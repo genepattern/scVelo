@@ -1,15 +1,15 @@
-#scVelo
-#Tue Jun 15 01:42:28 UTC 2021
+#scVelo.ComputeVelocity
+#Tue Jun 15 20:49:14 UTC 2021
 JVMLevel=
 LSID=urn\:lsid\:8080.gpserver.ip-172-31-26-71.ip-172-31-26-71.ec2.internal\:genepatternmodules\:443\:1
 author=Anthony S. Castanza
-commandLine=python <libdir>compute_scvelo.py -i <h5ad> -m <Marker.Genes> -s <min_shared_counts> -t <n_top_genes> -e <Embedding> -o <output.file.base> -j <job.cpuCount>
+commandLine=python <libdir>compute_scvelo.py -i <h5ad> -m <Marker.Genes> -s <min_shared_counts> -t <n_top_genes> -v <recalculate_highly_variable_genes> -e <Embedding> -o <output.file.base> -j <job.cpuCount> 
 cpuType=any
 description=Module for performing basic velocity analysis using the scVelo protocol on ScanpyUtilities processed datasets
 fileFormat=
-job.docker.image=python\:3.8-buster
+job.docker.image=acastanza/compute_scvelo\:latest
 language=any
-name=scVelo
+name=scVelo.ComputeVelocity
 os=any
 p1_MODE=IN
 p1_TYPE=FILE
@@ -65,30 +65,43 @@ p4_type=java.lang.Integer
 p4_value=
 p5_MODE=
 p5_TYPE=TEXT
-p5_default_value=umap
-p5_description=Select the type of embedding used in ScanpyUtilities
+p5_default_value=False
+p5_description=If highly_variable_genes have already been calculated externally, force their recomputation using scVelo's internal functions (true). Otherwise, leave existing highly_variable_genes as-is, calculating only if missing (false).
 p5_fileFormat=
-p5_flag=-e
-p5_name=Embedding
+p5_flag=-v
+p5_name=recalculate_highly_variable_genes
 p5_numValues=1..1
 p5_optional=
 p5_prefix=
 p5_prefix_when_specified=
 p5_type=java.lang.String
-p5_value=umap\=umap;tsne\=tsne
+p5_value=True\=true;False\=false
 p6_MODE=
 p6_TYPE=TEXT
-p6_default_value=<h5ad_basename>
-p6_description=Output basename for velocity calculation results
+p6_default_value=umap
+p6_description=Select the type of embedding used in ScanpyUtilities
 p6_fileFormat=
-p6_flag=-o
-p6_name=output.file.base
+p6_flag=-e
+p6_name=Embedding
 p6_numValues=1..1
 p6_optional=
 p6_prefix=
 p6_prefix_when_specified=
 p6_type=java.lang.String
-p6_value=
+p6_value=umap\=umap;tsne\=tsne
+p7_MODE=
+p7_TYPE=TEXT
+p7_default_value=<h5ad_basename>
+p7_description=Output basename for velocity calculation results
+p7_fileFormat=
+p7_flag=-o
+p7_name=output.file.base
+p7_numValues=1..1
+p7_optional=
+p7_prefix=
+p7_prefix_when_specified=
+p7_type=java.lang.String
+p7_value=
 privacy=private
 quality=development
 src.repo=
