@@ -39,7 +39,7 @@ RUN pip install scvelo==0.2.3
 
 # copy module files
 COPY src/* /src/
-RUN chmod a+x /sec/compute_scvelo.py
+RUN chmod a+x /scr/compute_scvelo.py
 
 # display software versions
 RUN python --version
