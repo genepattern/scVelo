@@ -36,6 +36,7 @@ def main():
 	ap.add_argument("-m","--markers",action="store",dest="markers",help="A list of marker genes")
 	ap.add_argument("-s","--shared",action="store",dest="minshared",help="Filter genes by minimum shared counts")
 	ap.add_argument("-t","--top",action="store",dest="topgenes",help="Top Genes for Velocity Computation")
+	ap.add_argument("-v","--hvg",action="store",dest="hvg",help="Compute highly_variable_genes")
 	ap.add_argument("-e","--embedding",action="store",dest="embedding",help="Dataset was processed with umap or tsne embedding")
 	ap.add_argument("-o","--out",action="store",dest="output",help="Output file basename")
 	ap.add_argument("-j","--cpu",action="store",dest="ncores",help="CPU cores to use for transition dynamics calculation")
@@ -49,7 +50,12 @@ def main():
 			markergenes = f.read().splitlines()
 		markergenes = list(set([sub.replace('-I', '') for sub in markergenes]))
 
-	sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
+	if options.hvg == "False":
+		if "highly_variable" not in list(adata.var):
+			sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
+	if options.hvg == "True":
+			sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
+
 	scv.pp.filter_and_normalize(adata, min_shared_counts=int(options.minshared), n_top_genes=int(options.topgenes), enforce=True)
 	scv.pp.moments(adata, n_pcs=30, n_neighbors=30)
 	scv.tl.recover_dynamics(adata, n_jobs=int(options.ncores))
