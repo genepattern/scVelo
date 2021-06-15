@@ -49,14 +49,18 @@ def main():
 			markergenes = f.read().splitlines()
 		markergenes = list(set([sub.replace('-I', '') for sub in markergenes]))
 
-
+	sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
 	scv.pp.filter_and_normalize(adata, min_shared_counts=int(options.minshared), n_top_genes=int(options.topgenes), enforce=True)
 	scv.pp.moments(adata, n_pcs=30, n_neighbors=30)
-	scv.tl.recover_dynamics(adata)
+	scv.tl.recover_dynamics(adata, n_jobs=int(options.ncores))
 	scv.tl.velocity(adata, mode = 'dynamical')
 	scv.tl.velocity_graph(adata)
-	if "X_umap" not in list(adata.obsm):
-		scv.tl.umap(adata)
+	if options.embedding != "tsne":
+		if "X_umap" not in list(adata.obsm):
+			scv.tl.umap(adata)
+	if options.embedding != "umap":
+		if "X_tsne" not in list(adata.obsm):
+			scv.tl.tsne(adata)
 	scv.tl.louvain(adata)
 	scv.pl.velocity_embedding_stream(adata, basis=options.embedding,save="embedding")
 	ad.AnnData.write(adata, options.output + "_graph_result.h5ad")
@@ -68,7 +72,7 @@ def main():
 			print("were not present in the variable genes list.")
 			markergenes = list(set(adata.var_names) & set(markergenes))
 		for i in markergenes:
-			sc.pl.umap(adata, color=[i], save="_"+options.output+"_"+i)
+			scv.pl.velocity_embedding_stream(adata, basis=options.embedding, color=[i], save="embedding_"+options.output+"_"+i)
 
 if __name__ == '__main__':
 	main()
