@@ -1,18 +1,18 @@
 import os, sys
 import subprocess
-
-subprocess.check_call(['apt-get', 'update'])
-subprocess.check_call(['apt-get', 'install', '-y', 'python3-pip'])
-
-import pkg_resources
-
-required = {'llvmlite','numpy','anndata','scipy','pandas','scanpy','python-igraph','matplotlib', 'scvelo', 'louvain', 'pybind11', 'hnswlib'}
-installed = {pkg.key for pkg in pkg_resources.working_set}
-missing = required - installed
-
-if missing:
-    # implement pip as a subprocess:
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install',*missing])
+# 
+# subprocess.check_call(['apt-get', 'update'])
+# subprocess.check_call(['apt-get', 'install', '-y', 'python3-pip'])
+# 
+# import pkg_resources
+# 
+# required = {'llvmlite','numpy','anndata','scipy','pandas','scanpy','python-igraph','matplotlib', 'scvelo', 'louvain', 'pybind11', 'hnswlib'}
+# installed = {pkg.key for pkg in pkg_resources.working_set}
+# missing = required - installed
+# 
+# if missing:
+#     # implement pip as a subprocess:
+#     subprocess.check_call([sys.executable, '-m', 'pip', 'install',*missing])
 
 from optparse import OptionParser
 import argparse
@@ -55,7 +55,8 @@ def main():
 	scv.tl.recover_dynamics(adata)
 	scv.tl.velocity(adata, mode = 'dynamical')
 	scv.tl.velocity_graph(adata)
-	scv.tl.umap(adata)
+	if "X_umap" not in list(adata.obsm):
+		scv.tl.umap(adata)
 	scv.tl.louvain(adata)
 	scv.pl.velocity_embedding_stream(adata, basis=options.embedding,save="embedding")
 	ad.AnnData.write(adata, options.output + "_graph_result.h5ad")

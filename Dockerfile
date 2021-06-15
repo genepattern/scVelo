@@ -25,6 +25,7 @@ ENV PATH="/opt/conda/bin:${PATH}"
 # install R dependencies
 
 # install python dependencies
+RUN pip install numba==0.52.0
 RUN pip install numpy==1.19.2
 RUN pip install pandas==1.2.2
 RUN pip install scipy==1.5.3
