@@ -61,6 +61,11 @@ def main():
 	ad.AnnData.write(adata, options.output + "_graph_result.h5ad")
 
 	if bool(options.markers):
+		if len(np.setdiff1d(markergenes,adata.var_names)):
+			print("Invalid marker genes.")
+			print(np.setdiff1d(markergenes,adata.var_names))
+			print("were not present in the variable genes list.")
+			markergenes = list(set(adata.var_names) & set(markergenes))
 		for i in markergenes:
 			sc.pl.umap(adata, color=[i], save="_"+options.output+"_"+i)
 

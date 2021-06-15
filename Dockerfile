@@ -5,7 +5,7 @@ MAINTAINER Anthony Castanza <acastanza@cloud.ucsd.edu>
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
-RUN mkdir /build
+RUN mkdir /src
 
 # install system dependencies
 RUN apt-get update --yes
@@ -38,8 +38,8 @@ RUN pip install loompy==3.0.6
 RUN pip install scvelo==0.2.3
 
 # copy module files
-COPY module/* /build/
-RUN chmod a+x /build/run_module.sh
+COPY src/* /src/
+RUN chmod a+x /sec/compute_scvelo.py
 
 # display software versions
 RUN python --version
