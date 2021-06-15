@@ -1,18 +1,18 @@
 import os, sys
 import subprocess
 
-# subprocess.check_call(['apt-get', 'update'])
-# subprocess.check_call(['apt-get', 'install', '-y', 'python3-pip'])
-# 
-# import pkg_resources
-# 
-# required = {'llvmlite','numpy','anndata','scipy','pandas','scanpy','python-igraph','matplotlib', 'scvelo', 'louvain', 'pybind11', 'hnswlib'}
-# installed = {pkg.key for pkg in pkg_resources.working_set}
-# missing = required - installed
-# 
-# if missing:
-#     # implement pip as a subprocess:
-#     subprocess.check_call([sys.executable, '-m', 'pip', 'install',*missing])
+subprocess.check_call(['apt-get', 'update'])
+subprocess.check_call(['apt-get', 'install', '-y', 'python3-pip'])
+
+import pkg_resources
+
+required = {'llvmlite','numpy','anndata','scipy','pandas','scanpy','python-igraph','matplotlib', 'scvelo', 'louvain', 'pybind11', 'hnswlib'}
+installed = {pkg.key for pkg in pkg_resources.working_set}
+missing = required - installed
+
+if missing:
+    # implement pip as a subprocess:
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install',*missing])
 
 from optparse import OptionParser
 import argparse
@@ -62,7 +62,7 @@ def main():
 
 	if bool(options.markers):
 		for i in markergenes:
-			sc.pl.umap(adata, color=[markergenes[i]], save="_"+options.output+"_"+markergenes[i])
+			sc.pl.umap(adata, color=[i], save="_"+options.output+"_"+i)
 
 if __name__ == '__main__':
 	main()
