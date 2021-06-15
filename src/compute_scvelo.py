@@ -44,23 +44,28 @@ def main():
 	options = ap.parse_args()
 
 	adata=anndata.read_h5ad(options.input_file)
-	
+
+	# Check for marker genes file and read it into a list
 	if bool(options.markers):
 		with open(options.markers) as f:
 			markergenes = f.read().splitlines()
 		markergenes = list(set([sub.replace('-I', '') for sub in markergenes]))
 
+	# Check if user wants to regenerate variable gene selection, or if it needs to be generated from scratch
 	if options.hvg == "False":
 		if "highly_variable" not in list(adata.var):
 			sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
 	if options.hvg == "True":
 			sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
-
+	
+	# scVelo Core Functions
 	scv.pp.filter_and_normalize(adata, min_shared_counts=int(options.minshared), n_top_genes=int(options.topgenes), enforce=True)
 	scv.pp.moments(adata, n_pcs=30, n_neighbors=30)
 	scv.tl.recover_dynamics(adata, n_jobs=int(options.ncores))
 	scv.tl.velocity(adata, mode = 'dynamical')
 	scv.tl.velocity_graph(adata)
+
+	# Confirm presence of lower dimensional embeddings and generate if absent
 	if options.embedding != "tsne":
 		if "X_umap" not in list(adata.obsm):
 			scv.tl.umap(adata)
@@ -71,6 +76,9 @@ def main():
 	scv.pl.velocity_embedding_stream(adata, basis=options.embedding,save="embedding")
 	ad.AnnData.write(adata, options.output + "_graph_result.h5ad")
 
+	# Add plotting for Batch Keys if present
+
+	# Check if marker genes are present and plot ones that are
 	if bool(options.markers):
 		if len(np.setdiff1d(markergenes,adata.var_names)):
 			print("Invalid marker genes.")
