@@ -71,8 +71,9 @@ def main():
 	if options.embedding != "umap":
 		if "X_tsne" not in list(adata.obsm):
 			scv.tl.tsne(adata)
-	scv.tl.louvain(adata)
-	scv.pl.velocity_embedding_stream(adata, basis=options.embedding,save="embedding")
+#	scv.tl.louvain(adata)
+	scv.tl.latent_time(adata)
+	scv.pl.velocity_embedding_stream(adata, color='latent_time', color_map='gnuplot', basis=options.embedding,save="latent_time_velocity_embedding")
 	ad.AnnData.write(adata, compression="gzip", filename=options.output + "_graph_result.h5ad")
 
 	# Add plotting for Batch Keys if present
