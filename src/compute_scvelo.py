@@ -74,7 +74,11 @@ def main():
 			scv.tl.tsne(adata)
 #	scv.tl.louvain(adata)
 	scv.tl.latent_time(adata)
-	scv.pl.velocity_embedding_stream(adata, color='latent_time', color_map='gnuplot', basis=options.embedding,save="latent_time_velocity_embedding"+options.plot)
+	scv.pl.velocity_embedding_stream(adata, color='latent_time', color_map='gnuplot', basis=options.embedding,save="latent_time_velocity_embedding."+options.plot)
+	if "batch" in list(adata.obs):
+		batches = list(adata.obs['batch'].cat.categories)
+		for i in batches:
+			scv.pl.velocity_embedding_stream(adata[adata.obs['batch']==i], color='latent_time', color_map='gnuplot', basis=options.embedding,save=i+"_latent_time_velocity_embedding."+options.plot)
 	ad.AnnData.write(adata, compression="gzip", filename=options.output + "_graph_result.h5ad")
 
 	# Add plotting for Batch Keys if present
@@ -87,7 +91,7 @@ def main():
 			print("were not present in the variable genes list.")
 			markergenes = list(set(adata.var_names) & set(markergenes))
 		for i in markergenes:
-			scv.pl.velocity_embedding_stream(adata, basis=options.embedding, color=[i], save="embedding_"+options.output+"_"+i+options.plot)
+			scv.pl.velocity_embedding_stream(adata, basis=options.embedding, color=[i], save="embedding_"+options.output+"_"+i+"."+options.plot)
 
 if __name__ == '__main__':
 	main()
