@@ -39,7 +39,7 @@ def main():
 	ap.add_argument("-v","--hvg",action="store",dest="hvg",help="Compute highly_variable_genes")
 	ap.add_argument("-e","--embedding",action="store",dest="embedding",help="Dataset was processed with umap or tsne embedding")
 	ap.add_argument("-o","--out",action="store",dest="output",help="Output file basename")
-	ap.add_argument("-j","--cpu",action="store",dest="ncores",help="CPU cores to use for transition dynamics calculation")
+#	ap.add_argument("-j","--cpu",action="store",dest="ncores",help="CPU cores to use for transition dynamics calculation")
 
 	options = ap.parse_args()
 
@@ -61,7 +61,7 @@ def main():
 	# scVelo Core Functions
 	scv.pp.filter_and_normalize(adata, min_shared_counts=int(options.minshared), n_top_genes=int(options.topgenes), enforce=True)
 	scv.pp.moments(adata, n_pcs=30, n_neighbors=30)
-	scv.tl.recover_dynamics(adata, n_jobs=int(options.ncores))
+	scv.tl.recover_dynamics(adata) # , n_jobs=int(options.ncores))
 	scv.tl.velocity(adata, mode = 'dynamical')
 	scv.tl.velocity_graph(adata)
 
@@ -74,7 +74,7 @@ def main():
 			scv.tl.tsne(adata)
 	scv.tl.louvain(adata)
 	scv.pl.velocity_embedding_stream(adata, basis=options.embedding,save="embedding")
-	ad.AnnData.write(adata, options.output + "_graph_result.h5ad")
+	ad.AnnData.write(adata, compression="gzip", options.output + "_graph_result.h5ad")
 
 	# Add plotting for Batch Keys if present
 
