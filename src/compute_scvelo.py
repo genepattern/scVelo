@@ -60,7 +60,7 @@ def main():
 	# scVelo Core Functions
 	scv.pp.filter_and_normalize(adata, min_shared_counts=int(options.minshared), n_top_genes=int(options.topgenes), enforce=True)
 	scv.pp.moments(adata, n_pcs=30, n_neighbors=30)
-	scv.tl.recover_dynamics(adata) # , n_jobs=int(options.ncores))
+	scv.tl.recover_dynamics(adata, show_progress_bar=False) # , n_jobs=int(options.ncores))
 	scv.tl.velocity(adata, mode = 'dynamical')
 	scv.tl.velocity_graph(adata)
 
