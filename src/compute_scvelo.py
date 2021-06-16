@@ -53,9 +53,9 @@ def main():
 	# Check if user wants to regenerate variable gene selection, or if it needs to be generated from scratch
 	if options.hvg == "False":
 		if "highly_variable" not in list(adata.var):
-			sc.pp.highly_variable_genes(adata, flavor="seurat")
+			sc.pp.highly_variable_genes(adata, flavor="seurat_v3", n_top_genes = 2000, check_values=False)
 	if options.hvg == "True":
-			sc.pp.highly_variable_genes(adata, flavor="seurat")
+			sc.pp.highly_variable_genes(adata, flavor="seurat_v3", n_top_genes = 2000, check_values=False)
 
 	# scVelo Core Functions
 	scv.pp.filter_and_normalize(adata, min_shared_counts=int(options.minshared), n_top_genes=int(options.topgenes), enforce=True)
