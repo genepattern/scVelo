@@ -1,15 +1,15 @@
 import os, sys
 import subprocess
-# 
+#
 # subprocess.check_call(['apt-get', 'update'])
 # subprocess.check_call(['apt-get', 'install', '-y', 'python3-pip'])
-# 
+#
 # import pkg_resources
-# 
+#
 # required = {'llvmlite','numpy','anndata','scipy','pandas','scanpy','python-igraph','matplotlib', 'scvelo', 'louvain', 'pybind11', 'hnswlib'}
 # installed = {pkg.key for pkg in pkg_resources.working_set}
 # missing = required - installed
-# 
+#
 # if missing:
 #     # implement pip as a subprocess:
 #     subprocess.check_call([sys.executable, '-m', 'pip', 'install',*missing])
@@ -57,7 +57,7 @@ def main():
 			sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
 	if options.hvg == "True":
 			sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
-	
+
 	# scVelo Core Functions
 	scv.pp.filter_and_normalize(adata, min_shared_counts=int(options.minshared), n_top_genes=int(options.topgenes), enforce=True)
 	scv.pp.moments(adata, n_pcs=30, n_neighbors=30)
