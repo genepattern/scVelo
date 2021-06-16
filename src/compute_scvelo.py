@@ -38,6 +38,7 @@ def main():
 	ap.add_argument("-t","--top",action="store",dest="topgenes",help="Top Genes for Velocity Computation")
 	ap.add_argument("-v","--hvg",action="store",dest="hvg",help="Compute highly_variable_genes")
 	ap.add_argument("-e","--embedding",action="store",dest="embedding",help="Dataset was processed with umap or tsne embedding")
+	ap.add_argument("-p","--plot",action="store",dest="output",help="Save velocity plots as png or svg")
 	ap.add_argument("-o","--out",action="store",dest="output",help="Output file basename")
 #	ap.add_argument("-j","--cpu",action="store",dest="ncores",help="CPU cores to use for transition dynamics calculation")
 	options = ap.parse_args()
@@ -73,7 +74,7 @@ def main():
 			scv.tl.tsne(adata)
 #	scv.tl.louvain(adata)
 	scv.tl.latent_time(adata)
-	scv.pl.velocity_embedding_stream(adata, color='latent_time', color_map='gnuplot', basis=options.embedding,save="latent_time_velocity_embedding")
+	scv.pl.velocity_embedding_stream(adata, color='latent_time', color_map='gnuplot', basis=options.embedding,save="latent_time_velocity_embedding"+options.plot)
 	ad.AnnData.write(adata, compression="gzip", filename=options.output + "_graph_result.h5ad")
 
 	# Add plotting for Batch Keys if present
@@ -86,7 +87,7 @@ def main():
 			print("were not present in the variable genes list.")
 			markergenes = list(set(adata.var_names) & set(markergenes))
 		for i in markergenes:
-			scv.pl.velocity_embedding_stream(adata, basis=options.embedding, color=[i], save="embedding_"+options.output+"_"+i)
+			scv.pl.velocity_embedding_stream(adata, basis=options.embedding, color=[i], save="embedding_"+options.output+"_"+i+options.plot)
 
 if __name__ == '__main__':
 	main()

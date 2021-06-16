@@ -1,12 +1,13 @@
 #scVelo.ComputeVelocity
-#Tue Jun 15 20:49:14 UTC 2021
+#Wed Jun 16 20:07:32 UTC 2021
 JVMLevel=
 LSID=urn\:lsid\:8080.gpserver.ip-172-31-26-71.ip-172-31-26-71.ec2.internal\:genepatternmodules\:443\:1
 author=Anthony S. Castanza
-commandLine=python <libdir>compute_scvelo.py -i <h5ad> -m <Marker.Genes> -s <min_shared_counts> -t <n_top_genes> -v <recalculate_highly_variable_genes> -e <Embedding> -o <output.file.base> -j <job.cpuCount> 
+categories=single-cell;singlecell;velocity
+commandLine=python <libdir>compute_scvelo.py -i <h5ad> -m <Marker.Genes> -s <min_shared_counts> -t <n_top_genes> -v <recalculate_highly_variable_genes> -e <Embedding> -p <Save.Plot.Type> -o <output.file.base>
 cpuType=any
 description=Module for performing basic velocity analysis using the scVelo protocol on ScanpyUtilities processed datasets
-fileFormat=
+fileFormat=h5ad;png;svg
 job.docker.image=acastanza/compute_scvelo\:latest
 language=any
 name=scVelo.ComputeVelocity
@@ -53,7 +54,7 @@ p3_value=
 p4_MODE=
 p4_TYPE=Integer
 p4_default_value=2000
-p4_description=Top N variable genes for velocity calculation
+p4_description=Top N variable genes to use for velocity calculation
 p4_fileFormat=
 p4_flag=-t
 p4_name=n_top_genes
@@ -91,21 +92,34 @@ p6_type=java.lang.String
 p6_value=umap\=umap;tsne\=tsne
 p7_MODE=
 p7_TYPE=TEXT
-p7_default_value=<h5ad_basename>
-p7_description=Output basename for velocity calculation results
+p7_default_value=png
+p7_description=Save velocity plots as png or svg
 p7_fileFormat=
-p7_flag=-o
-p7_name=output.file.base
+p7_flag=-p
+p7_name=Save.Plot.Type
 p7_numValues=1..1
 p7_optional=
 p7_prefix=
 p7_prefix_when_specified=
 p7_type=java.lang.String
-p7_value=
+p7_value=png\=png;svg\=svg
+p8_MODE=
+p8_TYPE=TEXT
+p8_default_value=<h5ad_basename>
+p8_description=Output basename for velocity calculation results
+p8_fileFormat=
+p8_flag=-o
+p8_name=output.file.base
+p8_numValues=1..1
+p8_optional=
+p8_prefix=
+p8_prefix_when_specified=
+p8_type=java.lang.String
+p8_value=
 privacy=private
 quality=development
 src.repo=
 taskDoc=
-taskType=
+taskType=single-cell
 userid=acastanza
 version=
