@@ -33,7 +33,7 @@ def main():
 	usage="%prog [options]" + "\n"
 	ap = argparse.ArgumentParser()
 	ap.add_argument("-i","--input-file",action="store",dest="input_file",help="h5ad (anndata) file.")
-	ap.add_argument("-m","--markers",action="store",dest="markers",help="A list of marker genes")
+	ap.add_argument("-m","--markers",action="store",dest="markers",nargs='?',help="A list of marker genes")
 	ap.add_argument("-s","--shared",action="store",dest="minshared",help="Filter genes by minimum shared counts")
 	ap.add_argument("-t","--top",action="store",dest="topgenes",help="Top Genes for Velocity Computation")
 	ap.add_argument("-v","--hvg",action="store",dest="hvg",help="Compute highly_variable_genes")
@@ -53,9 +53,9 @@ def main():
 	# Check if user wants to regenerate variable gene selection, or if it needs to be generated from scratch
 	if options.hvg == "False":
 		if "highly_variable" not in list(adata.var):
-			sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
+			sc.pp.highly_variable_genes(adata, flavor="seurat_v3")
 	if options.hvg == "True":
-			sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
+			sc.pp.highly_variable_genes(adata, flavor="seurat_v3")
 
 	# scVelo Core Functions
 	scv.pp.filter_and_normalize(adata, min_shared_counts=int(options.minshared), n_top_genes=int(options.topgenes), enforce=True)
@@ -73,12 +73,12 @@ def main():
 			scv.tl.tsne(adata)
 	scv.tl.louvain(adata)
 	scv.pl.velocity_embedding_stream(adata, basis=options.embedding,save="embedding")
-	ad.AnnData.write(adata, compression="gzip", options.output + "_graph_result.h5ad")
+	ad.AnnData.write(adata, compression="gzip", filename=options.output + "_graph_result.h5ad")
 
 	# Add plotting for Batch Keys if present
 
 	# Check if marker genes are present and plot ones that are
-	if bool(options.markers):
+	if options.markers != None:
 		if len(np.setdiff1d(markergenes,adata.var_names)):
 			print("Invalid marker genes.")
 			print(np.setdiff1d(markergenes,adata.var_names))

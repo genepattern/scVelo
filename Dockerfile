@@ -37,6 +37,7 @@ RUN pip install cmake==3.18.4
 RUN pip install MulticoreTSNE==0.1
 RUN pip install loompy==3.0.6
 RUN pip install scvelo==0.2.3
+RUN pip install scikit-misc=0.1.4
 
 # copy module files
 COPY src/* /src/
