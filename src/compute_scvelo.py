@@ -40,7 +40,6 @@ def main():
 	ap.add_argument("-e","--embedding",action="store",dest="embedding",help="Dataset was processed with umap or tsne embedding")
 	ap.add_argument("-o","--out",action="store",dest="output",help="Output file basename")
 #	ap.add_argument("-j","--cpu",action="store",dest="ncores",help="CPU cores to use for transition dynamics calculation")
-
 	options = ap.parse_args()
 
 	adata=anndata.read_h5ad(options.input_file)
