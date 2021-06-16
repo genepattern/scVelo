@@ -81,8 +81,6 @@ def main():
 			scv.pl.velocity_embedding_stream(adata[adata.obs['batch']==i], color='latent_time', color_map='gnuplot', basis=options.embedding,save=i+"_latent_time_velocity_embedding."+options.plot)
 	ad.AnnData.write(adata, compression="gzip", filename=options.output + "_graph_result.h5ad")
 
-	# Add plotting for Batch Keys if present
-
 	# Check if marker genes are present and plot ones that are
 	if options.markers != None:
 		if len(np.setdiff1d(markergenes,adata.var_names)):
