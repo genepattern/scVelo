@@ -38,7 +38,7 @@ def main():
 	ap.add_argument("-t","--top",action="store",dest="topgenes",help="Top Genes for Velocity Computation")
 	ap.add_argument("-v","--hvg",action="store",dest="hvg",help="Compute highly_variable_genes")
 	ap.add_argument("-e","--embedding",action="store",dest="embedding",help="Dataset was processed with umap or tsne embedding")
-	ap.add_argument("-p","--plot",action="store",dest="output",help="Save velocity plots as png or svg")
+	ap.add_argument("-p","--plot",action="store",dest="plot",help="Save velocity plots as png or svg")
 	ap.add_argument("-o","--out",action="store",dest="output",help="Output file basename")
 #	ap.add_argument("-j","--cpu",action="store",dest="ncores",help="CPU cores to use for transition dynamics calculation")
 	options = ap.parse_args()
