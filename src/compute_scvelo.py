@@ -77,7 +77,7 @@ def main():
 	scv.pl.velocity_embedding_stream(adata, color='latent_time', color_map='gnuplot', basis=options.embedding,save="latent_time_velocity_embedding."+options.plot)
 	if "batch" in list(adata.obs):
 		batches = list(adata.obs['batch'].cat.categories)
-		scv.pl.velocity_embedding_stream(adata, color='batch', basis=options.embedding, save=batches_velocity_embedding."+options.plot)
+		scv.pl.velocity_embedding_stream(adata, color='batch', basis=options.embedding, save="batches_velocity_embedding."+options.plot)
 		for i in batches:
 			scv.pl.velocity_embedding_stream(adata[adata.obs['batch']==i], color='latent_time', color_map='gnuplot', basis=options.embedding, save=i+"_latent_time_velocity_embedding."+options.plot)
 	ad.AnnData.write(adata, compression="gzip", filename=options.output + "_graph_result.h5ad")
