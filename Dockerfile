@@ -38,6 +38,8 @@ RUN pip install MulticoreTSNE==0.1
 RUN pip install loompy==3.0.6
 RUN pip install scvelo==0.2.3
 RUN pip install scikit-misc==0.1.4
+RUN pip install pybind11==2.6.2 
+RUN pip install hnswlib==0.5.2 
 
 # copy module files
 COPY src/* /src/
