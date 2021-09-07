@@ -88,23 +88,23 @@ def main():
 #	scv.tl.louvain(adata)
     scv.tl.latent_time(adata)
     scv.pl.velocity_embedding_stream(adata, color='latent_time', color_map='gnuplot',
-                                     basis=options.embedding, save="Latent_time_velocity_embedding." + options.plot)
+                                     basis=options.embedding, save="latent_time_velocity_embedding." + options.plot)
     if "batch" in list(adata.obs):
         batches = list(adata.obs['batch'].cat.categories)
         scv.pl.velocity_embedding_stream(
-            adata, color='batch', basis=options.embedding, save="Batches_velocity_embedding." + options.plot)
+            adata, color='batch', basis=options.embedding, save="batches_velocity_embedding." + options.plot)
         for i in batches:
             scv.pl.velocity_embedding_stream(adata[adata.obs['batch'] == i], color='latent_time', color_map='gnuplot',
                                              basis=options.embedding, save=i + "_latent_time_velocity_embedding." + options.plot)
 
     scv.tl.velocity_confidence(adata)
     scv.pl.scatter(adata, c=['velocity_length'], cmap='coolwarm', perc=[
-                   5, 95], save="Velocity_length_embedding." + options.plot)
+                   5, 95], save="velocity_length_embedding." + options.plot)
     scv.pl.scatter(adata, c=['velocity_confidence'], cmap='coolwarm', perc=[
-                   5, 95], save="Velocity_confidence_embedding." + options.plot)
+                   5, 95], save="velocity_confidence_embedding." + options.plot)
 
     ad.AnnData.write(adata, compression="gzip",
-                     filename=options.output + "_graph_result.h5ad")
+                     filename=options.output + "_complete_velocity_data.h5ad")
 
     # Check if marker genes are present and plot ones that are
     if options.markers != None:
@@ -115,7 +115,7 @@ def main():
             markergenes = list(set(adata.var_names) & set(markergenes))
         for i in markergenes:
             scv.pl.velocity_embedding_stream(adata, basis=options.embedding, color=[
-                                             i], save="Embedding_" + options.output + "_" + i + "." + options.plot)
+                                             i], save="embedding_" + options.output + "_" + i + "." + options.plot)
 
 
 if __name__ == '__main__':
