@@ -80,6 +80,11 @@ def main():
 		scv.pl.velocity_embedding_stream(adata, color='batch', basis=options.embedding, save="batches_velocity_embedding."+options.plot)
 		for i in batches:
 			scv.pl.velocity_embedding_stream(adata[adata.obs['batch']==i], color='latent_time', color_map='gnuplot', basis=options.embedding, save=i+"_latent_time_velocity_embedding."+options.plot)
+
+	scv.tl.velocity_confidence(adata)
+	scv.pl.scatter(adata, c=['velocity_length'], cmap='coolwarm', perc=[5, 95], save=i+"_velocity_length."+options.plot)
+	scv.pl.scatter(adata, c=['velocity_confidence'], cmap='coolwarm', perc=[5, 95], save=i+"_velocity_confidence."+options.plot)
+
 	ad.AnnData.write(adata, compression="gzip", filename=options.output + "_graph_result.h5ad")
 
 	# Check if marker genes are present and plot ones that are
