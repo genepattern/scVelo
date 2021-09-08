@@ -88,20 +88,20 @@ def main():
 #	scv.tl.louvain(adata)
     scv.tl.latent_time(adata)
     scv.pl.velocity_embedding_stream(adata, color='latent_time', color_map='gnuplot',
-                                     basis=options.embedding, save="latent_time_velocity_embedding." + options.plot)
+                                     basis=options.embedding, save=options.output + "_latent_time_velocity_embedding." + options.plot)
     if "batch" in list(adata.obs):
         batches = list(adata.obs['batch'].cat.categories)
         scv.pl.velocity_embedding_stream(
-            adata, color='batch', basis=options.embedding, save="batches_velocity_embedding." + options.plot)
+            adata, color='batch', basis=options.embedding, save=options.output + "_batches_velocity_embedding." + options.plot)
         for i in batches:
             scv.pl.velocity_embedding_stream(adata[adata.obs['batch'] == i], color='latent_time', color_map='gnuplot',
-                                             basis=options.embedding, save=i + "_latent_time_velocity_embedding." + options.plot)
+                                             basis=options.embedding, save=options.output + "_" + i + "_latent_time_velocity_embedding." + options.plot)
 
     scv.tl.velocity_confidence(adata)
     scv.pl.scatter(adata, c=['velocity_length'], cmap='coolwarm', perc=[
-                   5, 95], save="velocity_length_embedding." + options.plot)
+                   5, 95], save=options.output + "_velocity_length_embedding." + options.plot)
     scv.pl.scatter(adata, c=['velocity_confidence'], cmap='coolwarm', perc=[
-                   5, 95], save="velocity_confidence_embedding." + options.plot)
+                   5, 95], save=options.output + "_velocity_confidence_embedding." + options.plot)
 
     ad.AnnData.write(adata, compression="gzip",
                      filename=options.output + "_complete_velocity_data.h5ad")
@@ -115,7 +115,9 @@ def main():
             markergenes = list(set(adata.var_names) & set(markergenes))
         for i in markergenes:
             scv.pl.velocity_embedding_stream(adata, basis=options.embedding, color=[
-                                             i], save="embedding_" + options.output + "_" + i + "." + options.plot)
+                                             i], save=options.output + "_embedding_" + i + "." + options.plot)
+        scv.pl.velocity(adata, markergenes, ncols=1,
+                        save=options.output + "_combined_per-marker_velocity" + "." + options.plot)
 
 
 if __name__ == '__main__':
