@@ -64,9 +64,11 @@ def main():
     # Check if user wants to regenerate variable gene selection, or if it needs to be generated from scratch
     if options.hvg == "False":
         if "highly_variable" not in list(adata.var):
+            print("Calculation of highly variable genes was not selected but no precomputed set was detected in the dataset so doing it anyway using method 'seurat_v3'.\n")
             sc.pp.highly_variable_genes(adata, flavor="seurat_v3", n_top_genes=int(
                 options.topgenes), check_values=False)
     if options.hvg == "True":
+        print("Realculation of highly variable genes was requested; calculating using method 'seurat_v3'.\n")
         sc.pp.highly_variable_genes(adata, flavor="seurat_v3", n_top_genes=int(
             options.topgenes), check_values=False)
 
@@ -81,32 +83,42 @@ def main():
     # Confirm presence of lower dimensional embeddings and generate if absent
     if options.embedding != "tsne":
         if "X_umap" not in list(adata.obsm):
-            print("'UMAP' Embedding was requested, but we didn't find it in the dataset so creating it now.\n")
+            print(
+                "'UMAP' Embedding was requested, but we didn't find it in the dataset so creating it now.\n")
             scv.tl.umap(adata)
     if options.embedding != "umap":
         if "X_tsne" not in list(adata.obsm):
-            print("'tSNE' Embedding was requested, but we didn't find it in the dataset so creating it now.\n")
+            print(
+                "'tSNE' Embedding was requested, but we didn't find it in the dataset so creating it now.\n")
             scv.tl.tsne(adata)
 #	scv.tl.louvain(adata)
     scv.tl.latent_time(adata)
 
 # Detect/create clustering
     if "clusters" in list(adata.obs):
-        cluster_type = "clusters\n"
+        cluster_type = "clusters"
+        cluster_out = "clusters"
         print("Found 'clusters' key in dataset. We'll use this for plots and any differential kinetics.\n")
     elif "clusters" not in list(adata.obs):
         if "leiden" in list(adata.obs):
             cluster_type = "leiden"
-            print("Found 'leiden' clustering key in dataset. We'll use this for plots and any differential kinetics.\n")
+            cluster_out = "leiden_clusters"
+            print("Found 'leiden' clustering in dataset. We'll use this for plots and any differential kinetics.\n")
         elif "leiden" not in list(adata.obs):
             if "walktrap" in list(adata.obs):
                 cluster_type = "walktrap"
+                cluster_out = "walktrap_clusters"
                 print(
-                    "Found 'walktrap' clustering key in dataset. We'll use this for plots and any differential kinetics.\n")
+                    "Found 'walktrap' clustering in dataset. We'll use this for plots and any differential kinetics.\n")
             else:
                 print("Didn't find any clustering in dataset, clustering data using method: 'leiden'.\nWe'll use this for plots and any differential kinetics.\n")
                 sc.tl.leiden(adata)
                 cluster_type = "leiden"
+                cluster_out = "leiden_clusters"
+    scv.tl.rank_velocity_genes(adata, groupby=cluster_type, min_corr=.3)
+    df = scv.DataFrame(adata.uns['rank_velocity_genes']['names'])
+    df.to_csv(options.output + "_top_velocity_genes_by_" +
+              cluster_out + ".txt", sep="\t")
 
 # Plotting
 
