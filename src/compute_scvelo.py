@@ -81,20 +81,43 @@ def main():
     # Confirm presence of lower dimensional embeddings and generate if absent
     if options.embedding != "tsne":
         if "X_umap" not in list(adata.obsm):
+            print("'UMAP' Embedding was requested, but we didn't find it in the dataset so creating it now.\n")
             scv.tl.umap(adata)
     if options.embedding != "umap":
         if "X_tsne" not in list(adata.obsm):
+            print("'tSNE' Embedding was requested, but we didn't find it in the dataset so creating it now.\n")
             scv.tl.tsne(adata)
 #	scv.tl.louvain(adata)
     scv.tl.latent_time(adata)
-    scv.pl.velocity_embedding_stream(adata, color='latent_time', color_map='gnuplot',
+
+# Detect/create clustering
+    if "clusters" in list(adata.obs):
+        cluster_type = "clusters\n"
+        print("Found 'clusters' key in dataset. We'll use this for plots and any differential kinetics.\n")
+    elif "clusters" not in list(adata.obs):
+        if "leiden" in list(adata.obs):
+            cluster_type = "leiden"
+            print("Found 'leiden' clustering key in dataset. We'll use this for plots and any differential kinetics.\n")
+        elif "leiden" not in list(adata.obs):
+            if "walktrap" in list(adata.obs):
+                cluster_type = "walktrap"
+                print(
+                    "Found 'walktrap' clustering key in dataset. We'll use this for plots and any differential kinetics.\n")
+            else:
+                print("Didn't find any clustering in dataset, clustering data using method: 'leiden'.\nWe'll use this for plots and any differential kinetics.\n")
+                sc.tl.leiden(adata)
+                cluster_type = "leiden"
+
+# Plotting
+
+    scv.pl.velocity_embedding_stream(adata, color=['latent_time', cluster_type], color_map='gnuplot',
                                      basis=options.embedding, save=options.output + "_latent_time_velocity_embedding." + options.plot)
     if "batch" in list(adata.obs):
         batches = list(adata.obs['batch'].cat.categories)
         scv.pl.velocity_embedding_stream(
             adata, color='batch', basis=options.embedding, save=options.output + "_batches_velocity_embedding." + options.plot)
         for i in batches:
-            scv.pl.velocity_embedding_stream(adata[adata.obs['batch'] == i], color='latent_time', color_map='gnuplot',
+            scv.pl.velocity_embedding_stream(adata[adata.obs['batch'] == i], color=['latent_time', cluster_type], color_map='gnuplot',
                                              basis=options.embedding, save=options.output + "_" + i + "_latent_time_velocity_embedding." + options.plot)
 
     scv.tl.velocity_confidence(adata)
@@ -102,6 +125,11 @@ def main():
                    5, 95], save=options.output + "_velocity_length_embedding." + options.plot)
     scv.pl.scatter(adata, c=['velocity_confidence'], cmap='coolwarm', perc=[
                    5, 95], save=options.output + "_velocity_confidence_embedding." + options.plot)
+
+    # Stuff for Differential Kinetics
+    # if no clusters, run leiden
+    if options.diff_kinetics == True:
+        scv.tl.differential_kinetic_test(adata, groupby=cluster_type)
 
     ad.AnnData.write(adata, compression="gzip",
                      filename=options.output + "_complete_velocity_data.h5ad")
