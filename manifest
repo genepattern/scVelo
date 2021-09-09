@@ -103,7 +103,7 @@ p7_optional=
 p7_prefix=
 p7_prefix_when_specified=
 p7_type=java.lang.String
-p7_value=False\=False;True\=True
+p7_value=False\=false;True\=true
 p8_MODE=
 p8_TYPE=TEXT
 p8_default_value=png
