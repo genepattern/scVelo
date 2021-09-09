@@ -51,4 +51,4 @@ RUN python --version
 RUN pip --version
 
 # default command
-CMD ["python --version"]
+CMD ["python", "--version"]
