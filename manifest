@@ -1,12 +1,13 @@
 #scVelo.ComputeVelocity
-#Wed Jun 16 20:07:32 UTC 2021
+#Thu Sep 09 00:40:05 UTC 2021
 JVMLevel=
 LSID=urn\:lsid\:8080.gpserver.ip-172-31-26-71.ip-172-31-26-71.ec2.internal\:genepatternmodules\:443\:1
 author=Anthony S. Castanza
 categories=single-cell;singlecell;velocity
-commandLine=python <libdir>compute_scvelo.py -i <h5ad> -m <Marker.Genes> -s <min_shared_counts> -t <n_top_genes> -v <recalculate_highly_variable_genes> -e <Embedding> -p <Save.Plot.Type> -o <output.file.base>
+commandLine=python <libdir>compute_scvelo.py -i <h5ad> -m <Marker.Genes> -s <min_shared_counts> -t <n_top_genes> -v <recalculate_highly_variable_genes> -e <Embedding> -d <Differential.Kinetics.Analysis> -p <Save.Plot.Type> -o <output.file.base>
 cpuType=any
 description=Module for performing basic velocity analysis using the scVelo protocol on ScanpyUtilities processed datasets
+documentationUrl=
 fileFormat=h5ad;png;svg
 job.docker.image=acastanza/compute_scvelo\:latest
 language=any
@@ -67,7 +68,7 @@ p4_value=
 p5_MODE=
 p5_TYPE=TEXT
 p5_default_value=False
-p5_description=By default (false) scVelo will use an existing calculation of highly viariable genes if one exists. If a highly_variable_genes key is not present in the data, it will be recalculated using scanpy's "seurat_v3" setting for the value of genes specified in the "n_top_genes" parameter. If "true" this calculation will always run, overwriting any previously calculated highly variable genes.
+p5_description=If highly_variable_genes have already been calculated externally, force their recomputation using scVelo's internal functions (true). Otherwise, leave existing highly_variable_genes as-is, calculating only if missing (false).
 p5_fileFormat=
 p5_flag=-v
 p5_name=recalculate_highly_variable_genes
@@ -92,30 +93,43 @@ p6_type=java.lang.String
 p6_value=umap\=umap;tsne\=tsne
 p7_MODE=
 p7_TYPE=TEXT
-p7_default_value=png
-p7_description=Save velocity plots as png or svg
+p7_default_value=False
+p7_description=Perform differential kinetics analysis on the basis of dataset clustering
 p7_fileFormat=
-p7_flag=-p
-p7_name=Save.Plot.Type
+p7_flag=-d
+p7_name=Differential.Kinetics.Analysis
 p7_numValues=1..1
 p7_optional=
 p7_prefix=
 p7_prefix_when_specified=
 p7_type=java.lang.String
-p7_value=png\=png;svg\=svg
+p7_value=False\=False;True\=True
 p8_MODE=
 p8_TYPE=TEXT
-p8_default_value=<h5ad_basename>
-p8_description=Output basename for velocity calculation results
+p8_default_value=png
+p8_description=Save velocity plots as png or svg
 p8_fileFormat=
-p8_flag=-o
-p8_name=output.file.base
+p8_flag=-p
+p8_name=Save.Plot.Type
 p8_numValues=1..1
 p8_optional=
 p8_prefix=
 p8_prefix_when_specified=
 p8_type=java.lang.String
-p8_value=
+p8_value=png\=png;svg\=svg
+p9_MODE=
+p9_TYPE=TEXT
+p9_default_value=<h5ad_basename>
+p9_description=Output basename for velocity calculation results
+p9_fileFormat=
+p9_flag=-o
+p9_name=output.file.base
+p9_numValues=1..1
+p9_optional=
+p9_prefix=
+p9_prefix_when_specified=
+p9_type=java.lang.String
+p9_value=
 privacy=private
 quality=development
 src.repo=

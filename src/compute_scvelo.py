@@ -46,6 +46,8 @@ def main():
                     help="Compute highly_variable_genes")
     ap.add_argument("-e", "--embedding", action="store", dest="embedding",
                     help="Dataset was processed with umap or tsne embedding")
+    ap.add_argument("-d", "--diffkin", default="False", action="store", dest="diff_kinetics",
+                    help="Perform differential kinetics analysis using clustering.")
     ap.add_argument("-p", "--plot", action="store", dest="plot",
                     help="Save velocity plots as png or svg")
     ap.add_argument("-o", "--out", action="store",
@@ -97,7 +99,7 @@ def main():
 # Detect/create clustering
     if "clusters" in list(adata.obs):
         cluster_type = "clusters"
-        cluster_out = "clusters"
+        cluster_out = "dataset_clusters"
         print("Found 'clusters' key in dataset. We'll use this for plots and any differential kinetics.\n")
     elif "clusters" not in list(adata.obs):
         if "leiden" in list(adata.obs):
@@ -139,9 +141,36 @@ def main():
                    5, 95], save=options.output + "_velocity_confidence_embedding." + options.plot)
 
     # Stuff for Differential Kinetics
-    # if no clusters, run leiden
-    if options.diff_kinetics == True:
+    if options.diff_kinetics == "True":
+        velocity_genes_list = list(
+            adata.var['velocity_genes'][adata.var['velocity_genes'] == True].index)
         scv.tl.differential_kinetic_test(adata, groupby=cluster_type)
+        kdf = scv.get_df(adata[:, velocity_genes_list], [
+                         'fit_diff_kinetics', 'fit_pval_kinetics'], precision=2)
+        kdf.to_csv(options.output + "_differential_kinetics_for_velocity_genes_by_" +
+                   cluster_out + ".txt", sep="\t")
+        kwargs = dict(linewidth=2, add_linfit=True, frameon=False)
+        # scv.pl.scatter(adata, basis=velocity_genes_list, add_outline='fit_diff_kinetics', **kwargs)
+        diff_clusters = list(
+            adata[:, velocity_genes_list].var['fit_diff_kinetics'])
+        scv.pl.scatter(adata, legend_loc='right', size=60, title='diff kinetics',
+                       add_outline=diff_clusters, outline_width=(.8, .2), save=options.output + "_outlined_differential_kinetics_clusters." + options.plot)
+        scv.tl.velocity(adata, mode='dynamical', diff_kinetics=True)
+        scv.tl.velocity_graph(adata)
+        scv.pl.velocity_embedding_stream(adata, color=['latent_time', cluster_type], color_map='gnuplot',
+                                         basis=options.embedding, save=options.output + "_differential_kinetics" + "_latent_time_velocity_embedding." + options.plot)
+        if "batch" in list(adata.obs):
+            batches = list(adata.obs['batch'].cat.categories)
+            scv.pl.velocity_embedding_stream(
+                adata, color='batch', basis=options.embedding, save=options.output + "_differential_kinetics" + "_batches_velocity_embedding." + options.plot)
+            for i in batches:
+                scv.pl.velocity_embedding_stream(adata[adata.obs['batch'] == i], color=['latent_time', cluster_type], color_map='gnuplot',
+                                                 basis=options.embedding, save=options.output + "_differential_kinetics" + "_" + i + "_latent_time_velocity_embedding." + options.plot)
+        scv.tl.velocity_confidence(adata)
+        scv.pl.scatter(adata, c=['velocity_length'], cmap='coolwarm', perc=[
+                       5, 95], save=options.output + "_differential_kinetics" + "_velocity_length_embedding." + options.plot)
+        scv.pl.scatter(adata, c=['velocity_confidence'], cmap='coolwarm', perc=[
+                       5, 95], save=options.output + "_differential_kinetics" + "_velocity_confidence_embedding." + options.plot)
 
     ad.AnnData.write(adata, compression="gzip",
                      filename=options.output + "_complete_velocity_data.h5ad")
