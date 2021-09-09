@@ -18,14 +18,14 @@ RUN apt-get install libxml2-dev --yes
 # install python with conda
 RUN mkdir /conda && \
     cd /conda && \
-    wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
-    bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/conda
+    wget https://repo.anaconda.com/miniconda/Miniconda3-py38_4.10.3-Linux-x86_64.sh && \
+    bash Miniconda3-py38_4.10.3-Linux-x86_64.shh -b -p /opt/conda
 ENV PATH="/opt/conda/bin:${PATH}"
 
 # install R dependencies
 
 # install python dependencies
-RUN pip install numba==0.54.0
+RUN pip install numba==0.52.0
 RUN pip install numpy==1.19.2
 RUN pip install pandas==1.2.2
 RUN pip install scipy==1.5.3
