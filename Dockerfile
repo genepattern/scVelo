@@ -19,7 +19,7 @@ RUN apt-get install libxml2-dev --yes
 RUN mkdir /conda && \
     cd /conda && \
     wget https://repo.anaconda.com/miniconda/Miniconda3-py38_4.10.3-Linux-x86_64.sh && \
-    bash Miniconda3-py38_4.10.3-Linux-x86_64.shh -b -p /opt/conda
+    bash Miniconda3-py38_4.10.3-Linux-x86_64.sh -b -p /opt/conda
 ENV PATH="/opt/conda/bin:${PATH}"
 
 # install R dependencies
