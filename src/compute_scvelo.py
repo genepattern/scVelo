@@ -150,7 +150,8 @@ def main():
         kdf.to_csv(options.output + "_differential_kinetics_for_velocity_genes_by_" +
                    cluster_out + ".txt", sep="\t")
         kwargs = dict(linewidth=2, add_linfit=True, frameon=False)
-        # scv.pl.scatter(adata, basis=velocity_genes_list, add_outline='fit_diff_kinetics', **kwargs)
+        top_genes = adata.var['fit_likelihood'].sort_values(ascending=False).index[:100]
+        scv.pl.scatter(adata, basis=top_genes[:20], ncols=5, add_outline='fit_diff_kinetics', **kwargs, save=options.output + "_top20_fit_likelihood_genes_after_differential_kinetics." + options.plot)
         diff_clusters = list(
             adata[:, velocity_genes_list].var['fit_diff_kinetics'])
         scv.pl.scatter(adata, legend_loc='right', size=60, title='diff kinetics',
