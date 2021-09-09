@@ -40,6 +40,7 @@ RUN pip install scvelo==0.2.3
 RUN pip install scikit-misc==0.1.4
 RUN pip install pybind11==2.6.2 
 RUN pip install hnswlib==0.5.2 
+RUN pip install leidenalg==0.8.7 
 
 # copy module files
 COPY src/* /src/
