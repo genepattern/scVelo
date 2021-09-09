@@ -185,15 +185,15 @@ def main():
         if options.diff_kinetics == "False":
             for i in markergenes:
                 scv.pl.velocity_embedding_stream(adata, basis=options.embedding, color=[
-                                             i], save=options.output + "_embedding_" + i + "." + options.plot)
+                    i], save=options.output + "_embedding_" + i + "." + options.plot)
             scv.pl.velocity(adata, markergenes, ncols=1,
                             save=options.output + "_combined_per-marker_velocity" + "." + options.plot)
         if options.diff_kinetics == "True":
             for i in markergenes:
                 scv.pl.velocity_embedding_stream(adata, basis=options.embedding, color=[
-                                             i], save=options.output +  "_differential_kinetics" + "_embedding_" + i + "." + options.plot)
+                    i], save=options.output + "_differential_kinetics" + "_embedding_" + i + "." + options.plot)
             scv.pl.velocity(adata, markergenes, ncols=1,
-                            save=options.output +  "_differential_kinetics" + "_combined_per-marker_velocity" + "." + options.plot)
+                            save=options.output + "_differential_kinetics" + "_combined_per-marker_velocity" + "." + options.plot)
 
 
 if __name__ == '__main__':
