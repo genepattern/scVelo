@@ -154,7 +154,7 @@ def main():
         diff_clusters = list(
             adata[:, velocity_genes_list].var['fit_diff_kinetics'])
         scv.pl.scatter(adata, legend_loc='right', size=60, title='diff kinetics',
-                       add_outline=diff_clusters, outline_width=(.8, .2), save=options.output + "_outlined_differential_kinetics_clusters." + options.plot)
+                       add_outline=diff_clusters, outline_width=(.8, .2), color=cluster_type, save=options.output + "_outlined_differential_kinetics_clusters." + options.plot)
         scv.tl.velocity(adata, mode='dynamical', diff_kinetics=True)
         scv.tl.velocity_graph(adata)
         scv.pl.velocity_embedding_stream(adata, color=['latent_time', cluster_type], color_map='gnuplot',
