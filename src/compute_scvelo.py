@@ -182,11 +182,18 @@ def main():
             print(np.setdiff1d(markergenes, adata.var_names))
             print("were not present in the variable genes list.")
             markergenes = list(set(adata.var_names) & set(markergenes))
-        for i in markergenes:
-            scv.pl.velocity_embedding_stream(adata, basis=options.embedding, color=[
+        if options.diff_kinetics == "False":
+            for i in markergenes:
+                scv.pl.velocity_embedding_stream(adata, basis=options.embedding, color=[
                                              i], save=options.output + "_embedding_" + i + "." + options.plot)
-        scv.pl.velocity(adata, markergenes, ncols=1,
-                        save=options.output + "_combined_per-marker_velocity" + "." + options.plot)
+            scv.pl.velocity(adata, markergenes, ncols=1,
+                            save=options.output + "_combined_per-marker_velocity" + "." + options.plot)
+        if options.diff_kinetics == "True":
+            for i in markergenes:
+                scv.pl.velocity_embedding_stream(adata, basis=options.embedding, color=[
+                                             i], save=options.output +  "_differential_kinetics" + "_embedding_" + i + "." + options.plot)
+            scv.pl.velocity(adata, markergenes, ncols=1,
+                            save=options.output +  "_differential_kinetics" + "_combined_per-marker_velocity" + "." + options.plot)
 
 
 if __name__ == '__main__':
