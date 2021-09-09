@@ -25,7 +25,7 @@ ENV PATH="/opt/conda/bin:${PATH}"
 # install R dependencies
 
 # install python dependencies
-RUN pip install numba==0.52.0
+RUN pip install numba==0.53.1
 RUN pip install numpy==1.19.2
 RUN pip install pandas==1.2.2
 RUN pip install scipy==1.5.3
@@ -38,9 +38,9 @@ RUN pip install MulticoreTSNE==0.1
 RUN pip install loompy==3.0.6
 RUN pip install scvelo==0.2.3
 RUN pip install scikit-misc==0.1.4
-RUN pip install pybind11==2.6.2 
-RUN pip install hnswlib==0.5.2 
-RUN pip install leidenalg==0.8.7 
+RUN pip install pybind11==2.6.2
+RUN pip install hnswlib==0.5.2
+RUN pip install leidenalg==0.8.7
 
 # copy module files
 COPY src/* /src/
