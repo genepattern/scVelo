@@ -145,7 +145,7 @@ def main():
         for i in batches:
             try:
                 scv.pl.velocity_embedding_stream(adata[adata.obs['batch'] == i], color=['latent_time', cluster_type], color_map='gnuplot',
-                                                 basis=embedding, save=output + "_" + i + "_latent_time_velocity_embedding." + plot)
+                                                 basis=options.embedding, save=options.output + "_" + i + "_latent_time_velocity_embedding." + options.plot)
             except ValueError:
                 warnings.warn(print("Unable to plot batch: " + i +
                                     ". Perhaps too many cells were removed by filtering parameters."))
@@ -183,8 +183,12 @@ def main():
             scv.pl.velocity_embedding_stream(
                 adata, color='batch', basis=options.embedding, save=options.output + "_differential_kinetics" + "_batches_velocity_embedding." + options.plot)
             for i in batches:
-                scv.pl.velocity_embedding_stream(adata[adata.obs['batch'] == i], color=['latent_time', cluster_type], color_map='gnuplot',
-                                                 basis=options.embedding, save=options.output + "_differential_kinetics" + "_" + i + "_latent_time_velocity_embedding." + options.plot)
+                try:
+                    scv.pl.velocity_embedding_stream(adata[adata.obs['batch'] == i], color=['latent_time', cluster_type], color_map='gnuplot',
+                                                     basis=options.embedding, save=options.output + "_differential_kinetics" + "_" + i + "_latent_time_velocity_embedding." + options.plot)
+                except ValueError:
+                    warnings.warn(print("Unable to plot batch: " + i +
+                                        ". Perhaps too many cells were removed by filtering parameters."))
         scv.tl.velocity_confidence(adata)
         scv.pl.scatter(adata, c=['velocity_length'], cmap='coolwarm', perc=[
                        5, 95], save=options.output + "_differential_kinetics" + "_velocity_length_embedding." + options.plot)
