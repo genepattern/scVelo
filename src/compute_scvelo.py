@@ -38,19 +38,23 @@ def main():
                     dest="input_file", help="h5ad (anndata) file.")
     ap.add_argument("-m", "--markers", action="store",
                     dest="markers", nargs='?', help="A list of marker genes")
-    ap.add_argument("-s", "--shared", action="store", dest="minshared",
+    ap.add_argument("-s", "--shared", default="30", action="store", dest="minshared",
                     help="Filter genes by minimum shared counts")
-    ap.add_argument("-t", "--top", action="store", dest="topgenes",
-                    help="Top Genes for Velocity Computation")
-    ap.add_argument("-v", "--hvg", action="store", dest="hvg",
+    ap.add_argument("-t", "--top", default="2000", action="store", dest="topgenes",
+                    help="Top genes for velocity Computation")
+    ap.add_argument("-v", "--hvg", default="True", action="store", dest="hvg",
                     help="Compute highly_variable_genes")
-    ap.add_argument("-e", "--embedding", action="store", dest="embedding",
-                    help="Dataset was processed with umap or tsne embedding")
-    ap.add_argument("-d", "--diffkin", default="False", action="store", dest="diff_kinetics",
+    ap.add_argument("-c", "--pcs", default="30", action="store", dest="pcs",
+                    help="Number of principal components used for computing gene moments")
+    ap.add_argument("-n", "--neighbors", default="30", action="store", dest="neighbors",
+                    help="Number of nearest neighbors in PCA space used for computing gene moments")
+    ap.add_argument("-d", "--diffkin", default="True", action="store", dest="diff_kinetics",
                     help="Perform differential kinetics analysis using clustering.")
-    ap.add_argument("-p", "--plot", action="store", dest="plot",
+    ap.add_argument("-f", "--force", default="False", action="store", dest="enforce",
+                    help="Enforce normalizaion using scvelo's internal functions.")
+    ap.add_argument("-p", "--plot", default="png", action="store", dest="plot",
                     help="Save velocity plots as png or svg")
-    ap.add_argument("-o", "--out", action="store",
+    ap.add_argument("-o", "--out", default="result", action="store",
                     dest="output", help="Output file basename")
 #	ap.add_argument("-j","--cpu",action="store",dest="ncores",help="CPU cores to use for transition dynamics calculation")
     options = ap.parse_args()
@@ -75,9 +79,14 @@ def main():
             options.topgenes), check_values=False)
 
     # scVelo Core Functions
-    scv.pp.filter_and_normalize(adata, min_shared_counts=int(
-        options.minshared), n_top_genes=int(options.topgenes), enforce=True)
-    scv.pp.moments(adata, n_pcs=30, n_neighbors=30)
+    if options.enforce == "True":
+        scv.pp.filter_and_normalize(adata, min_shared_counts=int(
+            options.minshared), n_top_genes=int(options.topgenes), enforce=True)
+    else:
+        scv.pp.filter_and_normalize(adata, min_shared_counts=int(
+            options.minshared), n_top_genes=int(options.topgenes), layers_normalize={'spliced', 'unspliced'})
+    scv.pp.moments(adata, n_pcs=int(options.pcs),
+                   n_neighbors=int(options.neighbors))
     scv.tl.recover_dynamics(adata)  # , n_jobs=int(options.ncores))
     scv.tl.velocity(adata, mode='dynamical')
     scv.tl.velocity_graph(adata)
@@ -150,8 +159,10 @@ def main():
         kdf.to_csv(options.output + "_differential_kinetics_for_velocity_genes_by_" +
                    cluster_out + ".txt", sep="\t")
         kwargs = dict(linewidth=2, add_linfit=True, frameon=False)
-        top_genes = adata.var['fit_likelihood'].sort_values(ascending=False).index[:100]
-        scv.pl.scatter(adata, basis=top_genes[:20], ncols=5, add_outline='fit_diff_kinetics', **kwargs, save=options.output + "_top20_fit_likelihood_genes_after_differential_kinetics." + options.plot)
+        top_genes = adata.var['fit_likelihood'].sort_values(
+            ascending=False).index[:100]
+        scv.pl.scatter(adata, basis=top_genes[:20], ncols=5, add_outline='fit_diff_kinetics', **kwargs,
+                       save=options.output + "_top20_fit_likelihood_genes_after_differential_kinetics." + options.plot)
         diff_clusters = list(
             adata[:, velocity_genes_list].var['fit_diff_kinetics'])
         scv.pl.scatter(adata, legend_loc='right', size=60, title='diff kinetics',
