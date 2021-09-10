@@ -29,6 +29,7 @@ import pandas as pd
 import scvelo as scv
 import matplotlib
 import igraph
+import warnings
 
 
 def main():
@@ -142,8 +143,12 @@ def main():
         scv.pl.velocity_embedding_stream(
             adata, color='batch', basis=options.embedding, save=options.output + "_batches_velocity_embedding." + options.plot)
         for i in batches:
-            scv.pl.velocity_embedding_stream(adata[adata.obs['batch'] == i], color=['latent_time', cluster_type], color_map='gnuplot',
-                                             basis=options.embedding, save=options.output + "_" + i + "_latent_time_velocity_embedding." + options.plot)
+            try:
+                scv.pl.velocity_embedding_stream(adata[adata.obs['batch'] == i], color=['latent_time', cluster_type], color_map='gnuplot',
+                                                 basis=embedding, save=output + "_" + i + "_latent_time_velocity_embedding." + plot)
+            except ValueError:
+                warnings.warn(print("Unable to plot batch: " + i +
+                                    ". Perhaps too many cells were removed by filtering parameters."))
 
     scv.tl.velocity_confidence(adata)
     scv.pl.scatter(adata, c=['velocity_length'], cmap='coolwarm', perc=[
