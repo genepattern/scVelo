@@ -43,7 +43,9 @@ def main():
     ap.add_argument("-t", "--top", default="2000", action="store", dest="topgenes",
                     help="Top genes for velocity Computation")
     ap.add_argument("-v", "--hvg", default="True", action="store", dest="hvg",
-                    help="Compute highly_variable_genes")
+                    help="Recalculate highly_variable_genes")
+    ap.add_argument("-e", "--embedding", default="umap", action="store", dest="embedding",
+                    help="Dataset was processed with umap or tsne embedding")
     ap.add_argument("-c", "--pcs", default="30", action="store", dest="pcs",
                     help="Number of principal components used for computing gene moments")
     ap.add_argument("-n", "--neighbors", default="30", action="store", dest="neighbors",
