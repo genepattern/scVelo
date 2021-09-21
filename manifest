@@ -1,10 +1,10 @@
 #scVelo.ComputeVelocity
-#Tue Sep 21 18:53:22 UTC 2021
+#Tue Sep 21 23:12:04 UTC 2021
 JVMLevel=
 LSID=urn\:lsid\:8080.gpserver.ip-172-31-26-71.ip-172-31-26-71.ec2.internal\:genepatternmodules\:443\:1
 author=Anthony S. Castanza
 categories=single-cell;singlecell;velocity
-commandLine=python <libdir>compute_scvelo.py -i <h5ad> -m <Marker.Genes> -v <Velocity.Mode> -s <min_shared_counts> -t <n_top_genes> -g <recalculate_highly_variable_genes> -e <Embedding> -c <N_PCs> -n <N_Neighbors> -d <Differential.Kinetics.Analysis> -f <Enforce.Normalization> -p <Save.Plot.Type> -p <Plot.Batches> -o <output.file.base>
+commandLine=python <libdir>compute_scvelo.py -i <h5ad> -m <Marker.Genes> -v <Velocity.Mode> -s <min_shared_counts> -t <n_top_genes> -g <recalculate_highly_variable_genes> -f <Enforce.Normalization> -e <Embedding> -c <N_PCs> -n <N_Neighbors> -d <Differential.Kinetics.Analysis> -b <Plot.Batches> -p <Save.Plot.Type> -o <output.file.base> -j <job.cpuCount>
 cpuType=any
 description=Module for performing basic velocity analysis using the scVelo protocol on ScanpyUtilities processed datasets
 documentationUrl=
@@ -14,38 +14,38 @@ language=any
 name=scVelo.ComputeVelocity
 os=any
 p10_MODE=
-p10_TYPE=TEXT
-p10_default_value=False
-p10_description=Perform differential kinetics analysis on the basis of dataset clustering using dynamical velocity estimations
+p10_TYPE=Integer
+p10_default_value=30
+p10_description=Number of nearest neighbors used in calculation of the gene moments of spliced/unspliced abundances
 p10_fileFormat=
-p10_flag=-d
-p10_name=Differential.Kinetics.Analysis
+p10_flag=-n
+p10_name=N_Neighbors
 p10_numValues=1..1
 p10_optional=
 p10_prefix=
 p10_prefix_when_specified=
-p10_type=java.lang.String
-p10_value=False\=false;True\=true
+p10_type=java.lang.Integer
+p10_value=
 p11_MODE=
 p11_TYPE=TEXT
-p11_default_value=png
-p11_description=Save velocity plots as png or svg (or pdf; not recommended due to pdf element count limitations)
+p11_default_value=False
+p11_description=Perform differential kinetics analysis on the basis of dataset clustering using dynamical velocity estimations
 p11_fileFormat=
-p11_flag=-p
-p11_name=Save.Plot.Type
+p11_flag=-d
+p11_name=Differential.Kinetics.Analysis
 p11_numValues=1..1
 p11_optional=
 p11_prefix=
 p11_prefix_when_specified=
 p11_type=java.lang.String
-p11_value=png\=png;svg\=svg;pdf\=pdf
+p11_value=False\=false;True\=true
 p12_MODE=
 p12_TYPE=TEXT
-p12_default_value=False
-p12_description=Normally, the top level counts matrix used by most tools such as scanpy and seurat will already be normalized.<br>scVelo requires that the separate spliced and unspliced counts layers used only by velocity calculations also be normalized.<br>Setting Enforce.Normalization to "true" will cause scVelo to force normalization of all three layers of the data.<br>Setting Enforce.Normalization to "false" will cause it to only normalize the velocity specific spliced and unspliced layers.
+p12_default_value=True
+p12_description=Produce individual velocity plots for each batch in the dataset (if present)
 p12_fileFormat=
-p12_flag=-f
-p12_name=Enforce.Normalization
+p12_flag=-b
+p12_name=Plot.Batches
 p12_numValues=1..1
 p12_optional=
 p12_prefix=
@@ -54,17 +54,17 @@ p12_type=java.lang.String
 p12_value=True\=true;False\=false
 p13_MODE=
 p13_TYPE=TEXT
-p13_default_value=True
-p13_description=Produce individual velocity plots for each batch in the dataset (if present)
+p13_default_value=png
+p13_description=Save velocity plots as png or svg (or pdf; not recommended due to pdf element count limitations)
 p13_fileFormat=
 p13_flag=-p
-p13_name=Plot.Batches
+p13_name=Save.Plot.Type
 p13_numValues=1..1
 p13_optional=
 p13_prefix=
 p13_prefix_when_specified=
 p13_type=java.lang.String
-p13_value=True\=true;False\=false
+p13_value=png\=png;svg\=svg;pdf\=pdf
 p14_MODE=
 p14_TYPE=TEXT
 p14_default_value=<h5ad_basename>
@@ -158,37 +158,37 @@ p6_type=java.lang.String
 p6_value=True\=true;False\=false
 p7_MODE=
 p7_TYPE=TEXT
-p7_default_value=umap
-p7_description=Select the type of embedding used in ScanpyUtilities
+p7_default_value=False
+p7_description=Normally, the top level counts matrix used by most tools such as scanpy and seurat will already be normalized.<br>scVelo requires that the separate spliced and unspliced counts layers used only by velocity calculations also be normalized.<br>Setting Enforce.Normalization to "true" will cause scVelo to force normalization of all three layers of the data.<br>Setting Enforce.Normalization to "false" will cause it to only normalize the velocity specific spliced and unspliced layers.
 p7_fileFormat=
-p7_flag=-e
-p7_name=Embedding
+p7_flag=-f
+p7_name=Enforce.Normalization
 p7_numValues=1..1
 p7_optional=
 p7_prefix=
 p7_prefix_when_specified=
 p7_type=java.lang.String
-p7_value=umap\=umap;tsne\=tsne
+p7_value=True\=true;False\=false
 p8_MODE=
-p8_TYPE=Integer
-p8_default_value=30
-p8_description=Number of principal components used in calculation of the gene moments of spliced/unspliced abundances
+p8_TYPE=TEXT
+p8_default_value=umap
+p8_description=Select the type of embedding used in ScanpyUtilities
 p8_fileFormat=
-p8_flag=-c
-p8_name=N_PCs
+p8_flag=-e
+p8_name=Embedding
 p8_numValues=1..1
 p8_optional=
 p8_prefix=
 p8_prefix_when_specified=
-p8_type=java.lang.Integer
-p8_value=
+p8_type=java.lang.String
+p8_value=umap\=umap;tsne\=tsne
 p9_MODE=
 p9_TYPE=Integer
 p9_default_value=30
-p9_description=Number of nearest neighbors used in calculation of the gene moments of spliced/unspliced abundances
+p9_description=Number of principal components used in calculation of the gene moments of spliced/unspliced abundances
 p9_fileFormat=
-p9_flag=-n
-p9_name=N_Neighbors
+p9_flag=-c
+p9_name=N_PCs
 p9_numValues=1..1
 p9_optional=
 p9_prefix=

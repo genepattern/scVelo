@@ -47,6 +47,8 @@ def main():
                     help="Top genes for velocity Computation")
     ap.add_argument("-g", "--hvg", default="True", action="store", dest="hvg",
                     help="Recalculate highly_variable_genes")
+    ap.add_argument("-f", "--force", default="False", action="store", dest="enforce",
+                    help="Enforce normalizaion using scvelo's internal functions.")
     ap.add_argument("-e", "--embedding", default="umap", action="store", dest="embedding",
                     help="Dataset was processed with umap or tsne embedding")
     ap.add_argument("-c", "--pcs", default="30", action="store", dest="pcs",
@@ -55,15 +57,14 @@ def main():
                     help="Number of nearest neighbors in PCA space used for computing gene moments")
     ap.add_argument("-d", "--diffkin", default="True", action="store", dest="diff_kinetics",
                     help="Perform differential kinetics analysis using clustering (requires 'dynamical' mode velocity estimation).")
-    ap.add_argument("-f", "--force", default="False", action="store", dest="enforce",
-                    help="Enforce normalizaion using scvelo's internal functions.")
-    ap.add_argument("-p", "--plot", default="png", action="store", dest="plot",
-                    help="Save velocity plots as png or svg")
     ap.add_argument("-b", "--batch", default="True", action="store", dest="plot_batches",
                     help="Produce individual velocity plots for each batch in the dataset (if present)")
+    ap.add_argument("-p", "--plot", default="png", action="store", dest="plot",
+                    help="Save velocity plots as png or svg")
     ap.add_argument("-o", "--out", default="result", action="store",
                     dest="output", help="Output file basename")
-#	ap.add_argument("-j","--cpu",action="store",dest="ncores",help="CPU cores to use for transition dynamics calculation")
+	ap.add_argument("-j","--cpu",action="store",dest="ncores",help="CPU cores to use for transition dynamics calculation")
+
     options = ap.parse_args()
 
     adata = anndata.read_h5ad(options.input_file)
@@ -96,7 +97,7 @@ def main():
                    n_neighbors=int(options.neighbors))
 
     if options.velocity_mode == "dynamical":
-        scv.tl.recover_dynamics(adata)  # , n_jobs=int(options.ncores))
+        scv.tl.recover_dynamics(adata, n_jobs=int(options.ncores))
 
     scv.tl.velocity(adata, mode=options.velocity_mode)
     scv.tl.velocity_graph(adata)
@@ -113,7 +114,7 @@ def main():
             print(
                 "'tSNE' Embedding was requested, but we didn't find it in the dataset so creating it now.\n")
             scv.tl.tsne(adata)
-#	scv.tl.louvain(adata)
+
     if options.velocity_mode == "dynamical":
         scv.tl.latent_time(adata)
 
@@ -190,7 +191,7 @@ def main():
             adata[:, velocity_genes_list].var['fit_diff_kinetics'])
         scv.pl.scatter(adata, legend_loc='right', size=60, title='diff kinetics',
                        add_outline=diff_clusters, outline_width=(.8, .2), color=cluster_type, save=options.output + "_outlined_differential_kinetics_clusters." + options.plot)
-        scv.tl.recover_dynamics(adata)
+        scv.tl.recover_dynamics(adata, n_jobs=int(options.ncores))
         scv.tl.velocity(adata, mode='dynamical', diff_kinetics=True)
         scv.tl.velocity_graph(adata)
         scv.tl.velocity_pseudotime(adata)
