@@ -1,10 +1,10 @@
 #scVelo.ComputeVelocity
-#Mon Sep 20 20:20:59 UTC 2021
+#Tue Sep 21 18:53:22 UTC 2021
 JVMLevel=
 LSID=urn\:lsid\:8080.gpserver.ip-172-31-26-71.ip-172-31-26-71.ec2.internal\:genepatternmodules\:443\:1
 author=Anthony S. Castanza
 categories=single-cell;singlecell;velocity
-commandLine=python <libdir>compute_scvelo.py -i <h5ad> -m <Marker.Genes> -v <Velocity.Mode> -s <min_shared_counts> -t <n_top_genes> -g <recalculate_highly_variable_genes> -e <Embedding> -c <N_PCs> -n <N_Neighbors> -d <Differential.Kinetics.Analysis> -p <Save.Plot.Type> -f <Enforce.Normalization> -b <Plot.Batches> -o <output.file.base>
+commandLine=python <libdir>compute_scvelo.py -i <h5ad> -m <Marker.Genes> -v <Velocity.Mode> -s <min_shared_counts> -t <n_top_genes> -g <recalculate_highly_variable_genes> -e <Embedding> -c <N_PCs> -n <N_Neighbors> -d <Differential.Kinetics.Analysis> -f <Enforce.Normalization> -p <Save.Plot.Type> -p <Plot.Batches> -o <output.file.base>
 cpuType=any
 description=Module for performing basic velocity analysis using the scVelo protocol on ScanpyUtilities processed datasets
 documentationUrl=
@@ -57,7 +57,7 @@ p13_TYPE=TEXT
 p13_default_value=True
 p13_description=Produce individual velocity plots for each batch in the dataset (if present)
 p13_fileFormat=
-p13_flag=-b
+p13_flag=-p
 p13_name=Plot.Batches
 p13_numValues=1..1
 p13_optional=

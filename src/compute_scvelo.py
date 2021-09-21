@@ -145,7 +145,7 @@ def main():
 
 # Plotting
     if options.velocity_mode == "dynamical":
-        plots = ['velocity_pseudotime', 'latent_time', cluster_type]
+        plots = ['latent_time', 'velocity_pseudotime', cluster_type]
     else:
         plots = ['velocity_pseudotime', cluster_type]
 
@@ -195,7 +195,12 @@ def main():
         scv.tl.velocity_graph(adata)
         scv.tl.velocity_pseudotime(adata)
         scv.tl.latent_time(adata)
-        plots = ['velocity_pseudotime', 'latent_time', cluster_type]
+        plots = ['latent_time', 'velocity_pseudotime', cluster_type]
+
+        scv.tl.rank_velocity_genes(adata, groupby=cluster_type, min_corr=.3)
+        df = scv.DataFrame(adata.uns['rank_velocity_genes']['names'])
+        df.to_csv(options.output + "_top_velocity_genes_by_" +
+              cluster_out + "_after_differential_kinetics.txt", sep="\t")
 
         if "batch" in list(adata.obs):
             batches = list(adata.obs['batch'].cat.categories)
