@@ -63,7 +63,7 @@ def main():
                     help="Save velocity plots as png or svg")
     ap.add_argument("-o", "--out", default="result", action="store",
                     dest="output", help="Output file basename")
-	ap.add_argument("-j","--cpu",action="store",dest="ncores",help="CPU cores to use for transition dynamics calculation")
+    ap.add_argument("-j","--cpu",action="store",dest="ncores",help="CPU cores to use for transition dynamics calculation")
 
     options = ap.parse_args()
 
