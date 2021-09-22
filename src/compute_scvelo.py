@@ -101,7 +101,7 @@ def main():
         scv.tl.recover_dynamics(adata, n_jobs=int(options.ncores))
 
     scv.tl.velocity(adata, mode=options.velocity_mode)
-    scv.tl.velocity_graph(adata)
+    scv.tl.velocity_graph(adata, n_jobs=int(options.ncores))
     scv.tl.velocity_pseudotime(adata)
 
     # Confirm presence of lower dimensional embeddings and generate if absent
@@ -192,7 +192,7 @@ def main():
         scv.pl.scatter(adata, legend_loc='right', size=60, title='diff kinetics',
                        add_outline=diff_clusters, outline_width=(.8, .2), color=cluster_type, save=options.output + "_outlined_differential_kinetics_clusters." + options.plot)
         scv.tl.velocity(adata, mode=options.velocity_mode, diff_kinetics=True)
-        scv.tl.velocity_graph(adata)
+        scv.tl.velocity_graph(adata, n_jobs=int(options.ncores))
         scv.tl.velocity_pseudotime(adata)
         if options.velocity_mode == "dynamical":
             scv.tl.latent_time(adata)
