@@ -37,7 +37,7 @@ RUN pip install scanpy==1.7.2
 RUN pip install cmake==3.18.4
 RUN pip install MulticoreTSNE==0.1
 RUN pip install loompy==3.0.6
-RUN pip install scvelo==0.2.3
+RUN pip install scvelo==0.2.4
 RUN pip install scikit-misc==0.1.4
 RUN pip install pybind11==2.6.2
 RUN pip install hnswlib==0.5.2
