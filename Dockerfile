@@ -14,6 +14,8 @@ RUN apt-get install libcurl4-gnutls-dev --yes
 RUN apt-get install libhdf5-serial-dev --yes
 # RUN apt-get install libigraph0-dev --yes #This should install automatically with python-igraph as the repo version fails
 RUN apt-get install libxml2-dev --yes
+RUN apt-get install libtool --yes
+RUN apt-get install flex bison --yes
 
 # install python with conda
 RUN mkdir /conda && \
@@ -24,17 +26,18 @@ ENV PATH="/opt/conda/bin:${PATH}"
 
 # install R dependencies
 
+
 # install python dependencies
+RUN pip install Cython==0.29.24
 RUN pip install joblib==1.0.1
-RUN pip install numba==0.52.0
-RUN pip install numpy==1.19.2
-RUN pip install pandas==1.2.2
-RUN pip install scipy==1.5.3
+RUN pip install numpy==1.20.3
+RUN pip install pandas==1.3.3
+RUN pip install scipy==1.7.1
 RUN pip install anndata==0.7.6
-RUN pip install python-igraph==0.8.2
+RUN pip install python-igraph==0.9.6
 RUN pip install louvain==0.7.0
-RUN pip install scanpy==1.7.2
-RUN pip install cmake==3.18.4
+RUN pip install scanpy==1.8.1
+RUN pip install cmake==3.18.2
 RUN pip install MulticoreTSNE==0.1
 RUN pip install loompy==3.0.6
 RUN pip install scvelo==0.2.4
