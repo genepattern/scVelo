@@ -96,7 +96,7 @@ def main():
     scv.pp.moments(adata, n_pcs=int(options.pcs),
                    n_neighbors=int(options.neighbors))
 
-    if options.velocity_mode == "dynamical":
+    if options.velocity_mode == "dynamical" or options.diff_kinetics == "True":
         scv.tl.recover_dynamics(adata, n_jobs=int(options.ncores))
 
     scv.tl.velocity(adata, mode=options.velocity_mode)
@@ -177,7 +177,7 @@ def main():
     if options.diff_kinetics == "True":
         velocity_genes_list = list(
             adata.var['velocity_genes'][adata.var['velocity_genes'] == True].index)
-        scv.tl.differential_kinetic_test(adata, groupby=cluster_type, n_jobs=int(options.ncores))
+        scv.tl.differential_kinetic_test(adata, groupby=cluster_type)
         kdf = scv.get_df(adata[:, velocity_genes_list], [
                          'fit_diff_kinetics', 'fit_pval_kinetics'], precision=2)
         kdf.to_csv(options.output + "_differential_kinetics_for_velocity_genes_by_" +
