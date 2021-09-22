@@ -63,7 +63,8 @@ def main():
                     help="Save velocity plots as png or svg")
     ap.add_argument("-o", "--out", default="result", action="store",
                     dest="output", help="Output file basename")
-    ap.add_argument("-j","--cpu",action="store",dest="ncores",help="CPU cores to use for transition dynamics calculation")
+    ap.add_argument("-j", "--cpu", action="store", dest="ncores",
+                    help="CPU cores to use for transition dynamics calculation")
 
     options = ap.parse_args()
 
@@ -153,7 +154,7 @@ def main():
     if "batch" in list(adata.obs):
         batches = list(adata.obs['batch'].cat.categories)
         scv.pl.velocity_embedding_stream(
-            adata, color=plots+['batch'], basis=options.embedding, save=options.output + "_velocity_embedding." + options.plot)
+            adata, color=plots + ['batch'], basis=options.embedding, save=options.output + "_velocity_embedding." + options.plot)
         if options.plot_batches == "True":
             for i in batches:
                 try:
@@ -165,7 +166,6 @@ def main():
     else:
         scv.pl.velocity_embedding_stream(adata, color=plots, color_map='gnuplot',
                                          basis=options.embedding, save=options.output + "_velocity_embedding." + options.plot)
-
 
     scv.tl.velocity_confidence(adata)
     scv.pl.scatter(adata, c=['velocity_length'], cmap='coolwarm', perc=[
@@ -191,11 +191,11 @@ def main():
             adata[:, velocity_genes_list].var['fit_diff_kinetics'])
         scv.pl.scatter(adata, legend_loc='right', size=60, title='diff kinetics',
                        add_outline=diff_clusters, outline_width=(.8, .2), color=cluster_type, save=options.output + "_outlined_differential_kinetics_clusters." + options.plot)
-        scv.tl.velocity(adata, mode='dynamical', diff_kinetics=True)
+        scv.tl.velocity(adata, mode=options.velocity_mode, diff_kinetics=True)
         scv.tl.velocity_graph(adata)
         scv.tl.velocity_pseudotime(adata)
-        scv.tl.latent_time(adata)
-        plots = ['latent_time', 'velocity_pseudotime', cluster_type]
+        if options.velocity_mode == "dynamical":
+            scv.tl.latent_time(adata)
 
         scv.tl.rank_velocity_genes(adata, groupby=cluster_type, min_corr=.3)
         df = scv.DataFrame(adata.uns['rank_velocity_genes']['names'])
