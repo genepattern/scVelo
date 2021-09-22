@@ -159,13 +159,13 @@ def main():
             for i in batches:
                 try:
                     scv.pl.velocity_embedding_stream(adata[adata.obs['batch'] == i], color=plots, color_map='gnuplot',
-                                                     basis=options.embedding, save=options.output + "_" + i + "_velocity_embedding." + options.plot)
+                                                     basis=options.embedding, legend_loc='right', save=options.output + "_" + i + "_velocity_embedding." + options.plot)
                 except ValueError:
                     warnings.warn(print("Unable to plot batch: " + i +
                                         ". Perhaps too many cells were removed by filtering parameters."))
     else:
         scv.pl.velocity_embedding_stream(adata, color=plots, color_map='gnuplot',
-                                         basis=options.embedding, save=options.output + "_velocity_embedding." + options.plot)
+                                         basis=options.embedding, legend_loc='right', save=options.output + "_velocity_embedding." + options.plot)
 
     scv.tl.velocity_confidence(adata)
     scv.pl.scatter(adata, c=['velocity_length'], cmap='coolwarm', perc=[
@@ -205,18 +205,18 @@ def main():
         if "batch" in list(adata.obs):
             batches = list(adata.obs['batch'].cat.categories)
             scv.pl.velocity_embedding_stream(
-                adata, color=plots+['batch'], basis=options.embedding, save=options.output + "_differential_kinetics" + "_velocity_embedding." + options.plot)
+                adata, color=plots+['batch'], basis=options.embedding, legend_loc='right', save=options.output + "_differential_kinetics" + "_velocity_embedding." + options.plot)
             if options.plot_batches == "True":
                 for i in batches:
                     try:
                         scv.pl.velocity_embedding_stream(adata[adata.obs['batch'] == i], color=plots, color_map='gnuplot',
-                                                         basis=options.embedding, save=options.output + "_differential_kinetics" + "_" + i + "_velocity_embedding." + options.plot)
+                                                         basis=options.embedding, legend_loc='right', save=options.output + "_differential_kinetics" + "_" + i + "_velocity_embedding." + options.plot)
                     except ValueError:
                         warnings.warn(print("Unable to plot batch: " + i +
                                             ". Perhaps too many cells were removed by filtering parameters."))
         else:
             scv.pl.velocity_embedding_stream(adata, color=plots, color_map='gnuplot',
-                                             basis=options.embedding, save=options.output + "_differential_kinetics" + "_velocity_embedding." + options.plot)
+                                             basis=options.embedding, legend_loc='right', save=options.output + "_differential_kinetics" + "_velocity_embedding." + options.plot)
 
         scv.tl.velocity_confidence(adata)
         scv.pl.scatter(adata, c=['velocity_length'], cmap='coolwarm', perc=[
@@ -237,13 +237,13 @@ def main():
             markergenes = list(set(adata.var_names) & set(markergenes))
         if options.diff_kinetics == "False":
             for i in markergenes:
-                scv.pl.velocity_embedding_stream(adata, basis=options.embedding, color=[
+                scv.pl.velocity_embedding_stream(adata, basis=options.embedding, legend_loc='right', color=[
                     i], save=options.output + "_embedding_" + i + "." + options.plot)
             scv.pl.velocity(adata, markergenes, ncols=1,
                             save=options.output + "_combined_per-marker_velocity" + "." + options.plot)
         if options.diff_kinetics == "True":
             for i in markergenes:
-                scv.pl.velocity_embedding_stream(adata, basis=options.embedding, color=[
+                scv.pl.velocity_embedding_stream(adata, basis=options.embedding, legend_loc='right', color=[
                     i], save=options.output + "_differential_kinetics" + "_embedding_" + i + "." + options.plot)
             scv.pl.velocity(adata, markergenes, ncols=1,
                             save=options.output + "_differential_kinetics" + "_combined_per-marker_velocity" + "." + options.plot)
