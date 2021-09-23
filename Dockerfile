@@ -30,8 +30,9 @@ ENV PATH="/opt/conda/bin:${PATH}"
 # install python dependencies
 RUN pip install Cython==0.29.24
 RUN pip install joblib==1.0.1
+RUN pip install numba==0.52.0
 RUN pip install numpy==1.20.3
-RUN pip install pandas==1.3.3
+RUN pip install pandas==1.2.2
 RUN pip install scipy==1.7.1
 RUN pip install anndata==0.7.6
 RUN pip install python-igraph==0.9.6
