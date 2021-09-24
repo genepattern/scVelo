@@ -123,7 +123,7 @@ def main():
         scv.tl.latent_time(adata)
         top_lt_genes = adata.var['fit_likelihood'].sort_values(
             ascending=False).index[:300]
-        scv.pl.heatmap(adata, var_names=top_lt_genes, sortby='latent_time', col_color=cluster_type, n_convolve=100, save=options.output + "_top_latent_time_genes_trajectory_heatmap." + options.plot))
+        scv.pl.heatmap(adata, var_names=top_lt_genes, sortby='latent_time', col_color=cluster_type, n_convolve=100, save=options.output + "_top_latent_time_genes_trajectory_heatmap." + options.plot)
 
 
 # Detect/create clustering
