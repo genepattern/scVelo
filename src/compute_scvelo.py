@@ -70,7 +70,8 @@ def main():
 
     adata = anndata.read_h5ad(options.input_file)
 
-    scv.pl.proportions(adata, save=options.output + "_splicing_proportions." + options.plot)
+    scv.pl.proportions(adata, save=options.output +
+                       "_splicing_proportions." + options.plot)
 
     # Check for marker genes file and read it into a list
     if bool(options.markers):
