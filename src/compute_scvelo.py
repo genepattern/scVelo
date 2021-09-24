@@ -200,7 +200,7 @@ def main():
                 min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph." + options.plot)
 
    # Stuff for Differential Kinetics
-   if options.diff_kinetics == "True":
+    if options.diff_kinetics == "True":
         velocity_genes_list = list(
             adata.var['velocity_genes'][adata.var['velocity_genes'] == True].index)
         scv.tl.differential_kinetic_test(adata, groupby=cluster_type)
