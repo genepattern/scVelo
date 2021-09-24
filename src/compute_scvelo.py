@@ -121,42 +121,45 @@ def main():
 
     if options.velocity_mode == "dynamical":
         scv.tl.latent_time(adata)
-        top_lt_genes = adata.var['fit_likelihood'].sort_values(
-            ascending=False).index[:300]
-        scv.pl.heatmap(adata, var_names=top_lt_genes, sortby='latent_time', col_color=cluster_type, n_convolve=100, save=options.output + "_top_latent_time_genes_trajectory_heatmap." + options.plot)
-
 
 # Detect/create clustering
     if "clusters" in list(adata.obs):
-        cluster_type="clusters"
-        cluster_out="dataset_clusters"
+        cluster_type = "clusters"
+        cluster_out = "dataset_clusters"
         print("Found 'clusters' key in dataset. We'll use this for plots and any differential kinetics.\n")
     elif "clusters" not in list(adata.obs):
         if "leiden" in list(adata.obs):
-            cluster_type="leiden"
-            cluster_out="leiden_clusters"
+            cluster_type = "leiden"
+            cluster_out = "leiden_clusters"
             print("Found 'leiden' clustering in dataset. We'll use this for plots and any differential kinetics.\n")
         elif "leiden" not in list(adata.obs):
             if "walktrap" in list(adata.obs):
-                cluster_type="walktrap"
-                cluster_out="walktrap_clusters"
+                cluster_type = "walktrap"
+                cluster_out = "walktrap_clusters"
                 print(
                     "Found 'walktrap' clustering in dataset. We'll use this for plots and any differential kinetics.\n")
             else:
                 print("Didn't find any clustering in dataset, clustering data using method: 'leiden'.\nWe'll use this for plots and any differential kinetics.\n")
                 sc.tl.leiden(adata)
-                cluster_type="leiden"
-                cluster_out="leiden_clusters"
-    scv.tl.rank_velocity_genes(adata, groupby = cluster_type, min_corr = .3)
-    vel_df=scv.DataFrame(adata.uns['rank_velocity_genes']['names'])
+                cluster_type = "leiden"
+                cluster_out = "leiden_clusters"
+
+    if options.velocity_mode == "dynamical":
+        top_lt_genes = adata.var['fit_likelihood'].sort_values(
+            ascending=False).index[:300]
+        scv.pl.heatmap(adata, var_names=top_lt_genes, sortby='latent_time', col_color=cluster_type,
+                       n_convolve=100, save=options.output + "_top_latent_time_genes_trajectory_heatmap." + options.plot)
+
+    scv.tl.rank_velocity_genes(adata, groupby=cluster_type, min_corr=.3)
+    vel_df = scv.DataFrame(adata.uns['rank_velocity_genes']['names'])
     vel_df.to_csv(options.output + "_top_velocity_genes_by_" +
-              cluster_out + ".txt", sep="\t")
+                  cluster_out + ".txt", sep="\t")
 
     if options.velocity_mode == "dynamical":
         scv.tl.rank_dynamical_genes(adata, groupby=cluster_type)
         dyn_df = scv.get_df(adata, 'rank_dynamical_genes/names')
         dyn_df.to_csv(options.output + "_top_dynamical_genes_by_" +
-              cluster_out + ".txt", sep="\t")
+                      cluster_out + ".txt", sep="\t")
 
 # Plotting
     if options.velocity_mode == "dynamical":
@@ -185,16 +188,17 @@ def main():
                    5, 95], save=options.output + "_velocity_length_embedding." + options.plot)
     scv.pl.scatter(adata, c=['velocity_confidence'], cmap='coolwarm', perc=[
                    5, 95], save=options.output + "_velocity_confidence_embedding." + options.plot)
-    conf_df = adata.obs.groupby(cluster_type)['velocity_length', 'velocity_confidence'].mean().T
-    conf_df.style.background_gradient(cmap='coolwarm', axis=1)
+    conf_df = adata.obs.groupby(cluster_type)[
+        'velocity_length', 'velocity_confidence'].mean().T
+    # conf_df.style.background_gradient(cmap='coolwarm', axis=1)
     conf_df.to_csv(options.output + "_velocity_length_and_confidence" +
-               cluster_out + ".txt", sep="\t")
+                   cluster_out + ".txt", sep="\t")
 
     scv.tl.paga(adata, groups=cluster_type)
     paga_df = scv.get_df(adata, 'paga/transitions_confidence', precision=2).T
-    paga_df.style.background_gradient(cmap='Blues').format('{:.2g}')
+    # paga_df.style.background_gradient(cmap='Blues').format('{:.2g}')
     paga_df.to_csv(options.output + "_paga_transitions_confidence" +
-               cluster_out + ".txt", sep="\t")
+                   cluster_out + ".txt", sep="\t")
 
     scv.pl.paga(adata, basis=options.embedding, size=50, alpha=.1,
                 min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph." + options.plot)
@@ -222,19 +226,21 @@ def main():
         scv.tl.velocity_pseudotime(adata)
         if options.velocity_mode == "dynamical":
             scv.tl.latent_time(adata)
-            top_lt_genes = adata.var['fit_likelihood'].sort_values(ascending=False).index[:300]
-            scv.pl.heatmap(adata, var_names=top_lt_genes, sortby='latent_time', col_color=cluster_type, n_convolve=100, save=options.output + "_top_latent_time_genes_trajectory_heatmap_after_differential_kinetics." + options.plot)
+            top_lt_genes = adata.var['fit_likelihood'].sort_values(
+                ascending=False).index[:300]
+            scv.pl.heatmap(adata, var_names=top_lt_genes, sortby='latent_time', col_color=cluster_type, n_convolve=100,
+                           save=options.output + "_top_latent_time_genes_trajectory_heatmap_after_differential_kinetics." + options.plot)
 
         scv.tl.rank_velocity_genes(adata, groupby=cluster_type, min_corr=.3)
         vel_dk_df = scv.DataFrame(adata.uns['rank_velocity_genes']['names'])
         vel_dk_df.to_csv(options.output + "_top_velocity_genes_by_" +
-                  cluster_out + "_after_differential_kinetics.txt", sep="\t")
+                         cluster_out + "_after_differential_kinetics.txt", sep="\t")
 
         if options.velocity_mode == "dynamical":
             scv.tl.rank_dynamical_genes(adata, groupby=cluster_type)
             dyn_dk_df = scv.get_df(adata, 'rank_dynamical_genes/names')
             dyn_dk_df.to_csv(options.output + "_top_dynamical_genes_by_" +
-                  cluster_out + "_after_differential_kinetics.txt", sep="\t")
+                             cluster_out + "_after_differential_kinetics.txt", sep="\t")
 
         if "batch" in list(adata.obs):
             batches = list(adata.obs['batch'].cat.categories)
@@ -257,19 +263,21 @@ def main():
                        5, 95], save=options.output + "_differential_kinetics" + "_velocity_length_embedding." + options.plot)
         scv.pl.scatter(adata, c=['velocity_confidence'], cmap='coolwarm', perc=[
                        5, 95], save=options.output + "_differential_kinetics" + "_velocity_confidence_embedding." + options.plot)
-        conf_dk_df = adata.obs.groupby(cluster_type)['velocity_length', 'velocity_confidence'].mean().T
-        conf_dk_df.style.background_gradient(cmap='coolwarm', axis=1)
+        conf_dk_df = adata.obs.groupby(cluster_type)[
+            'velocity_length', 'velocity_confidence'].mean().T
+        # conf_dk_df.style.background_gradient(cmap='coolwarm', axis=1)
         conf_dk_df.to_csv(options.output + "_velocity_length_and_confidence_after_differential_kinetics" +
-                   cluster_out + ".txt", sep="\t")
+                          cluster_out + ".txt", sep="\t")
 
         scv.tl.paga(adata, groups=cluster_type)
-        paga_dk_df = scv.get_df(adata, 'paga/transitions_confidence', precision=2).T
-        paga_dk_df.style.background_gradient(cmap='Blues').format('{:.2g}')
+        paga_dk_df = scv.get_df(
+            adata, 'paga/transitions_confidence', precision=2).T
+        # paga_dk_df.style.background_gradient(cmap='Blues').format('{:.2g}')
         paga_dk_df.to_csv(options.output + "_paga_transitions_confidence_after_differential_kinetics" +
-                   cluster_out + ".txt", sep="\t")
+                          cluster_out + ".txt", sep="\t")
 
         scv.pl.paga(adata, basis=options.embedding, size=50, alpha=.1,
-                    min_edge_width=2, node_size_scale=1.5, save=options.output +  "_differential_kinetics" + "_paga_velocity_graph." + options.plot)
+                    min_edge_width=2, node_size_scale=1.5, save=options.output + "_differential_kinetics" + "_paga_velocity_graph." + options.plot)
 
     ad.AnnData.write(adata, compression="gzip",
                      filename=options.output + "_complete_velocity_data.h5ad")
