@@ -298,7 +298,7 @@ def main():
         if options.diff_kinetics == "True":
             for i in markergenes:
                 scv.pl.velocity_embedding_stream(adata, basis=options.embedding, legend_loc='right', color=[
-                    i], save= "Marker_" i + "_" + options.output + "_embedding_after_differential_kinetics." + options.plot)
+                    i], save="Marker_" + i + "_" + options.output + "_embedding_after_differential_kinetics." + options.plot)
             scv.pl.velocity(adata, markergenes, ncols=1,
                             save=options.output + "_combined_per-marker_velocity_after_differential_kinetics" + "." + options.plot)
 
