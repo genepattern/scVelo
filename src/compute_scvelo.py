@@ -170,18 +170,18 @@ def main():
     if "batch" in list(adata.obs):
         batches = list(adata.obs['batch'].cat.categories)
         scv.pl.velocity_embedding_stream(
-            adata, color=plots + ['batch'], basis=options.embedding, save=options.output + "_velocity_embedding." + options.plot)
+            adata, color=plots + ['batch'], basis=options.embedding, save=options.output + "_velocity_embeddings." + options.plot)
         if options.plot_batches == "True":
             for i in batches:
                 try:
                     scv.pl.velocity_embedding_stream(adata[adata.obs['batch'] == i], color=plots, color_map='gnuplot',
-                                                     basis=options.embedding, legend_loc='right', save=options.output + "_" + i + "_velocity_embedding." + options.plot)
+                                                     basis=options.embedding, legend_loc='right', save=options.output + "_batch_" + i + "_velocity_embeddings." + options.plot)
                 except ValueError:
                     warnings.warn(print("Unable to plot batch: " + i +
                                         ". Perhaps too many cells were removed by filtering parameters."))
     else:
         scv.pl.velocity_embedding_stream(adata, color=plots, color_map='gnuplot',
-                                         basis=options.embedding, legend_loc='right', save=options.output + "_velocity_embedding." + options.plot)
+                                         basis=options.embedding, legend_loc='right', save=options.output + "_velocity_embeddings." + options.plot)
 
     scv.tl.velocity_confidence(adata)
     scv.pl.scatter(adata, c=['velocity_length'], cmap='coolwarm', perc=[
@@ -191,17 +191,17 @@ def main():
     conf_df = adata.obs.groupby(cluster_type)[
         'velocity_length', 'velocity_confidence'].mean().T
     # conf_df.style.background_gradient(cmap='coolwarm', axis=1)
-    conf_df.to_csv(options.output + "_velocity_length_and_confidence" +
+    conf_df.to_csv(options.output + "_velocity_length_and_confidence_by" +
                    cluster_out + ".txt", sep="\t")
 
     scv.tl.paga(adata, groups=cluster_type)
     paga_df = scv.get_df(adata, 'paga/transitions_confidence', precision=2).T
     # paga_df.style.background_gradient(cmap='Blues').format('{:.2g}')
-    paga_df.to_csv(options.output + "_paga_transitions_confidence" +
+    paga_df.to_csv(options.output + "_paga_transitions_confidence_by" +
                    cluster_out + ".txt", sep="\t")
 
     scv.pl.paga(adata, basis=options.embedding, size=50, alpha=.1,
-                min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph." + options.plot)
+                min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph_by" + cluster_out + options.plot)
 
    # Stuff for Differential Kinetics
     if options.diff_kinetics == "True":
@@ -220,7 +220,7 @@ def main():
         diff_clusters = list(
             adata[:, velocity_genes_list].var['fit_diff_kinetics'])
         scv.pl.scatter(adata, legend_loc='right', size=60, title='diff kinetics',
-                       add_outline=diff_clusters, outline_width=(.8, .2), color=cluster_type, save=options.output + "_outlined_differential_kinetics_clusters." + options.plot)
+                       add_outline=diff_clusters, outline_width=(.8, .2), color=cluster_type, save=options.output + "_outlined_clusters_affected_by_differential_kinetics." + options.plot)
         scv.tl.velocity(adata, mode=options.velocity_mode, diff_kinetics=True)
         scv.tl.velocity_graph(adata, n_jobs=int(options.ncores))
         scv.tl.velocity_pseudotime(adata)
@@ -233,51 +233,51 @@ def main():
 
         scv.tl.rank_velocity_genes(adata, groupby=cluster_type, min_corr=.3)
         vel_dk_df = scv.DataFrame(adata.uns['rank_velocity_genes']['names'])
-        vel_dk_df.to_csv(options.output + "_top_velocity_genes_by_" +
-                         cluster_out + "_after_differential_kinetics.txt", sep="\t")
+        vel_dk_df.to_csv(options.output + "_top_velocity_genes_after_differential_kinetics_by_" +
+                         cluster_out + ".txt", sep="\t")
 
         if options.velocity_mode == "dynamical":
             scv.tl.rank_dynamical_genes(adata, groupby=cluster_type)
             dyn_dk_df = scv.get_df(adata, 'rank_dynamical_genes/names')
-            dyn_dk_df.to_csv(options.output + "_top_dynamical_genes_by_" +
-                             cluster_out + "_after_differential_kinetics.txt", sep="\t")
+            dyn_dk_df.to_csv(options.output + "_top_dynamical_genes_after_differential_kinetics_by_" +
+                             cluster_out + ".txt", sep="\t")
 
         if "batch" in list(adata.obs):
             batches = list(adata.obs['batch'].cat.categories)
             scv.pl.velocity_embedding_stream(
-                adata, color=plots + ['batch'], basis=options.embedding, legend_loc='right', save=options.output + "_differential_kinetics" + "_velocity_embedding." + options.plot)
+                adata, color=plots + ['batch'], basis=options.embedding, legend_loc='right', save=options.output + "_velocity_embeddings_after_differential_kinetics"." + options.plot)
             if options.plot_batches == "True":
                 for i in batches:
                     try:
                         scv.pl.velocity_embedding_stream(adata[adata.obs['batch'] == i], color=plots, color_map='gnuplot',
-                                                         basis=options.embedding, legend_loc='right', save=options.output + "_differential_kinetics" + "_" + i + "_velocity_embedding." + options.plot)
+                                                         basis=options.embedding, legend_loc='right', save=options.output + i + "_velocity_embeddings_after_differential_kinetics." + options.plot)
                     except ValueError:
                         warnings.warn(print("Unable to plot batch: " + i +
                                             ". Perhaps too many cells were removed by filtering parameters."))
         else:
             scv.pl.velocity_embedding_stream(adata, color=plots, color_map='gnuplot',
-                                             basis=options.embedding, legend_loc='right', save=options.output + "_differential_kinetics" + "_velocity_embedding." + options.plot)
+                                             basis=options.embedding, legend_loc='right', save=options.output + "_velocity_embeddings_after_differential_kinetics." + options.plot)
 
         scv.tl.velocity_confidence(adata)
         scv.pl.scatter(adata, c=['velocity_length'], cmap='coolwarm', perc=[
-                       5, 95], save=options.output + "_differential_kinetics" + "_velocity_length_embedding." + options.plot)
+                       5, 95], save=options.output + "_velocity_length_embedding_after_differential_kinetics." + options.plot)
         scv.pl.scatter(adata, c=['velocity_confidence'], cmap='coolwarm', perc=[
-                       5, 95], save=options.output + "_differential_kinetics" + "_velocity_confidence_embedding." + options.plot)
+                       5, 95], save=options.output + "_velocity_confidence_embedding_after_differential_kinetics." + options.plot)
         conf_dk_df = adata.obs.groupby(cluster_type)[
             'velocity_length', 'velocity_confidence'].mean().T
         # conf_dk_df.style.background_gradient(cmap='coolwarm', axis=1)
-        conf_dk_df.to_csv(options.output + "_velocity_length_and_confidence_after_differential_kinetics" +
+        conf_dk_df.to_csv(options.output + "_velocity_length_and_confidence_after_differential_kinetics_by_" +
                           cluster_out + ".txt", sep="\t")
 
         scv.tl.paga(adata, groups=cluster_type)
         paga_dk_df = scv.get_df(
             adata, 'paga/transitions_confidence', precision=2).T
         # paga_dk_df.style.background_gradient(cmap='Blues').format('{:.2g}')
-        paga_dk_df.to_csv(options.output + "_paga_transitions_confidence_after_differential_kinetics" +
+        paga_dk_df.to_csv(options.output + "_paga_transitions_confidence_after_differential_kinetics_by_" +
                           cluster_out + ".txt", sep="\t")
 
         scv.pl.paga(adata, basis=options.embedding, size=50, alpha=.1,
-                    min_edge_width=2, node_size_scale=1.5, save=options.output + "_differential_kinetics" + "_paga_velocity_graph." + options.plot)
+                    min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph_after_differential_kinetics_by" + cluster_out + options.plot)
 
     ad.AnnData.write(adata, compression="gzip",
                      filename=options.output + "_complete_velocity_data.h5ad")
@@ -298,9 +298,9 @@ def main():
         if options.diff_kinetics == "True":
             for i in markergenes:
                 scv.pl.velocity_embedding_stream(adata, basis=options.embedding, legend_loc='right', color=[
-                    i], save=options.output + "_differential_kinetics" + "_embedding_" + i + "." + options.plot)
+                    i], save= "Marker_" i + "_" + options.output + "_embedding_after_differential_kinetics." + options.plot)
             scv.pl.velocity(adata, markergenes, ncols=1,
-                            save=options.output + "_differential_kinetics" + "_combined_per-marker_velocity" + "." + options.plot)
+                            save=options.output + "_combined_per-marker_velocity_after_differential_kinetics" + "." + options.plot)
 
 
 if __name__ == '__main__':
