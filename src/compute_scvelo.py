@@ -205,7 +205,7 @@ def main():
                    cluster_out + ".txt", sep="\t")
 
     scv.pl.paga(adata, basis=options.embedding, size=50, alpha=.1,
-                min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph_by" + cluster_out + options.plot)
+                min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph_by" + cluster_out + "." + options.plot)
     scv.pl.scatter(adata, color=['root_cells', 'end_points'],
                    save=options.output + "_velocity_terminal_states." + options.plot)
 
@@ -251,7 +251,7 @@ def main():
         if "batch" in list(adata.obs):
             batches = list(adata.obs['batch'].cat.categories)
             scv.pl.velocity_embedding_stream(
-                adata, color=plots + ['batch'], basis=options.embedding, legend_loc='right', save=options.output + "_velocity_embeddings_after_differential_kinetics"." + options.plot)
+                adata, color=plots + ['batch'], basis=options.embedding, legend_loc='right', save=options.output + "_velocity_embeddings_after_differential_kinetics." + options.plot)
             if options.plot_batches == "True":
                 for i in batches:
                     try:
@@ -283,7 +283,7 @@ def main():
                           cluster_out + ".txt", sep="\t")
 
         scv.pl.paga(adata, basis=options.embedding, size=50, alpha=.1,
-                    min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph_after_differential_kinetics_by" + cluster_out + options.plot)
+                    min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph_after_differential_kinetics_by" + cluster_out + "." + options.plot)
         scv.pl.scatter(adata, color=['root_cells', 'end_points'], save=options.output +
                        "_velocity_terminal_states_after_differential_kinetics." + options.plot)
 
@@ -302,13 +302,13 @@ def main():
                 scv.pl.velocity_embedding_stream(adata, basis=options.embedding, legend_loc='right', color=[
                     i], save=options.output + "_embedding_" + i + "." + options.plot)
             scv.pl.velocity(adata, markergenes, ncols=1,
-                            save=options.output + "_combined_per-marker_velocity" + "." + options.plot)
+                            save=options.output + "_combined_per-marker_velocity." + options.plot)
         if options.diff_kinetics == "True":
             for i in markergenes:
                 scv.pl.velocity_embedding_stream(adata, basis=options.embedding, legend_loc='right', color=[
                     i], save="Marker_" + i + "_" + options.output + "_embedding_after_differential_kinetics." + options.plot)
             scv.pl.velocity(adata, markergenes, ncols=1,
-                            save=options.output + "_combined_per-marker_velocity_after_differential_kinetics" + "." + options.plot)
+                            save=options.output + "_combined_per-marker_velocity_after_differential_kinetics." + options.plot)
 
 
 if __name__ == '__main__':
