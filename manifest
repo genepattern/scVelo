@@ -1,5 +1,5 @@
 #scVelo.ComputeVelocity
-#Tue Sep 21 23:12:04 UTC 2021
+#Mon Sep 27 19:15:27 UTC 2021
 JVMLevel=
 LSID=urn\:lsid\:8080.gpserver.ip-172-31-26-71.ip-172-31-26-71.ec2.internal\:genepatternmodules\:443\:1
 author=Anthony S. Castanza
@@ -96,7 +96,7 @@ p2_TYPE=FILE
 p2_default_value=
 p2_description=A list of marker genes to plot on the embedded graph
 p2_fileFormat=txt
-p2_flag=-m
+p2_flag=-m 
 p2_name=Marker.Genes
 p2_numValues=0..1
 p2_optional=on
@@ -168,7 +168,7 @@ p7_optional=
 p7_prefix=
 p7_prefix_when_specified=
 p7_type=java.lang.String
-p7_value=True\=true;False\=false
+p7_value=True\=true;False\=false;None\=none
 p8_MODE=
 p8_TYPE=TEXT
 p8_default_value=umap
