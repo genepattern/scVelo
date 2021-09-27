@@ -195,7 +195,7 @@ def main():
     conf_df = adata.obs.groupby(cluster_type)[
         'velocity_length', 'velocity_confidence'].mean().T
     # conf_df.style.background_gradient(cmap='coolwarm', axis=1)
-    conf_df.to_csv(options.output + "_velocity_length_and_confidence_by" +
+    conf_df.to_csv(options.output + "_velocity_length_and_confidence_by_" +
                    cluster_out + ".txt", sep="\t")
 
     scv.tl.paga(adata, groups=cluster_type)
