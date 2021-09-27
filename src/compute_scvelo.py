@@ -201,7 +201,7 @@ def main():
     scv.tl.paga(adata, groups=cluster_type)
     paga_df = scv.get_df(adata, 'paga/transitions_confidence', precision=2).T
     # paga_df.style.background_gradient(cmap='Blues').format('{:.2g}')
-    paga_df.to_csv(options.output + "_paga_transitions_confidence_by" +
+    paga_df.to_csv(options.output + "_paga_transitions_confidence_by_" +
                    cluster_out + ".txt", sep="\t")
 
     scv.pl.paga(adata, basis=options.embedding, size=50, alpha=.1,
