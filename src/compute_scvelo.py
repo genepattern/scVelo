@@ -205,7 +205,7 @@ def main():
                    cluster_out + ".txt", sep="\t")
 
     scv.pl.paga(adata, basis=options.embedding, size=50, alpha=.1,
-                min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph_by" + cluster_out + "." + options.plot)
+                min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph_by_" + cluster_out + "." + options.plot)
     scv.pl.scatter(adata, color=['root_cells', 'end_points'],
                    save=options.output + "_velocity_terminal_states." + options.plot)
 
@@ -283,7 +283,7 @@ def main():
                           cluster_out + ".txt", sep="\t")
 
         scv.pl.paga(adata, basis=options.embedding, size=50, alpha=.1,
-                    min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph_after_differential_kinetics_by" + cluster_out + "." + options.plot)
+                    min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph_after_differential_kinetics_by_" + cluster_out + "." + options.plot)
         scv.pl.scatter(adata, color=['root_cells', 'end_points'], save=options.output +
                        "_velocity_terminal_states_after_differential_kinetics." + options.plot)
 
