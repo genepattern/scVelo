@@ -216,7 +216,7 @@ def main():
         scv.tl.differential_kinetic_test(adata, groupby=cluster_type)
         kdf = scv.get_df(adata[:, velocity_genes_list], [
                          'fit_diff_kinetics', 'fit_pval_kinetics'], precision=2)
-        kdf.to_csv(options.output + "_differential_kinetics_for_velocity_genes_by_" +
+        kdf.to_csv(options.output + "_differential_kinetics_test_for_velocity_genes_by_" +
                    cluster_out + ".txt", sep="\t")
         kwargs = dict(linewidth=2, add_linfit=True, frameon=False)
         top_genes = adata.var['fit_likelihood'].sort_values(
@@ -239,14 +239,14 @@ def main():
 
         scv.tl.rank_velocity_genes(adata, groupby=cluster_type, min_corr=.3)
         vel_dk_df = scv.DataFrame(adata.uns['rank_velocity_genes']['names'])
-        vel_dk_df.to_csv(options.output + "_top_velocity_genes_after_differential_kinetics_by_" +
-                         cluster_out + ".txt", sep="\t")
+        vel_dk_df.to_csv(options.output + "_top_velocity_genes_by_" +
+                         cluster_out + "_after_differential_kinetics.txt", sep="\t")
 
         if options.velocity_mode == "dynamical":
             scv.tl.rank_dynamical_genes(adata, groupby=cluster_type)
             dyn_dk_df = scv.get_df(adata, 'rank_dynamical_genes/names')
-            dyn_dk_df.to_csv(options.output + "_top_dynamical_genes_after_differential_kinetics_by_" +
-                             cluster_out + ".txt", sep="\t")
+            dyn_dk_df.to_csv(options.output + "_top_dynamical_genes_by_" +
+                             cluster_out + "_after_differential_kinetics.txt", sep="\t")
 
         if "batch" in list(adata.obs):
             batches = list(adata.obs['batch'].cat.categories)
@@ -272,18 +272,18 @@ def main():
         conf_dk_df = adata.obs.groupby(cluster_type)[
             'velocity_length', 'velocity_confidence'].mean().T
         # conf_dk_df.style.background_gradient(cmap='coolwarm', axis=1)
-        conf_dk_df.to_csv(options.output + "_velocity_length_and_confidence_after_differential_kinetics_by_" +
-                          cluster_out + ".txt", sep="\t")
+        conf_dk_df.to_csv(options.output + "_velocity_length_and_confidence_by_" +
+                          cluster_out + "_after_differential_kinetics.txt", sep="\t")
 
         scv.tl.paga(adata, groups=cluster_type)
         paga_dk_df = scv.get_df(
             adata, 'paga/transitions_confidence', precision=2).T
         # paga_dk_df.style.background_gradient(cmap='Blues').format('{:.2g}')
-        paga_dk_df.to_csv(options.output + "_paga_transitions_confidence_after_differential_kinetics_by_" +
-                          cluster_out + ".txt", sep="\t")
+        paga_dk_df.to_csv(options.output + "_paga_transitions_confidence_by_" +
+                          cluster_out + "_after_differential_kinetics.txt", sep="\t")
 
         scv.pl.paga(adata, basis=options.embedding, size=50, alpha=.1,
-                    min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph_after_differential_kinetics_by_" + cluster_out + "." + options.plot)
+                    min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph_by_" + cluster_out + "_after_differential_kinetics." + options.plot)
         scv.pl.scatter(adata, color=['root_cells', 'end_points'], save=options.output +
                        "_velocity_terminal_states_after_differential_kinetics." + options.plot)
 
