@@ -202,6 +202,8 @@ def main():
 
     scv.pl.paga(adata, basis=options.embedding, size=50, alpha=.1,
                 min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph_by" + cluster_out + options.plot)
+    scv.pl.scatter(adata, color=['root_cells', 'end_points'],
+                   save=options.output + "_velocity_terminal_states." + options.plot)
 
    # Stuff for Differential Kinetics
     if options.diff_kinetics == "True":
@@ -278,6 +280,8 @@ def main():
 
         scv.pl.paga(adata, basis=options.embedding, size=50, alpha=.1,
                     min_edge_width=2, node_size_scale=1.5, save=options.output + "_paga_velocity_graph_after_differential_kinetics_by" + cluster_out + options.plot)
+        scv.pl.scatter(adata, color=['root_cells', 'end_points'], save=options.output +
+                       "_velocity_terminal_states_after_differential_kinetics." + options.plot)
 
     ad.AnnData.write(adata, compression="gzip",
                      filename=options.output + "_complete_velocity_data.h5ad")
