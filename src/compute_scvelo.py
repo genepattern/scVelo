@@ -94,9 +94,13 @@ def main():
     if options.enforce == "True":
         scv.pp.filter_and_normalize(adata, min_shared_counts=int(
             options.minshared), n_top_genes=int(options.topgenes), enforce=True)
-    else:
+    elif options.enforce == "False":
         scv.pp.filter_and_normalize(adata, min_shared_counts=int(
             options.minshared), n_top_genes=int(options.topgenes), layers_normalize={'spliced', 'unspliced'})
+    else:
+        warnings.warn(
+            print("Absolutely no normalization was selected. Using all data layers as-is."))
+
     scv.pp.moments(adata, n_pcs=int(options.pcs),
                    n_neighbors=int(options.neighbors))
 
