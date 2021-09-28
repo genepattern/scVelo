@@ -96,7 +96,7 @@ def main():
             options.minshared), n_top_genes=int(options.topgenes), enforce=True)
     elif options.enforce == "False":
         scv.pp.filter_and_normalize(adata, min_shared_counts=int(
-            options.minshared), n_top_genes=int(options.topgenes), layers_normalize={'spliced', 'unspliced'})
+            options.minshared), n_top_genes=int(options.topgenes), layers_normalize={'spliced', 'unspliced', 'ambiguous'})
     else:
         warnings.warn(
             print("Absolutely no normalization was selected. Using all data layers as-is."))
