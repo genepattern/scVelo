@@ -1,7 +1,7 @@
 # copyright 2017-2018 Regents of the University of California and the Broad Institute. All rights reserved.
 FROM python:3.8-buster
 
-MAINTAINER Anthony Castanza <acastanza@cloud.ucsd.edu>
+MAINTAINER Anthony S. Castanza <acastanza@cloud.ucsd.edu>
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
@@ -48,8 +48,8 @@ RUN pip install hnswlib==0.5.2
 RUN pip install leidenalg==0.8.7
 
 # copy module files
-COPY src/* /src/
-RUN chmod a+x /src/compute_scvelo.py
+COPY module/* /build/
+RUN chmod a+x /build/compute_scvelo.py
 
 # display software versions
 RUN python --version
