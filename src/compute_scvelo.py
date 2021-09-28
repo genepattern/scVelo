@@ -1,24 +1,5 @@
-import os
-import sys
-import re
-import subprocess
-#
-# subprocess.check_call(['apt-get', 'update'])
-# subprocess.check_call(['apt-get', 'install', '-y', 'python3-pip'])
-#
-# import pkg_resources
-#
-# required = {'llvmlite','numpy','anndata','scipy','pandas','scanpy','python-igraph','matplotlib', 'scvelo', 'louvain', 'pybind11', 'hnswlib'}
-# installed = {pkg.key for pkg in pkg_resources.working_set}
-# missing = required - installed
-#
-# if missing:
-#     # implement pip as a subprocess:
-#     subprocess.check_call([sys.executable, '-m', 'pip', 'install',*missing])
-
+import os, sys, re, argparse, shutil, warnings
 from optparse import OptionParser
-import argparse
-import shutil
 
 import anndata
 import anndata as ad
@@ -28,8 +9,10 @@ import pandas as pd
 import scvelo as scv
 import matplotlib
 import igraph
-import warnings
 
+__author__ = "Anthony S. Castanza"
+__email__ = "acastanza@ucsd.edu"
+__version__="1.0.0"
 
 def main():
     usage = "%prog [options]" + "\n"
