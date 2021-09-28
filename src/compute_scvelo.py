@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 import subprocess
 #
 # subprocess.check_call(['apt-get', 'update'])
@@ -19,8 +20,6 @@ from optparse import OptionParser
 import argparse
 import shutil
 
-import os
-import sys
 import anndata
 import anndata as ad
 import scanpy as sc
@@ -77,7 +76,7 @@ def main():
     if bool(options.markers):
         with open(options.markers) as f:
             markergenes = f.read().splitlines()
-        markergenes = list(set([sub.replace('-I', '') for sub in markergenes]))
+        markergenes = list(set([re.sub('-I$', '', sub) for sub in markergenes]))
 
     # Check if user wants to regenerate variable gene selection, or if it needs to be generated from scratch
     if options.hvg == "False":
