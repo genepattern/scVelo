@@ -18,7 +18,7 @@ def main():
     usage = "%prog [options]" + "\n"
     ap = argparse.ArgumentParser()
     ap.add_argument("-i", "--input-file", action="store",
-                    dest="input_file", help="h5ad (anndata) file.")
+                    dest="input_file", help="Input h5ad (anndata) file from Scanpy.")
     ap.add_argument("-m", "--markers", action="store",
                     dest="markers", nargs='?', help="A list of marker genes")
     ap.add_argument("-v", "--velmode", default="stochastic", action="store", dest="velocity_mode",
