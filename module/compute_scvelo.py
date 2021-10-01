@@ -1,4 +1,9 @@
-import os, sys, re, argparse, shutil, warnings
+import os
+import sys
+import re
+import argparse
+import shutil
+import warnings
 from optparse import OptionParser
 
 import anndata
@@ -13,6 +18,7 @@ import igraph
 __author__ = "Anthony S. Castanza"
 __email__ = "acastanza@ucsd.edu"
 __version__ = "1.0.0"
+
 
 def main():
     usage = "%prog [options]" + "\n"
