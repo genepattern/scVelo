@@ -97,6 +97,7 @@ def main():
             print("Absolutely no normalization was selected. Using all data layers as-is."))
 
     if options.keys != "NONE":
+        print("Attempting to regress out selected keys: " + options.keys)
         regression_keys = options.keys.split(",")
         sc.pp.regress_out(adata, regression_keys)
         sc.pp.scale(adata)
