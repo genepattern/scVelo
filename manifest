@@ -1,12 +1,12 @@
 #scVelo.ComputeVelocity
-#Mon Sep 27 19:15:27 UTC 2021
+#Fri Oct 01 05:01:36 UTC 2021
 JVMLevel=
 LSID=urn\:lsid\:8080.gpserver.ip-172-31-26-71.ip-172-31-26-71.ec2.internal\:genepatternmodules\:443\:1
 author=Anthony S. Castanza
 categories=single-cell;singlecell;velocity
-commandLine=python <libdir>compute_scvelo.py -i <h5ad> -m <Marker.Genes> -v <Velocity.Mode> -s <min_shared_counts> -t <n_top_genes> -g <recalculate_highly_variable_genes> -f <Enforce.Normalization> -e <Embedding> -c <N_PCs> -n <N_Neighbors> -d <Differential.Kinetics.Analysis> -b <Plot.Batches> -p <Save.Plot.Type> -o <output.file.base> -j <job.cpuCount>
+commandLine=python <libdir>compute_scvelo.py -i <h5ad> -m <Marker.Genes> -v <Velocity.Mode> -s <min_shared_counts> -t <n_top_genes> -g <recalculate_highly_variable_genes> -f <Enforce.Normalization> -e <Embedding> -c <N_PCs> -n <N_Neighbors> -d <Differential.Kinetics.Analysis> -l <Clustering> -r <Cluster.Resolution> -b <Plot.Batches> -p <Save.Plot.Type> -o <output.file.base> -j <job.cpuCount>
 cpuType=any
-description=Perform single-cell RNA velocity analysis using scVelo. Requires that gene expression was quantified with a velocity-ready transcriptome, and intended for datasets preprocessed with the ScanpyUtilities module.
+description=Module for performing basic velocity analysis using the scVelo protocol on ScanpyUtilities processed datasets
 documentationUrl=
 fileFormat=h5ad;png;svg
 job.docker.image=acastanza/compute_scvelo\:latest
@@ -41,43 +41,69 @@ p11_type=java.lang.String
 p11_value=False\=false;True\=true
 p12_MODE=
 p12_TYPE=TEXT
-p12_default_value=True
-p12_description=Produce individual velocity plots for each batch in the dataset (if present)
+p12_default_value=autodetect_existing
+p12_description=Autodetect existing clusters in the dataset, or run clustering using choice of leiden or louvian algorithms. If no clustering is detected with "autodetect_existing", "leiden" will be used.
 p12_fileFormat=
-p12_flag=-b
-p12_name=Plot.Batches
+p12_flag=-l
+p12_name=Clustering
 p12_numValues=1..1
 p12_optional=
 p12_prefix=
 p12_prefix_when_specified=
 p12_type=java.lang.String
-p12_value=True\=true;False\=false
+p12_value=autodetect_existing\=autodetect_existing;run_leiden\=run_leiden;run_louvain\=run_louvain
 p13_MODE=
-p13_TYPE=TEXT
-p13_default_value=png
-p13_description=Save velocity plots as png or svg (or pdf; not recommended due to pdf element count limitations)
+p13_TYPE=Floating Point
+p13_default_value=1.0
+p13_description=Resolution to use if running leiden or louvain clustering on the dataset.
 p13_fileFormat=
-p13_flag=-p
-p13_name=Save.Plot.Type
+p13_flag=-r
+p13_name=Cluster.Resolution
 p13_numValues=1..1
 p13_optional=
 p13_prefix=
 p13_prefix_when_specified=
-p13_type=java.lang.String
-p13_value=png\=png;svg\=svg;pdf\=pdf
+p13_type=java.lang.Float
+p13_value=
 p14_MODE=
 p14_TYPE=TEXT
-p14_default_value=<h5ad_basename>
-p14_description=Output basename for velocity calculation results
+p14_default_value=True
+p14_description=Produce individual velocity plots for each batch in the dataset (if present)
 p14_fileFormat=
-p14_flag=-o
-p14_name=output.file.base
+p14_flag=-b
+p14_name=Plot.Batches
 p14_numValues=1..1
 p14_optional=
 p14_prefix=
 p14_prefix_when_specified=
 p14_type=java.lang.String
-p14_value=
+p14_value=True\=true;False\=false
+p15_MODE=
+p15_TYPE=TEXT
+p15_default_value=png
+p15_description=Save velocity plots as png or svg (or pdf; not recommended due to pdf element count limitations)
+p15_fileFormat=
+p15_flag=-p
+p15_name=Save.Plot.Type
+p15_numValues=1..1
+p15_optional=
+p15_prefix=
+p15_prefix_when_specified=
+p15_type=java.lang.String
+p15_value=png\=png;svg\=svg;pdf\=pdf
+p16_MODE=
+p16_TYPE=TEXT
+p16_default_value=<h5ad_basename>
+p16_description=Output basename for velocity calculation results
+p16_fileFormat=
+p16_flag=-o
+p16_name=output.file.base
+p16_numValues=1..1
+p16_optional=
+p16_prefix=
+p16_prefix_when_specified=
+p16_type=java.lang.String
+p16_value=
 p1_MODE=IN
 p1_TYPE=FILE
 p1_default_value=

@@ -39,7 +39,7 @@ def main():
                     help="Number of nearest neighbors in PCA space used for computing gene moments")
     ap.add_argument("-d", "--diffkin", default="True", action="store", dest="diff_kinetics",
                     help="Perform differential kinetics analysis using clustering (requires 'dynamical' mode velocity estimation).")
-    ap.add_argument("-c", "--clustering", default="autodetect_existing", action="store", dest="clustering",
+    ap.add_argument("-l", "--clustering", default="autodetect_existing", action="store", dest="clustering",
                     help="Save velocity plots as png or svg")
     ap.add_argument("-r", "--resolution", default="1", action="store", dest="resolution",
                     help="Save velocity plots as png or svg")
