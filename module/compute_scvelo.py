@@ -37,17 +37,19 @@ def main():
                     help="Recalculate highly_variable_genes.")
     ap.add_argument("-f", "--force", default="False", action="store", dest="enforce",
                     help="Enforce normalizaion using scvelo's internal functions.")
-    ap.add_argument("-e", "--embedding", default="umap", action="store", dest="embedding",
-                    help="Dataset was processed with 'umap' or 'tsne' embedding.")
     ap.add_argument("-c", "--pcs", default="30", action="store", dest="pcs",
                     help="Number of principal components used for computing gene moments.")
     ap.add_argument("-n", "--neighbors", default="30", action="store", dest="neighbors",
                     help="Number of nearest neighbors in PCA space used for computing gene moments.")
     ap.add_argument("-d", "--diffkin", default="True", action="store", dest="diff_kinetics",
                     help="Perform differential kinetics analysis using clustering (requires 'dynamical' mode velocity estimation).")
+    ap.add_argument("-e", "--embedding", default="umap", action="store", dest="embedding",
+                    help="Dataset was processed with 'umap' or 'tsne' embedding.")
     ap.add_argument("-l", "--clustering", default="autodetect_existing", action="store", dest="clustering",
                     help="Some kinetics functions require the dataset to be clustered. Specify 'run_leiden' or 'run_louvain' to create a new clustering, or 'autodetect_existing' to attempt to detect previous clustering with a fallback to 'run_leiden'.")
     ap.add_argument("-r", "--resolution", default="1.0", action="store", dest="resolution",
+                    help="Specify a resolution to use for clustering if running the leiden or louvain algorithms.")
+    ap.add_argument("-k", "--key_regression", default="NONE", action="store", dest="keys",
                     help="Specify a resolution to use for clustering if running the leiden or louvain algorithms.")
     ap.add_argument("-b", "--batch", default="True", action="store", dest="plot_batches",
                     help="Produce individual velocity plots for each batch in the dataset (if present).")
@@ -93,6 +95,11 @@ def main():
     else:
         warnings.warn(
             print("Absolutely no normalization was selected. Using all data layers as-is."))
+
+    if options.keys != "NONE":
+        regression_keys = options.keys.split(",")
+        sc.pp.regress_out(adata, regression_keys)
+        sc.pp.scale(adata)
 
     scv.pp.moments(adata, n_pcs=int(options.pcs),
                    n_neighbors=int(options.neighbors))
