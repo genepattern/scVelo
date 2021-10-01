@@ -12,7 +12,7 @@ import igraph
 
 __author__ = "Anthony S. Castanza"
 __email__ = "acastanza@ucsd.edu"
-__version__="1.0.0"
+__version__ = "1.0.0"
 
 def main():
     usage = "%prog [options]" + "\n"
@@ -39,6 +39,10 @@ def main():
                     help="Number of nearest neighbors in PCA space used for computing gene moments")
     ap.add_argument("-d", "--diffkin", default="True", action="store", dest="diff_kinetics",
                     help="Perform differential kinetics analysis using clustering (requires 'dynamical' mode velocity estimation).")
+    ap.add_argument("-c", "--clustering", default="autodetect_existing", action="store", dest="clustering",
+                    help="Save velocity plots as png or svg")
+    ap.add_argument("-r", "--resolution", default="1", action="store", dest="resolution",
+                    help="Save velocity plots as png or svg")
     ap.add_argument("-b", "--batch", default="True", action="store", dest="plot_batches",
                     help="Produce individual velocity plots for each batch in the dataset (if present)")
     ap.add_argument("-p", "--plot", default="png", action="store", dest="plot",
@@ -59,7 +63,8 @@ def main():
     if bool(options.markers):
         with open(options.markers) as f:
             markergenes = f.read().splitlines()
-        markergenes = list(set([re.sub('-I$', '', sub) for sub in markergenes]))
+        markergenes = list(set([re.sub('-I$', '', sub)
+                                for sub in markergenes]))
 
     # Check if user wants to regenerate variable gene selection, or if it needs to be generated from scratch
     if options.hvg == "False":
@@ -109,26 +114,49 @@ def main():
         scv.tl.latent_time(adata)
 
 # Detect/create clustering
-    if "clusters" in list(adata.obs):
-        cluster_type = "clusters"
-        cluster_out = "dataset_clusters"
-        print("Found 'clusters' key in dataset. We'll use this for plots and any differential kinetics.\n")
-    elif "clusters" not in list(adata.obs):
-        if "leiden" in list(adata.obs):
-            cluster_type = "leiden"
-            cluster_out = "leiden_clusters"
-            print("Found 'leiden' clustering in dataset. We'll use this for plots and any differential kinetics.\n")
-        elif "leiden" not in list(adata.obs):
-            if "walktrap" in list(adata.obs):
-                cluster_type = "walktrap"
-                cluster_out = "walktrap_clusters"
-                print(
-                    "Found 'walktrap' clustering in dataset. We'll use this for plots and any differential kinetics.\n")
-            else:
-                print("Didn't find any clustering in dataset, clustering data using method: 'leiden'.\nWe'll use this for plots and any differential kinetics.\n")
-                sc.tl.leiden(adata)
+    if options.clustering == "autodetect_existing":
+        if "clusters" in list(adata.obs):
+            cluster_type = "clusters"
+            cluster_out = "dataset_clusters"
+            print(
+                "Found 'clusters' key in dataset. We'll use this for plots and any differential kinetics.\n")
+        elif "clusters" not in list(adata.obs):
+            if "leiden" in list(adata.obs):
                 cluster_type = "leiden"
                 cluster_out = "leiden_clusters"
+                print(
+                    "Found 'leiden' clustering in dataset. We'll use this for plots and any differential kinetics.\n")
+            elif "leiden" not in list(adata.obs):
+                if "louvain" in list(adata.obs):
+                    cluster_type = "louvain"
+                    cluster_out = "louvain_clusters"
+                    print(
+                        "Found 'louvain' clustering in dataset. We'll use this for plots and any differential kinetics.\n")
+                elif "louvain" not in list(adata.obs):
+                    if "walktrap" in list(adata.obs):
+                        cluster_type = "walktrap"
+                        cluster_out = "walktrap_clusters"
+                        print(
+                            "Found 'walktrap' clustering in dataset. We'll use this for plots and any differential kinetics.\n")
+                    else:
+                        print(
+                            "Didn't find any clustering in dataset, clustering data using method: 'leiden'.\nWe'll use this for plots and any differential kinetics.\n")
+                        sc.tl.leiden(adata, resolution=float(
+                            options.resolution))
+                        cluster_type = "leiden"
+                        cluster_out = "leiden_clusters"
+    elif options.clustering == "run_louvain":
+        print(
+            "Clustering data using method: 'louvain'.\nWe'll use this for plots and any differential kinetics.\n")
+        sc.tl.louvain(adata, resolution=float(options.resolution))
+        cluster_type = "louvain"
+        cluster_out = "louvain_clusters"
+    else:
+        print(
+            "Clustering data using method: 'leiden'.\nWe'll use this for plots and any differential kinetics.\n")
+        sc.tl.leiden(adata, resolution=float(options.resolution))
+        cluster_type = "leiden"
+        cluster_out = "leiden_clusters"
 
     if options.velocity_mode == "dynamical":
         top_lt_genes = adata.var['fit_likelihood'].sort_values(
