@@ -41,7 +41,7 @@ def main():
                     help="Perform differential kinetics analysis using clustering (requires 'dynamical' mode velocity estimation).")
     ap.add_argument("-l", "--clustering", default="autodetect_existing", action="store", dest="clustering",
                     help="Save velocity plots as png or svg")
-    ap.add_argument("-r", "--resolution", default="1", action="store", dest="resolution",
+    ap.add_argument("-r", "--resolution", default="1.0", action="store", dest="resolution",
                     help="Save velocity plots as png or svg")
     ap.add_argument("-b", "--batch", default="True", action="store", dest="plot_batches",
                     help="Produce individual velocity plots for each batch in the dataset (if present)")
