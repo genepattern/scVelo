@@ -64,6 +64,8 @@ def main():
 
     adata = anndata.read_h5ad(options.input_file)
 
+    scv.settings.figdir="./figures"
+
     scv.pl.proportions(adata, save=options.output +
                        "_splicing_proportions." + options.plot)
 
@@ -238,8 +240,26 @@ def main():
     scv.pl.scatter(adata, color=['root_cells', 'end_points'],
                    save=options.output + "_velocity_terminal_states." + options.plot)
 
+    ad.AnnData.write(adata, compression="gzip",
+                     filename=options.output + "_complete_" + options.velocity_mode + "_velocity_data.h5ad")
+
+    # Check if marker genes are present and plot ones that are
+    if options.markers != None:
+        scv.settings.figdir="./figures/markers"
+        if len(np.setdiff1d(markergenes, adata.var_names)):
+            print("Invalid marker genes.")
+            print(np.setdiff1d(markergenes, adata.var_names))
+            print("were not present in the variable genes list.")
+            markergenes = list(set(adata.var_names) & set(markergenes))
+        for i in markergenes:
+            scv.pl.velocity_embedding_stream(adata, basis=options.embedding, legend_loc='right', color=[
+                i], save=options.output + "_embedding_" + i + "." + options.plot)
+        scv.pl.velocity(adata, markergenes, ncols=1,
+                        save=options.output + "_combined_per-marker_velocity." + options.plot)
+
    # Stuff for Differential Kinetics
     if options.diff_kinetics == "True":
+        scv.settings.figdir="./diff_kinetics_figures"
         velocity_genes_list = list(
             adata.var['velocity_genes'][adata.var['velocity_genes'] == True].index)
         scv.tl.differential_kinetic_test(adata, groupby=cluster_type)
@@ -316,23 +336,11 @@ def main():
         scv.pl.scatter(adata, color=['root_cells', 'end_points'], save=options.output +
                        "_velocity_terminal_states_after_differential_kinetics." + options.plot)
 
-    ad.AnnData.write(adata, compression="gzip",
-                     filename=options.output + "_complete_velocity_data.h5ad")
+        ad.AnnData.write(adata, compression="gzip",
+                         filename=options.output + "_complete_" + options.velocity_mode + "_velocity_post-differential_kinetics_data.h5ad")
 
-    # Check if marker genes are present and plot ones that are
-    if options.markers != None:
-        if len(np.setdiff1d(markergenes, adata.var_names)):
-            print("Invalid marker genes.")
-            print(np.setdiff1d(markergenes, adata.var_names))
-            print("were not present in the variable genes list.")
-            markergenes = list(set(adata.var_names) & set(markergenes))
-        if options.diff_kinetics == "False":
-            for i in markergenes:
-                scv.pl.velocity_embedding_stream(adata, basis=options.embedding, legend_loc='right', color=[
-                    i], save=options.output + "_embedding_" + i + "." + options.plot)
-            scv.pl.velocity(adata, markergenes, ncols=1,
-                            save=options.output + "_combined_per-marker_velocity." + options.plot)
-        if options.diff_kinetics == "True":
+        if options.markers != None:
+            scv.settings.figdir="./diff_kinetics_figures/markers"
             for i in markergenes:
                 scv.pl.velocity_embedding_stream(adata, basis=options.embedding, legend_loc='right', color=[
                     i], save="Marker_" + i + "_" + options.output + "_embedding_after_differential_kinetics." + options.plot)
