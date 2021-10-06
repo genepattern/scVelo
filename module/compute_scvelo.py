@@ -104,6 +104,15 @@ def main():
         sc.pp.regress_out(adata, regression_keys)
         sc.pp.scale(adata)
 
+    if options.hvg == "True" or options.enforce == "True" or options.keys != "NONE":
+        print("Additional preprocessing of the non-splicing expression data was requested, rerunning PCA and Embedding to produce accurate plots.")
+        sc.pp.pca(adata, n_comps=int(options.pcs), svd_solver='arpack')
+        sc.pp.neighbors(adata, n_neighbors=int(options.neighbors))
+        if options.embedding == "umap":
+            scv.tl.umap(adata)
+        if options.embedding == "tsne":
+            scv.tl.tsne(adata)
+
     scv.pp.moments(adata, n_pcs=int(options.pcs),
                    n_neighbors=int(options.neighbors))
 
@@ -115,12 +124,12 @@ def main():
     scv.tl.velocity_pseudotime(adata)
 
     # Confirm presence of lower dimensional embeddings and generate if absent
-    if options.embedding != "tsne":
+    if options.embedding == "umap":
         if "X_umap" not in list(adata.obsm):
             print(
                 "'UMAP' Embedding was requested, but we didn't find it in the dataset so creating it now.\n")
             scv.tl.umap(adata)
-    if options.embedding != "umap":
+    if options.embedding == "tsne":
         if "X_tsne" not in list(adata.obsm):
             print(
                 "'tSNE' Embedding was requested, but we didn't find it in the dataset so creating it now.\n")
