@@ -79,11 +79,11 @@ def main():
     # Check if user wants to regenerate variable gene selection, or if it needs to be generated from scratch
     if options.hvg == "False":
         if "highly_variable" not in list(adata.var):
-            print("Calculation of highly variable genes was not selected but no precomputed set was detected in the dataset so doing it anyway using method 'seurat_v3'.\n")
+            print("Calculation of highly variable genes was not selected but no precomputed set was detected in the dataset so doing it anyway using method 'seurat_v3'.")
             sc.pp.highly_variable_genes(adata, flavor="seurat_v3", n_top_genes=int(
                 options.topgenes), check_values=False)
     if options.hvg == "True":
-        print("Realculation of highly variable genes was requested; calculating using method 'seurat_v3'.\n")
+        print("Realculation of highly variable genes was requested; calculating using method 'seurat_v3'.")
         sc.pp.highly_variable_genes(adata, flavor="seurat_v3", n_top_genes=int(
             options.topgenes), check_values=False)
 
@@ -105,7 +105,7 @@ def main():
         sc.pp.scale(adata)
 
     if options.hvg == "True" or options.enforce == "True" or options.keys != "NONE":
-        print("Additional preprocessing of the non-splicing expression data was requested, rerunning PCA and Embedding to produce accurate plots.")
+        print("Additional preprocessing of the non-splicing expression data was requested, re-running PCA and " + options.embedding.upper() + " embedding to produce plots that reflect this.")
         sc.pp.pca(adata, n_comps=int(options.pcs), svd_solver='arpack')
         sc.pp.neighbors(adata, n_neighbors=int(options.neighbors))
         if options.embedding == "umap":
@@ -127,12 +127,12 @@ def main():
     if options.embedding == "umap":
         if "X_umap" not in list(adata.obsm):
             print(
-                "'UMAP' Embedding was requested, but we didn't find it in the dataset so creating it now.\n")
+                "'UMAP' Embedding was requested, but we didn't find it in the dataset so creating it now.")
             scv.tl.umap(adata)
     if options.embedding == "tsne":
         if "X_tsne" not in list(adata.obsm):
             print(
-                "'tSNE' Embedding was requested, but we didn't find it in the dataset so creating it now.\n")
+                "'tSNE' Embedding was requested, but we didn't find it in the dataset so creating it now.")
             scv.tl.tsne(adata)
 
     if options.velocity_mode == "dynamical":
@@ -144,47 +144,47 @@ def main():
             cluster_type = "clusters"
             cluster_out = "dataset_clusters"
             print(
-                "Found 'clusters' key in dataset. We'll use this for plots and any differential kinetics.\n")
+                "Found 'clusters' key in dataset. We'll use this for plots and any differential kinetics.")
         elif "clusters" not in list(adata.obs):
             if "leiden" in list(adata.obs):
                 cluster_type = "leiden"
                 cluster_out = "leiden_clusters"
                 print(
-                    "Found 'leiden' clustering in dataset. We'll use this for plots and any differential kinetics.\n")
+                    "Found 'leiden' clustering in dataset. We'll use this for plots and any differential kinetics.")
             elif "leiden" not in list(adata.obs):
                 if "louvain" in list(adata.obs):
                     cluster_type = "louvain"
                     cluster_out = "louvain_clusters"
                     print(
-                        "Found 'louvain' clustering in dataset. We'll use this for plots and any differential kinetics.\n")
+                        "Found 'louvain' clustering in dataset. We'll use this for plots and any differential kinetics.")
                 elif "louvain" not in list(adata.obs):
                     if "walktrap" in list(adata.obs):
                         cluster_type = "walktrap"
                         cluster_out = "walktrap_clusters"
                         print(
-                            "Found 'walktrap' clustering in dataset. We'll use this for plots and any differential kinetics.\n")
+                            "Found 'walktrap' clustering in dataset. We'll use this for plots and any differential kinetics.")
                     else:
                         print(
-                            "Didn't find any clustering in dataset, clustering data using method: 'leiden'.\nWe'll use this for plots and any differential kinetics.\n")
+                            "Didn't find any clustering in dataset, clustering data using method: 'leiden'.\nWe'll use this for plots and any differential kinetics.")
                         sc.tl.leiden(adata, resolution=float(
                             options.resolution))
                         cluster_type = "leiden"
                         cluster_out = "leiden_clusters"
     elif options.clustering == "run_louvain":
         print(
-            "Clustering data using method: 'louvain'.\nWe'll use this for plots and any differential kinetics.\n")
+            "Clustering data using method: 'louvain'.\nWe'll use this for plots and any differential kinetics.")
         sc.tl.louvain(adata, resolution=float(options.resolution))
         cluster_type = "louvain"
         cluster_out = "louvain_clusters"
     elif options.clustering == "run_leiden":
         print(
-            "Clustering data using method: 'leiden'.\nWe'll use this for plots and any differential kinetics.\n")
+            "Clustering data using method: 'leiden'.\nWe'll use this for plots and any differential kinetics.")
         sc.tl.leiden(adata, resolution=float(options.resolution))
         cluster_type = "leiden"
         cluster_out = "leiden_clusters"
     else:
         print(
-            "Attempting to use user-specified clustering as-is from key: " + options.clustering + "\n")
+            "Attempting to use user-specified clustering as-is from key: " + options.clustering)
         cluster_type = options.clustering
         cluster_out = options.clustering + "_clusters"
 
