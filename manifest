@@ -1,5 +1,5 @@
 #scVelo.ComputeVelocity
-#Fri Oct 01 17:29:02 UTC 2021
+#Wed Oct 06 21:36:44 UTC 2021
 JVMLevel=
 LSID=urn\:lsid\:8080.gpserver.ip-172-31-26-71.ip-172-31-26-71.ec2.internal\:genepatternmodules\:443\:1
 author=Anthony S. Castanza
@@ -16,7 +16,7 @@ os=any
 p10_MODE=
 p10_TYPE=TEXT
 p10_default_value=False
-p10_description=Perform differential kinetics analysis on the basis of dataset clustering using dynamical velocity estimations
+p10_description=Perform differential kinetics analysis on the basis of dataset clustering using dynamical velocity estimations.
 p10_fileFormat=
 p10_flag=-d
 p10_name=Differential.Kinetics.Analysis
@@ -29,7 +29,7 @@ p10_value=False\=false;True\=true
 p11_MODE=
 p11_TYPE=TEXT
 p11_default_value=umap
-p11_description=Select the type of embedding used in ScanpyUtilities
+p11_description=Select the type of embedding used in ScanpyUtilities.
 p11_fileFormat=
 p11_flag=-e
 p11_name=Embedding
@@ -68,7 +68,7 @@ p13_value=
 p14_MODE=
 p14_TYPE=TEXT
 p14_default_value=NONE
-p14_description=Any keys to regress out of the dataset (i.e. batch) using scanpy.pp.regress_out().<br>Should be specified as a non-quoted comma separated list
+p14_description=Any keys to regress out of the dataset (i.e. batch) using scanpy.pp.regress_out().<br>Should be specified as a non-quoted comma separated list.<br><br>Regressing out a key will force re-calculation of PCA, the KNN graph, and UMAP embeddings.
 p14_fileFormat=
 p14_flag=-k
 p14_name=Regression.Keys
@@ -81,7 +81,7 @@ p14_value=
 p15_MODE=
 p15_TYPE=TEXT
 p15_default_value=True
-p15_description=Produce individual velocity plots for each batch in the dataset (if present)
+p15_description=Produce individual velocity plots for each batch in the dataset (if present).
 p15_fileFormat=
 p15_flag=-b
 p15_name=Plot.Batches
@@ -94,7 +94,7 @@ p15_value=True\=true;False\=false
 p16_MODE=
 p16_TYPE=TEXT
 p16_default_value=png
-p16_description=Save velocity plots as png or svg (or pdf; not recommended due to pdf element count limitations)
+p16_description=Save velocity plots as png or svg (or pdf; not recommended due to pdf element count limitations).
 p16_fileFormat=
 p16_flag=-p
 p16_name=Save.Plot.Type
@@ -107,7 +107,7 @@ p16_value=png\=png;svg\=svg;pdf\=pdf
 p17_MODE=
 p17_TYPE=TEXT
 p17_default_value=<h5ad_basename>
-p17_description=Output basename for velocity calculation results
+p17_description=Output basename for velocity calculation results.
 p17_fileFormat=
 p17_flag=-o
 p17_name=output.file.base
@@ -185,7 +185,7 @@ p5_value=
 p6_MODE=
 p6_TYPE=TEXT
 p6_default_value=False
-p6_description=If highly_variable_genes have already been calculated externally, force their recomputation using scVelo's internal functions (true).<br>Otherwise, leave existing highly_variable_genes as-is, calculating only if missing (false).
+p6_description=If highly_variable_genes have already been calculated externally, force their re-computation with Scanpy using the selected method.<br>If set to 'false' and the highly_variable_genes key isn't found in the data, the calculation will be automatically performed using the Seruat_v3 method.<br><br>Selecting options other than 'false' will force re-calculation of PCA, the KNN graph, and UMAP embeddings.
 p6_fileFormat=
 p6_flag=-g
 p6_name=recalculate_highly_variable_genes
@@ -194,11 +194,11 @@ p6_optional=
 p6_prefix=
 p6_prefix_when_specified=
 p6_type=java.lang.String
-p6_value=True\=true;False\=false
+p6_value=False\=false;seurat_v3\=seurat_v3;cell_ranger\=cell_ranger
 p7_MODE=
 p7_TYPE=TEXT
 p7_default_value=False
-p7_description=Normally, the top level counts matrix used by most tools such as scanpy and seurat will already be normalized.<br>scVelo requires that the separate spliced and unspliced counts layers used only by velocity calculations also be normalized.<br>Setting Enforce.Normalization to "true" will cause scVelo to force normalization of all three layers of the data.<br>Setting Enforce.Normalization to "false" will cause it to only normalize the velocity specific spliced and unspliced layers.
+p7_description=Normally, the top level counts matrix used by most tools such as scanpy and seurat will already be normalized.<br>scVelo requires that the separate spliced and unspliced counts layers used only by velocity calculations also be normalized.<br>Setting Enforce.Normalization to "true" will cause scVelo to force normalization of all three layers of the data.<br>Setting Enforce.Normalization to "false" will cause it to only normalize the velocity specific spliced and unspliced layers.<br><br>Selecting 'true' will force re-calculation of PCA, the KNN graph, and UMAP embeddings.
 p7_fileFormat=
 p7_flag=-f
 p7_name=Enforce.Normalization
@@ -211,7 +211,7 @@ p7_value=True\=true;False\=false;None\=none
 p8_MODE=
 p8_TYPE=Integer
 p8_default_value=30
-p8_description=Number of principal components used in calculation of the gene moments of spliced/unspliced abundances
+p8_description=Number of principal components used in calculation of the gene moments of spliced/unspliced abundances.
 p8_fileFormat=
 p8_flag=-c
 p8_name=N_PCs
@@ -224,7 +224,7 @@ p8_value=
 p9_MODE=
 p9_TYPE=Integer
 p9_default_value=30
-p9_description=Number of nearest neighbors used in calculation of the gene moments of spliced/unspliced abundances
+p9_description=Number of nearest neighbors used in calculation of the gene moments of spliced/unspliced abundances.
 p9_fileFormat=
 p9_flag=-n
 p9_name=N_Neighbors
