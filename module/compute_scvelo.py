@@ -33,7 +33,7 @@ def main():
                     help="Filter genes by minimum shared counts.")
     ap.add_argument("-t", "--top", default="2000", action="store", dest="topgenes",
                     help="Top genes for velocity Computation.")
-    ap.add_argument("-g", "--hvg", default="True", action="store", dest="hvg",
+    ap.add_argument("-g", "--hvg", default="seurat_v3", action="store", dest="hvg",
                     help="Recalculate highly_variable_genes.")
     ap.add_argument("-f", "--force", default="False", action="store", dest="enforce",
                     help="Enforce normalizaion using scvelo's internal functions.")
@@ -82,9 +82,9 @@ def main():
             print("Calculation of highly variable genes was not selected but no precomputed set was detected in the dataset so doing it anyway using method 'seurat_v3'.")
             sc.pp.highly_variable_genes(adata, flavor="seurat_v3", n_top_genes=int(
                 options.topgenes), check_values=False)
-    if options.hvg == "True":
-        print("Realculation of highly variable genes was requested; calculating using method 'seurat_v3'.")
-        sc.pp.highly_variable_genes(adata, flavor="seurat_v3", n_top_genes=int(
+    else:
+        print("Realculation of highly variable genes was requested; calculating using method " + options.hvg)
+        sc.pp.highly_variable_genes(adata, flavor=options.hvg, n_top_genes=int(
             options.topgenes), check_values=False)
 
     # scVelo Core Functions
