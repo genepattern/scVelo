@@ -188,6 +188,8 @@ def main():
         cluster_type = options.clustering
         cluster_out = options.clustering + "_clusters"
 
+    sc.tl.rank_genes_groups(adata, cluster_type, method='wilcoxon')
+
     if options.velocity_mode == "dynamical":
         top_lt_genes = adata.var['fit_likelihood'].sort_values(
             ascending=False).index[:300]
