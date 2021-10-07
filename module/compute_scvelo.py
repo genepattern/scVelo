@@ -196,10 +196,28 @@ def main():
         scv.pl.heatmap(adata, var_names=top_lt_genes, sortby='latent_time', col_color=cluster_type,
                        n_convolve=100, save=options.output + "_top_latent_time_genes_trajectory_heatmap." + options.plot)
 
-    scv.tl.rank_velocity_genes(adata, groupby=cluster_type, min_corr=.3)
-    vel_df = scv.DataFrame(adata.uns['rank_velocity_genes']['names'])
-    vel_df.to_csv(options.output + "_top_velocity_genes_by_" +
+    scv.tl.rank_velocity_genes(adata, groupby=cluster_type, n_genes = len(adata.var))
+    vel_df = scv.DataFrame(adata.uns['rank_velocity_genes']['names']).head(100)
+    vel_df.to_csv(options.output + "_top100_velocity_genes_by_" +
                   cluster_out + ".txt", sep="\t")
+
+# # Convert to Gene.By.Sample.Score.Matrix
+# unique_values = set()
+# for col in scv.DataFrame(adata.uns['rank_velocity_genes']['names']):
+#     unique_values.update(scv.DataFrame(
+#         adata.uns['rank_velocity_genes']['names'])[col])
+# unique_values = list(unique_values)
+# unique_values.sort()
+# 
+# gene_by_cluster = pd.DataFrame(columns=scv.DataFrame(
+#     adata.uns['rank_velocity_genes']['names']).columns, index=unique_values)
+# 
+# for col in scv.DataFrame(adata.uns['rank_velocity_genes']['names']):
+#     gene_by_cluster[col] = list(scv.DataFrame(adata.uns['rank_velocity_genes']['scores'])[
+#                    col][np.argsort(scv.DataFrame(adata.uns['rank_velocity_genes']['names'])[col].values)])
+# 
+# gene_by_cluster.to_csv(options.output + "_velocity_gene_scores_by_" +
+#                  cluster_out + ".txt", sep="\t")
 
     if options.velocity_mode == "dynamical":
         scv.tl.rank_dynamical_genes(adata, groupby=cluster_type)
@@ -297,9 +315,9 @@ def main():
             scv.pl.heatmap(adata, var_names=top_lt_genes, sortby='latent_time', col_color=cluster_type, n_convolve=100,
                            save=options.output + "_top_latent_time_genes_trajectory_heatmap_after_differential_kinetics." + options.plot)
 
-        scv.tl.rank_velocity_genes(adata, groupby=cluster_type, min_corr=.3)
-        vel_dk_df = scv.DataFrame(adata.uns['rank_velocity_genes']['names'])
-        vel_dk_df.to_csv(options.output + "_top_velocity_genes_by_" +
+        scv.tl.rank_velocity_genes(adata, groupby=cluster_type, n_genes = len(adata.var))
+        vel_dk_df = scv.DataFrame(adata.uns['rank_velocity_genes']['names']).head(100)
+        vel_dk_df.to_csv(options.output + "_top100_velocity_genes_by_" +
                          cluster_out + "_after_differential_kinetics.txt", sep="\t")
 
         if options.velocity_mode == "dynamical":
