@@ -76,6 +76,10 @@ def main():
         markergenes = list(set([re.sub('-I$', '', sub)
                                 for sub in markergenes]))
 
+    if int(options.topgenes) == 0:
+        print("Can't use '0' top genes so resetting to complete gene list. Using " + len(adata.var) + "genes.")
+        options.topgenes = len(adata.var)
+
     # Check if user wants to regenerate variable gene selection, or if it needs to be generated from scratch
     if options.hvg == "False":
         if "highly_variable" not in list(adata.var):
