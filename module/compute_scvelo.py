@@ -64,7 +64,7 @@ def main():
 
     adata = anndata.read_h5ad(options.input_file)
 
-    scv.settings.figdir="./figures"
+    scv.settings.figdir = "./figures"
 
     scv.pl.proportions(adata, save=options.output +
                        "_splicing_proportions." + options.plot)
@@ -77,7 +77,8 @@ def main():
                                 for sub in markergenes]))
 
     if int(options.topgenes) == 0:
-        print("Can't use '0' top genes so resetting to complete gene list. Using " + len(adata.var) + "genes.")
+        print("Can't use '0' top genes so resetting to complete gene list. Using " +
+              len(adata.var) + "genes.")
         options.topgenes = len(adata.var)
 
     # Check if user wants to regenerate variable gene selection, or if it needs to be generated from scratch
@@ -109,7 +110,8 @@ def main():
         sc.pp.scale(adata)
 
     if options.hvg == "True" or options.enforce == "True" or options.keys != "NONE":
-        print("Additional preprocessing of the non-splicing expression data was requested, re-running PCA and " + options.embedding.upper() + " embedding to produce plots that reflect this.")
+        print("Additional preprocessing of the non-splicing expression data was requested, re-running PCA and " +
+              options.embedding.upper() + " embedding to produce plots that reflect this.")
         sc.pp.pca(adata, n_comps=int(options.pcs), svd_solver='arpack')
         sc.pp.neighbors(adata, n_neighbors=int(options.neighbors))
         if options.embedding == "umap":
@@ -200,7 +202,8 @@ def main():
         scv.pl.heatmap(adata, var_names=top_lt_genes, sortby='latent_time', col_color=cluster_type,
                        n_convolve=100, save=options.output + "_top_latent_time_genes_trajectory_heatmap." + options.plot)
 
-    scv.tl.rank_velocity_genes(adata, groupby=cluster_type, n_genes = len(adata.var))
+    scv.tl.rank_velocity_genes(
+        adata, groupby=cluster_type, n_genes=len(adata.var))
     vel_df = scv.DataFrame(adata.uns['rank_velocity_genes']['names']).head(100)
     vel_df.to_csv(options.output + "_top100_velocity_genes_by_" +
                   cluster_out + ".txt", sep="\t")
@@ -212,14 +215,14 @@ def main():
 #         adata.uns['rank_velocity_genes']['names'])[col])
 # unique_values = list(unique_values)
 # unique_values.sort()
-# 
+#
 # gene_by_cluster = pd.DataFrame(columns=scv.DataFrame(
 #     adata.uns['rank_velocity_genes']['names']).columns, index=unique_values)
-# 
+#
 # for col in scv.DataFrame(adata.uns['rank_velocity_genes']['names']):
 #     gene_by_cluster[col] = list(scv.DataFrame(adata.uns['rank_velocity_genes']['scores'])[
 #                    col][np.argsort(scv.DataFrame(adata.uns['rank_velocity_genes']['names'])[col].values)])
-# 
+#
 # gene_by_cluster.to_csv(options.output + "_velocity_gene_scores_by_" +
 #                  cluster_out + ".txt", sep="\t")
 
@@ -278,12 +281,24 @@ def main():
 
     # Check if marker genes are present and plot ones that are
     if options.markers != None:
-        scv.settings.figdir="./figures/markers"
+        scv.settings.figdir = "./figures/markers"
         if len(np.setdiff1d(markergenes, adata.var_names)):
-            print("Invalid marker genes.")
-            print(np.setdiff1d(markergenes, adata.var_names))
-            print("were not present in the variable genes list.")
-            markergenes = list(set(adata.var_names) & set(markergenes))
+            if "gene_name" in list(adata.var):
+                check_names = np.setdiff1d(markergenes, adata.var_names)
+                markergenes = list(set(adata.var_names) & set(markergenes))
+                for gene in check_names:
+                    found_ids = list(
+                        adata.var[adata.var["gene_name"] == gene].index)
+                    if len(found_ids) > 0:
+                        warnings.warn(print("Gene " + gene + " was identified in the dataset under name " + found_ids + "plots will be created under this ID."))
+                        markergenes = markergenes + found_ids
+                    else:
+                        print("Invalid marker gene: " gene)
+            else:
+                print("Invalid marker genes.")
+                print(np.setdiff1d(markergenes, adata.var_names))
+                print("were not present in the variable genes list.")
+                markergenes = list(set(adata.var_names) & set(markergenes))
         for i in markergenes:
             scv.pl.velocity_embedding_stream(adata, basis=options.embedding, legend_loc='right', color=[
                 i], save=options.output + "_embedding_" + i + "." + options.plot)
@@ -292,7 +307,7 @@ def main():
 
    # Stuff for Differential Kinetics
     if options.diff_kinetics == "True":
-        scv.settings.figdir="./diff_kinetics_figures"
+        scv.settings.figdir = "./diff_kinetics_figures"
         velocity_genes_list = list(
             adata.var['velocity_genes'][adata.var['velocity_genes'] == True].index)
         scv.tl.differential_kinetic_test(adata, groupby=cluster_type)
@@ -319,8 +334,10 @@ def main():
             scv.pl.heatmap(adata, var_names=top_lt_genes, sortby='latent_time', col_color=cluster_type, n_convolve=100,
                            save=options.output + "_top_latent_time_genes_trajectory_heatmap_after_differential_kinetics." + options.plot)
 
-        scv.tl.rank_velocity_genes(adata, groupby=cluster_type, n_genes = len(adata.var))
-        vel_dk_df = scv.DataFrame(adata.uns['rank_velocity_genes']['names']).head(100)
+        scv.tl.rank_velocity_genes(
+            adata, groupby=cluster_type, n_genes=len(adata.var))
+        vel_dk_df = scv.DataFrame(
+            adata.uns['rank_velocity_genes']['names']).head(100)
         vel_dk_df.to_csv(options.output + "_top100_velocity_genes_by_" +
                          cluster_out + "_after_differential_kinetics.txt", sep="\t")
 
@@ -373,7 +390,7 @@ def main():
                          filename=options.output + "_complete_" + options.velocity_mode + "_velocity_post-differential_kinetics_data.h5ad")
 
         if options.markers != None:
-            scv.settings.figdir="./diff_kinetics_figures/markers"
+            scv.settings.figdir = "./diff_kinetics_figures/markers"
             for i in markergenes:
                 scv.pl.velocity_embedding_stream(adata, basis=options.embedding, legend_loc='right', color=[
                     i], save="Marker_" + i + "_" + options.output + "_embedding_after_differential_kinetics." + options.plot)
