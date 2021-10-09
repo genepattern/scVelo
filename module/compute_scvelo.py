@@ -293,7 +293,7 @@ def main():
                         warnings.warn(print("Gene " + gene + " was identified in the dataset under name " + found_ids + "plots will be created under this ID."))
                         markergenes = markergenes + found_ids
                     else:
-                        print("Invalid marker gene: " gene)
+                        print("Invalid marker gene: " + gene)
             else:
                 print("Invalid marker genes.")
                 print(np.setdiff1d(markergenes, adata.var_names))
