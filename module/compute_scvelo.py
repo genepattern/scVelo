@@ -290,8 +290,8 @@ def main():
                     found_ids = list(
                         adata.var[adata.var["gene_name"] == gene].index)
                     if len(found_ids) > 0:
-                        warnings.warn(print("Gene " + gene + " was identified in the dataset under name " +
-                                      found_ids + "plots will be created under this ID."))
+                        warnings.warn(print("Gene " + gene + " was identified in the dataset under name ",
+                                      found_ids, "plots will be created under this ID."))
                         markergenes = markergenes + found_ids
                     else:
                         print("Invalid marker gene: " + gene)
