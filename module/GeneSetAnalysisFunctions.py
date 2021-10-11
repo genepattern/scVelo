@@ -54,5 +54,5 @@ def create_transition_matrix(ssgsea_result, ssgsea_df, set):
     test_set = ssgsea_raw_df[:set]
     for first_cluster in test_set.columns:
         for second_cluster in test_set.columns:
-            set_transition.at[first_cluster,second_cluster] = float(test_set[second_cluster]) / float(test_set[first_cluster])
+            set_transition.at[first_cluster,second_cluster] = float(test_set[second_cluster]) - float(test_set[first_cluster])
     return set_transition
