@@ -44,11 +44,14 @@ def adata_import_ssgsea_scores(adata, ssgsea_result):    # Add Clusterwise ssGSE
     adata.obs[ssgsea_cell_df.columns] = ssgsea_cell_df[ssgsea_cell_df.columns]
     return ssgsea_cell_df
 
-def ssgsea_plot(adata, ssgsea_result, basis, clusters ,outname, format):# Plotting
+def ssgsea_plot(adata, sets, ssgsea_result, basis, clusters ,outname, format):# Plotting
     import GeneSetAnalysisFunctions
     import scvelo as scv
     ssgsea_cell_df = GeneSetAnalysisFunctions.adata_import_ssgsea_scores(adata, ssgsea_result)
-    ssgsea_sets = list(ssgsea_cell_df.columns)
+    if sets == "":
+        ssgsea_sets = list(ssgsea_cell_df.columns)
+    else:
+        ssgsea_sets = list(sets)
     for set in ssgsea_sets:
         scv.pl.velocity_embedding_stream(adata, basis=basis, legend_loc='right', color=[
                                          set, clusters], color_map='seismic', save=set + "_" + outname + "_embedding." + format)
