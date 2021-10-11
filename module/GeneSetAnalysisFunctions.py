@@ -28,39 +28,58 @@ def velocity_score_to_gct(adata, cluster_out, outname):    # Convert to Gene.By.
                            cluster_out + ".gct", sep="\t", mode='a')
 
 
-def load_ssgsea_scores(adata, ssgsea_result):    # Add Clusterwise ssGSEA scores to adata.obs as a cell level score for plotting
+def load_ssgsea_result(ssgsea_result):
     ssgsea_df = pd.read_csv(ssgsea_result, sep='\t', header=2, index_col=[
                             0, 1], skip_blank_lines=True)
     ssgsea_df.index = ssgsea_df.index.droplevel(1)  # Drop gene descriptions
-    ssgsea_df = ssgsea_df.transpose()
-    ssgsea_df = ssgsea_df.reindex(list(adata.obs['leiden']))
-    ssgsea_df.index = range(len(ssgsea_df.index))
-    ssgsea_df = ssgsea_df.set_index(adata.obs.index)
-    adata.obs[ssgsea_df.columns] = ssgsea_df[ssgsea_df.columns]
     return ssgsea_df
+
+def adata_import_ssgsea_scores(adata, ssgsea_result):    # Add Clusterwise ssGSEA scores to adata.obs as a cell level score for plotting
+    import GeneSetAnalysisFunctions
+    ssgsea_df = load_ssgsea_result(ssgsea_result)
+    ssgsea_cell_df = ssgsea_df.transpose()
+    ssgsea_cell_df = ssgsea_cell_df.reindex(list(adata.obs['leiden']))
+    ssgsea_cell_df.index = range(len(ssgsea_cell_df.index))
+    ssgsea_cell_df = ssgsea_cell_df.set_index(adata.obs.index)
+    adata.obs[ssgsea_cell_df.columns] = ssgsea_cell_df[ssgsea_cell_df.columns]
+    return ssgsea_cell_df
 
 def ssgsea_plot(adata, ssgsea_result, basis, clusters ,outname, format):# Plotting
     import GeneSetAnalysisFunctions
     import scvelo as scv
-    ssgsea_df = GeneSetAnalysisFunctions.load_ssgsea_scores(adata, ssgsea_result)
-    ssgsea_sets = list(ssgsea_df.columns)
+    ssgsea_cell_df = GeneSetAnalysisFunctions.adata_import_ssgsea_scores(adata, ssgsea_result)
+    ssgsea_sets = list(ssgsea_cell_df.columns)
     for set in ssgsea_sets:
         scv.pl.velocity_embedding_stream(adata, basis=basis, legend_loc='right', color=[
                                          set, clusters], color_map='seismic', save=set + "_" + outname + "_embedding." + format)
 
-def create_transition_matrix(ssgsea_result, ssgsea_df, set):
-    ssgsea_sets = list(ssgsea_df.columns)
+def create_transition_matrix(ssgsea_result, ssgsea_cell_df, set):
+    import GeneSetAnalysisFunctions
+    import sys
+    import pandas as pd
+    ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
+    ssgsea_sets = list(ssgsea_cell_df.columns)
     set_transition = pd.DataFrame(columns=ssgsea_raw_df.columns, index=ssgsea_raw_df.columns)
-    test_set = ssgsea_raw_df[:set]
+    if len(np.where(ssgsea_raw_df.index==set)) == 1:
+        test_set = ssgsea_raw_df.iloc[[int(np.where(ssgsea_raw_df.index==set)[0])]]
+    else:
+        print("Found Duplicate Gene Set Name: " + set)
+        sys.exit(1)
     for first_cluster in test_set.columns:
         for second_cluster in test_set.columns:
             set_transition.at[first_cluster,second_cluster] = float(test_set[second_cluster]) - float(test_set[first_cluster])
     return set_transition
 
-def find_outlier_transitions(adata, ssgsea_result, ssgsea_df, set):
+def find_outlier_transitions(adata, ssgsea_result, set, threshold):
     import GeneSetAnalysisFunctions
-    set_transition = GeneSetAnalysisFunctions.create_transition_matrix(ssgsea_result, ssgsea_df, set)
-    set_transition_pass = set_transition[paga_df>0]
+    import numpy as np
+    import pandas as pd
+    import scvelo as scv
+    import math
+    paga_df = scv.get_df(adata, 'paga/transitions_confidence', precision=2).T
+    ssgsea_cell_df = GeneSetAnalysisFunctions.adata_import_ssgsea_scores(adata, ssgsea_result)
+    set_transition = GeneSetAnalysisFunctions.create_transition_matrix(ssgsea_result, ssgsea_cell_df, set)
+    set_transition_pass = set_transition[paga_df>float(threshold)]
     set_transition_pass_list = set_transition_pass.values.tolist()
     flat_set_transition_pass_list = [item for sublist in set_transition_pass_list for item in sublist if math.isnan(item) == False]
     mean = np.mean(flat_set_transition_pass_list)
@@ -71,5 +90,7 @@ def find_outlier_transitions(adata, ssgsea_result, ssgsea_df, set):
     outlier_loc = list(np.where(outlier)[0])
     transition_outlier_values = np.array(flat_set_transition_pass_list)[outlier_loc]
     transition_outlier_values = list(transition_outlier_values)
+    ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
+    test_set = ssgsea_raw_df.iloc[[int(np.where(ssgsea_raw_df.index==set)[0])]]
     for i in range(len(transition_outlier_values)):
-        print(np.where(set_transition_pass==transition_outlier_values[i]))
+        print("Transition from Cluster " + str(np.where(set_transition_pass==transition_outlier_values[i])[0]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass==transition_outlier_values[i])[0]))])) +") to Cluster " + str(np.where(set_transition_pass==transition_outlier_values[i])[1]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass==transition_outlier_values[i])[1]))])) + ") was scored as an outlier for gene set: " + set)
