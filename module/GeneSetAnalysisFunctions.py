@@ -1,9 +1,8 @@
-import numpy as np
-import pandas as pd
-import scvelo as scv
-
+# Functions to Enable Downstream Analysis of Gene Sets for Single Cell Datasets
 
 def velocity_score_to_gct(adata, cluster_out, outname):    # Convert to Gene.By.Sample.Score.Matrix
+    import numpy as np
+    import pandas as pd
     unique_values = set()
     for col in scv.DataFrame(adata.uns['rank_velocity_genes']['names']):
         unique_values.update(scv.DataFrame(
@@ -41,6 +40,7 @@ def load_ssgsea_scores(adata, ssgsea_result):    # Add Clusterwise ssGSEA scores
 
 def ssgsea_plot(adata, ssgsea_result, outname, format):# Plotting
     import GeneSetAnalysisFunctions
+    import scvelo as scv
     ssgsea_df = GeneSetAnalysisFunctions.load_ssgsea_scores(adata, ssgsea_result)
     ssgsea_sets = list(ssgsea_df.columns)
     for set in ssgsea_sets:
