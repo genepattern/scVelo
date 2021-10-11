@@ -56,3 +56,20 @@ def create_transition_matrix(ssgsea_result, ssgsea_df, set):
         for second_cluster in test_set.columns:
             set_transition.at[first_cluster,second_cluster] = float(test_set[second_cluster]) - float(test_set[first_cluster])
     return set_transition
+
+def find_outlier_transitions(adata, ssgsea_result, ssgsea_df, set):
+    import GeneSetAnalysisFunctions
+    set_transition = GeneSetAnalysisFunctions.create_transition_matrix(ssgsea_result, ssgsea_df, set)
+    set_transition_pass = set_transition[paga_df>0]
+    set_transition_pass_list = set_transition_pass.values.tolist()
+    flat_set_transition_pass_list = [item for sublist in set_transition_pass_list for item in sublist if math.isnan(item) == False]
+    mean = np.mean(flat_set_transition_pass_list)
+    standard_deviation = np.std(flat_set_transition_pass_list)
+    distance_from_mean = abs(flat_set_transition_pass_list - mean)
+    max_deviations = 2
+    outlier = distance_from_mean > max_deviations * standard_deviation
+    outlier_loc = list(np.where(outlier)[0])
+    transition_outlier_values = np.array(flat_set_transition_pass_list)[outlier_loc]
+    transition_outlier_values = list(transition_outlier_values)
+    for i in range(len(transition_outlier_values)):
+        print(np.where(set_transition_pass==transition_outlier_values[i]))
