@@ -39,14 +39,14 @@ def load_ssgsea_scores(adata, ssgsea_result):    # Add Clusterwise ssGSEA scores
     adata.obs[ssgsea_df.columns] = ssgsea_df[ssgsea_df.columns]
     return ssgsea_df
 
-def ssgsea_plot(adata, ssgsea_result, outname, format):# Plotting
+def ssgsea_plot(adata, ssgsea_result, basis, clusters ,outname, format):# Plotting
     import GeneSetAnalysisFunctions
     import scvelo as scv
     ssgsea_df = GeneSetAnalysisFunctions.load_ssgsea_scores(adata, ssgsea_result)
     ssgsea_sets = list(ssgsea_df.columns)
     for set in ssgsea_sets:
-        scv.pl.velocity_embedding_stream(adata, basis="umap", legend_loc='right', color=[
-                                         set, "leiden"], color_map='seismic', save=set + "_" + outname + "_embedding." + format)
+        scv.pl.velocity_embedding_stream(adata, basis=basis, legend_loc='right', color=[
+                                         set, clusters], color_map='seismic', save=set + "_" + outname + "_embedding." + format)
 
 def create_transition_matrix(ssgsea_result, ssgsea_df, set):
     ssgsea_sets = list(ssgsea_df.columns)
