@@ -47,3 +47,12 @@ def ssgsea_plot(adata, ssgsea_result, outname, format):# Plotting
     for set in ssgsea_sets:
         scv.pl.velocity_embedding_stream(adata, basis="umap", legend_loc='right', color=[
                                          set, "leiden"], color_map='seismic', save=set + "_" + outname + "_embedding." + format)
+
+def create_transition_matrix(ssgsea_result, ssgsea_df, set):
+    ssgsea_sets = list(ssgsea_df.columns)
+    set_transition = pd.DataFrame(columns=ssgsea_raw_df.columns, index=ssgsea_raw_df.columns)
+    test_set = ssgsea_raw_df[:set]
+    for first_cluster in test_set.columns:
+        for second_cluster in test_set.columns:
+            set_transition.at[first_cluster,second_cluster] = float(test_set[second_cluster]) / float(test_set[first_cluster])
+    return set_transition
