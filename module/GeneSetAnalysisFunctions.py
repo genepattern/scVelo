@@ -1,6 +1,7 @@
 # Functions to Enable Downstream Analysis of Gene Sets for Single Cell Datasets
 
 def velocity_score_to_gct(adata, cluster_out, outname):    # Convert to Gene.By.Sample.Score.Matrix
+    import re
     import numpy as np
     import pandas as pd
     unique_values = set()
@@ -16,8 +17,8 @@ def velocity_score_to_gct(adata, cluster_out, outname):    # Convert to Gene.By.
         gene_by_cluster[col] = list(scv.DataFrame(adata.uns['rank_velocity_genes']['scores'])[
             col][np.argsort(scv.DataFrame(adata.uns['rank_velocity_genes']['names'])[col].values)])
     gene_by_cluster.index.name = "NAME"
+    gene_by_cluster.index = gene_by_cluster.index.str.replace('\\..*', '', regex=True)
     gene_by_cluster.insert(loc=0, column='Description', value="NA")
-
     text_file = open(outname + "_velocity_gene_scores_by_" +
                            cluster_out + ".gct", "w")
     text_file.write('#1.2\n')
