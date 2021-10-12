@@ -112,7 +112,7 @@ def find_outlier_transitions(adata, ssgsea_result, set, threshold):
     standard_deviation = np.std(flat_set_transition_pass_list)
     distance_from_mean = abs(flat_set_transition_pass_list - mean)
     max_deviations = 2
-    filtered = dnp.logical_and(distance_from_mean < (max_deviations * standard_deviation), distance_from_mean > (1 * standard_deviation))
+    filtered = np.logical_and(distance_from_mean < (max_deviations * standard_deviation), distance_from_mean > (1 * standard_deviation))
     filtered_locs = list(np.where(filtered)[0])
     transition_values = np.array(
         flat_set_transition_pass_list)[filtered_locs]
@@ -122,14 +122,15 @@ def find_outlier_transitions(adata, ssgsea_result, set, threshold):
         int(np.where(ssgsea_raw_df.index == set)[0])]]
     set_hits = []
     for i in range(len(transition_values)):
-        print("Transition from Cluster " + str(np.where(set_transition_pass == transition_values[i])[0]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])) + ") to Cluster " + str(np.where(
-            set_transition_pass == transition_values[i])[1]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))])) + ") was scored as an outlier for gene set " + set + " at PAGA transition confidence >" + str(threshold))
+        print("Gene set " + set + " was scored as a candidate for transition from Cluster " + str(np.where(set_transition_pass == transition_values[i])[0]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])) + ") to Cluster " + str(np.where(
+            set_transition_pass == transition_values[i])[1]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))])) + ") at PAGA transition confidence >" + str(threshold))
         set_hits.append([set, str(np.where(set_transition_pass == transition_values[i])[0]).strip("[]"), str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])), str(np.where(set_transition_pass == transition_values[i])[1]).strip("[]"), str(
             float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))])), float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))]) - float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])])
     return(set_hits)
 
 
 def find_good_transitions(adata, ssgsea_result, threshold):
+    import GeneSetAnalysisFunctions
     ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
     all_sets = ssgsea_raw_df.index.to_list()
     all_set_results = []
