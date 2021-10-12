@@ -69,7 +69,7 @@ def ssgsea_plot_hits(adata, set_hits, ssgsea_result, basis, clusters, outname, f
     for i in range(len(set_hits)):
         set = str(set_hits.index[i])
         scv.pl.velocity_embedding_stream(adata, basis=basis, color=[
-            set, clusters], color_map='seismic', add_outline=[set_hits.iloc[i][0], set_hits.iloc[i][2]], save=set + "_" + outname + "_embedding." + format)
+            set, clusters], color_map='seismic', add_outline=[set_hits.iloc[i][0], set_hits.iloc[i][2]], save=set + "_Cluster_" + str(set_hits.iloc[i][0]) + "_to_" + str(set_hits.iloc[i][2]) + "_" + outname + "_embedding." + format)
 
 
 def create_transition_matrix(ssgsea_result, ssgsea_cell_df, set):
@@ -112,20 +112,20 @@ def find_outlier_transitions(adata, ssgsea_result, set, threshold):
     standard_deviation = np.std(flat_set_transition_pass_list)
     distance_from_mean = abs(flat_set_transition_pass_list - mean)
     max_deviations = 2
-    outlier = distance_from_mean > max_deviations * standard_deviation
-    outlier_loc = list(np.where(outlier)[0])
-    transition_outlier_values = np.array(
-        flat_set_transition_pass_list)[outlier_loc]
-    transition_outlier_values = list(transition_outlier_values)
+    filtered = dnp.logical_and(distance_from_mean < (max_deviations * standard_deviation), distance_from_mean > (1 * standard_deviation))
+    filtered_locs = list(np.where(filtered)[0])
+    transition_values = np.array(
+        flat_set_transition_pass_list)[filtered_locs]
+    transition_values = list(transition_values)
     ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
     test_set = ssgsea_raw_df.iloc[[
         int(np.where(ssgsea_raw_df.index == set)[0])]]
     set_hits = []
-    for i in range(len(transition_outlier_values)):
-        print("Transition from Cluster " + str(np.where(set_transition_pass == transition_outlier_values[i])[0]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_outlier_values[i])[0]))])) + ") to Cluster " + str(np.where(
-            set_transition_pass == transition_outlier_values[i])[1]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_outlier_values[i])[1]))])) + ") was scored as an outlier for gene set " + set + " at PAGA transition confidence >" + str(threshold))
-        set_hits.append([set, str(np.where(set_transition_pass == transition_outlier_values[i])[0]).strip("[]"), str(float(test_set[str(int(np.where(set_transition_pass == transition_outlier_values[i])[0]))])), str(np.where(set_transition_pass == transition_outlier_values[i])[1]).strip("[]"), str(
-            float(test_set[str(int(np.where(set_transition_pass == transition_outlier_values[i])[1]))])), float(test_set[str(int(np.where(set_transition_pass == transition_outlier_values[i])[1]))]) - float(test_set[str(int(np.where(set_transition_pass == transition_outlier_values[i])[0]))])])
+    for i in range(len(transition_values)):
+        print("Transition from Cluster " + str(np.where(set_transition_pass == transition_values[i])[0]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])) + ") to Cluster " + str(np.where(
+            set_transition_pass == transition_values[i])[1]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))])) + ") was scored as an outlier for gene set " + set + " at PAGA transition confidence >" + str(threshold))
+        set_hits.append([set, str(np.where(set_transition_pass == transition_values[i])[0]).strip("[]"), str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])), str(np.where(set_transition_pass == transition_values[i])[1]).strip("[]"), str(
+            float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))])), float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))]) - float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])])
     return(set_hits)
 
 
