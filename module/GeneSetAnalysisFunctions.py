@@ -128,10 +128,16 @@ def find_outlier_transitions(adata, ssgsea_result, set, threshold):
             float(test_set[str(int(np.where(set_transition_pass == transition_outlier_values[i])[1]))])), float(test_set[str(int(np.where(set_transition_pass == transition_outlier_values[i])[1]))]) - float(test_set[str(int(np.where(set_transition_pass == transition_outlier_values[i])[0]))])])
     return(set_hits)
 
-# ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
-# all_sets=ssgsea_raw_df.index.to_list()
-# all_set_results =[]
-# for set in all_sets:
-#     set_hits = GeneSetAnalysisFunctions.find_outlier_transitions(adata=adata, ssgsea_result="/Users/acastanza/Downloads/Mouse_Cortex_per_leiden_cluster_velocity_rankings_collapsed_to_symbols.PROJ.gct", set=set, threshold=0.2)
-#     all_set_results.append(set_hits)
-# flat_set_results = [item for sublist in all_set_results for item in sublist]
+
+def find_positive_transitions(adata, ssgsea_result, threshold):
+    ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
+    all_sets = ssgsea_raw_df.index.to_list()
+    all_set_results = []
+    for set in all_sets:
+        set_hits = GeneSetAnalysisFunctions.find_outlier_transitions(
+            adata=adata, ssgsea_result=ssgsea_result, set=set, threshold=threshold)
+        all_set_results.append(set_hits)
+    all_set_results_flat = [
+        item for sublist in all_set_results for item in sublist]
+    all_set_results_df = pd.DataFrame(all_set_results_flat)
+    return(all_set_results_df)
