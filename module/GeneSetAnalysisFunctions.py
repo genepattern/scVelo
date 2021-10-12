@@ -93,7 +93,7 @@ def create_transition_matrix(ssgsea_result, ssgsea_cell_df, set):
     return set_transition
 
 
-def find_outlier_transitions(adata, ssgsea_result, set, threshold):
+def find_candidate_transitions(adata, ssgsea_result, set, threshold, silent=False):
     import GeneSetAnalysisFunctions
     import numpy as np
     import pandas as pd
@@ -112,7 +112,8 @@ def find_outlier_transitions(adata, ssgsea_result, set, threshold):
     standard_deviation = np.std(flat_set_transition_pass_list)
     distance_from_mean = abs(flat_set_transition_pass_list - mean)
     max_deviations = 2
-    filtered = np.logical_and(distance_from_mean < (max_deviations * standard_deviation), distance_from_mean > (1 * standard_deviation))
+    filtered = np.logical_and(distance_from_mean < (
+        max_deviations * standard_deviation), distance_from_mean > (1 * standard_deviation))
     filtered_locs = list(np.where(filtered)[0])
     transition_values = np.array(
         flat_set_transition_pass_list)[filtered_locs]
@@ -122,33 +123,42 @@ def find_outlier_transitions(adata, ssgsea_result, set, threshold):
         int(np.where(ssgsea_raw_df.index == set)[0])]]
     set_hits = []
     for i in range(len(transition_values)):
-        print("Gene set " + set + " was scored as a candidate for transition from Cluster " + str(np.where(set_transition_pass == transition_values[i])[0]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])) + ") to Cluster " + str(np.where(
-            set_transition_pass == transition_values[i])[1]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))])) + ") at PAGA transition confidence >" + str(threshold))
+        if silent == False:
+            print("Gene set " + set + " was scored as a candidate for transition from Cluster " + str(np.where(set_transition_pass == transition_values[i])[0]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])) + ") to Cluster " + str(np.where(
+                set_transition_pass == transition_values[i])[1]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))])) + ") at PAGA transition confidence >" + str(threshold))
         set_hits.append([set, str(np.where(set_transition_pass == transition_values[i])[0]).strip("[]"), str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])), str(np.where(set_transition_pass == transition_values[i])[1]).strip("[]"), str(
             float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))])), float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))]) - float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])])
     return(set_hits)
 
 
-def find_good_transitions(adata, ssgsea_result, threshold):
+def find_good_transitions(adata, ssgsea_result, threshold, silent = False):
     import GeneSetAnalysisFunctions
     ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
     all_sets = ssgsea_raw_df.index.to_list()
     all_set_results = []
     for set in all_sets:
-        set_hits = GeneSetAnalysisFunctions.find_outlier_transitions(
-            adata=adata, ssgsea_result=ssgsea_result, set=set, threshold=threshold)
+        set_hits = GeneSetAnalysisFunctions.find_candidate_transitions(
+            adata=adata, ssgsea_result=ssgsea_result, set=set, threshold=threshold, silent=silent)
         all_set_results.append(set_hits)
     all_set_results_flat = [
         item for sublist in all_set_results for item in sublist]
     all_set_results_df = pd.DataFrame(all_set_results_flat)
-    all_positive_changes = all_set_results_df[all_set_results_df[5]>0] # Sets have a Positive Change
-    all_positive_changes = all_positive_changes[all_positive_changes[4].astype(float)>0] # Ending Cluster Ends Positive
-    all_positive_changes.columns = ["Gene_Set", "Start_Cluster", "Start_Cluster_ES", "End_Cluster", "End_Cluster_ES", "Cluster_ES_Delta"]
-    all_positive_changes.sort_values(by="Cluster_ES_Delta", ascending=False, inplace=True)
-    all_negative_changes = all_set_results_df[all_set_results_df[5]<0]  # Sets have a Negative Change
-    all_negative_changes = all_negative_changes[all_negative_changes[2].astype(float)>0]  # Starting Cluster Starts Positive
-    all_negative_changes.columns = ["Gene_Set", "Start_Cluster", "Start_Cluster_ES", "End_Cluster", "End_Cluster_ES", "Cluster_ES_Delta"]
-    all_negative_changes.sort_values(by="Cluster_ES_Delta", ascending=False, inplace=True)
+    # Sets have a Positive Change
+    all_positive_changes = all_set_results_df[all_set_results_df[5] > 0]
+    all_positive_changes = all_positive_changes[all_positive_changes[4].astype(
+        float) > 0]  # Ending Cluster Ends Positive
+    all_positive_changes.columns = ["Gene_Set", "Start_Cluster",
+                                    "Start_Cluster_ES", "End_Cluster", "End_Cluster_ES", "Cluster_ES_Delta"]
+    all_positive_changes.sort_values(
+        by="Cluster_ES_Delta", ascending=False, inplace=True)
+    # Sets have a Negative Change
+    all_negative_changes = all_set_results_df[all_set_results_df[5] < 0]
+    all_negative_changes = all_negative_changes[all_negative_changes[2].astype(
+        float) > 0]  # Starting Cluster Starts Positive
+    all_negative_changes.columns = ["Gene_Set", "Start_Cluster",
+                                    "Start_Cluster_ES", "End_Cluster", "End_Cluster_ES", "Cluster_ES_Delta"]
+    all_negative_changes.sort_values(
+        by="Cluster_ES_Delta", ascending=False, inplace=True)
     all_filtered_changes = all_positive_changes.append(all_negative_changes)
-    all_filtered_changes.set_index("Gene_Set",inplace=True)
+    all_filtered_changes.set_index("Gene_Set", inplace=True)
     return(all_filtered_changes)
