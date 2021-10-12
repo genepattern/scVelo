@@ -140,4 +140,5 @@ def find_positive_transitions(adata, ssgsea_result, threshold):
     all_set_results_flat = [
         item for sublist in all_set_results for item in sublist]
     all_set_results_df = pd.DataFrame(all_set_results_flat)
-    return(all_set_results_df)
+    all_positive_changes = all_set_results_df[all_set_results_df[5]>0]
+    return(all_positive_changes)
