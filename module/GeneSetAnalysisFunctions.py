@@ -69,7 +69,7 @@ def ssgsea_plot_hits(adata, set_hits, ssgsea_result, basis, clusters, outname, f
     for i in range(len(set_hits)):
         set = str(set_hits.index[i])
         scv.pl.velocity_embedding_stream(adata, basis=basis, color=[
-            set, clusters], color_map='seismic', add_outline=[set_hits[i][0], set_hits[i][2]], save=set + "_" + outname + "_embedding." + format)
+            set, clusters], color_map='seismic', add_outline=[set_hits.iloc[i][0], set_hits.iloc[i][2]], save=set + "_" + outname + "_embedding." + format)
 
 
 def create_transition_matrix(ssgsea_result, ssgsea_cell_df, set):
