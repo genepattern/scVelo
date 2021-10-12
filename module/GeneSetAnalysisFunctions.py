@@ -141,10 +141,11 @@ def find_good_transitions(adata, ssgsea_result, threshold):
         item for sublist in all_set_results for item in sublist]
     all_set_results_df = pd.DataFrame(all_set_results_flat)
     all_positive_changes = all_set_results_df[all_set_results_df[5]>0] # Sets have a Positive Change
-    all_positive_changes = all_set_results_df[all_set_results_df[4]>0] # Ending Cluster Ends Positive
+    all_positive_changes = all_set_results_df[all_set_results_df[4].astype(float)>0] # Ending Cluster Ends Positive
     all_positive_changes.columns = ["Gene_Set", "Start_Cluster", "Start_Cluster_ES", "End_Cluster", "End_Cluster_ES", "Cluster_ES_Delta"]
     all_negative_changes = all_set_results_df[all_set_results_df[5]<0]  # Sets have a Negative Change
-    all_negative_changes = all_set_results_df[all_set_results_df[2]>0]  # Starting Cluster Starts Positive
+    all_negative_changes = all_set_results_df[all_set_results_df[2].astype(float)>0]  # Starting Cluster Starts Positive
     all_negative_changes.columns = ["Gene_Set", "Start_Cluster", "Start_Cluster_ES", "End_Cluster", "End_Cluster_ES", "Cluster_ES_Delta"]
     all_filtered_changes = all_positive_changes.append(all_negative_changes)
+    all_filtered_changes.set_index("Gene_Set",inplace=True)
     return(all_filtered_changes)
