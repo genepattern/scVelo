@@ -129,7 +129,7 @@ def find_outlier_transitions(adata, ssgsea_result, set, threshold):
     return(set_hits)
 
 
-def find_positive_transitions(adata, ssgsea_result, threshold):
+def find_good_transitions(adata, ssgsea_result, threshold):
     ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
     all_sets = ssgsea_raw_df.index.to_list()
     all_set_results = []
