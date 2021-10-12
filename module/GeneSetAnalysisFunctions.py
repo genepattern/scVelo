@@ -143,7 +143,7 @@ def find_good_transitions(adata, ssgsea_result, threshold):
     all_positive_changes = all_set_results_df[all_set_results_df[5]>0] # Sets have a Positive Change
     all_positive_changes = all_positive_changes[all_positive_changes[4].astype(float)>0] # Ending Cluster Ends Positive
     all_positive_changes.columns = ["Gene_Set", "Start_Cluster", "Start_Cluster_ES", "End_Cluster", "End_Cluster_ES", "Cluster_ES_Delta"]
-    all_positive_changes.sort_values(by="Cluster_ES_Delta", ascending=True, inplace=True)
+    all_positive_changes.sort_values(by="Cluster_ES_Delta", ascending=False, inplace=True)
     all_negative_changes = all_set_results_df[all_set_results_df[5]<0]  # Sets have a Negative Change
     all_negative_changes = all_negative_changes[all_negative_changes[2].astype(float)>0]  # Starting Cluster Starts Positive
     all_negative_changes.columns = ["Gene_Set", "Start_Cluster", "Start_Cluster_ES", "End_Cluster", "End_Cluster_ES", "Cluster_ES_Delta"]
