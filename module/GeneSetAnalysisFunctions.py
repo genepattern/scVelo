@@ -172,7 +172,7 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold = 0.5, 
     for i in range(len(transition_values)):
         if silent == False:
             print("Gene set " + set + " was scored as a candidate for transition from Cluster " + str(np.where(set_transition_pass == transition_values[i])[0]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])) + ") to Cluster " + str(np.where(
-                set_transition_pass == transition_values[i])[1]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))])) + ") at PAGA transition confidence >" + str(threshold))
+                set_transition_pass == transition_values[i])[1]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))])) + ") at PAGA transition confidence >" + str(conf_threshold) + " and adjacency >" + str(adj_threshold))
         set_hits.append([set, str(np.where(set_transition_pass == transition_values[i])[0]).strip("[]"), str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])), str(np.where(set_transition_pass == transition_values[i])[1]).strip("[]"), str(
             float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))])), float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))]) - float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])])
     return(set_hits)
