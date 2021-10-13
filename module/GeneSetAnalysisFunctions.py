@@ -186,7 +186,7 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.5, ad
 
 
 # Using the results of find_candidate_transitions keep candidates that have good directionality
-def find_good_transitions(adata, ssgsea_result, conf_threshold=0.5, adj_threshold=0.5, silent=False):
+def find_good_transitions(adata, ssgsea_result, conf_threshold=0.25, adj_threshold=0.5, silent=False):
     import GeneSetAnalysisFunctions
     import pandas as pd
     ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
