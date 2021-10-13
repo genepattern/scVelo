@@ -53,25 +53,25 @@ def load_ssgsea_result(ssgsea_result):
 def detect_clusters(adata, silent=True):
     if "clusters" in list(adata.obs):
         cluster_type = "clusters"
-        if silent = False:
+        if silent == False:
             print(
                 "Found 'clusters' key in dataset")
     elif "clusters" not in list(adata.obs):
         if "leiden" in list(adata.obs):
             cluster_type = "leiden"
-            if silent = False:
+            if silent == False:
                 print(
                     "Found 'leiden' clustering in dataset.")
         elif "leiden" not in list(adata.obs):
             if "louvain" in list(adata.obs):
                 cluster_type = "louvain"
-                if silent = False:
+                if silent == False:
                     print(
                         "Found 'louvain' clustering in dataset.")
             elif "louvain" not in list(adata.obs):
                 if "walktrap" in list(adata.obs):
                     cluster_type = "walktrap"
-                    if silent = False:
+                    if silent == False:
                         print(
                             "Found 'walktrap' clustering in dataset.")
                 else:
