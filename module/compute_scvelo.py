@@ -77,7 +77,7 @@ def main():
 
     if int(options.topgenes) == 0:
         print("Can't use '0' top genes so resetting to complete gene list. Using " +
-              str(len(adata.var)) + "genes.")
+              str(len(adata.var)) + " genes.")
         options.topgenes = len(adata.var)
 
     # Check if user wants to regenerate variable gene selection, or if it needs to be generated from scratch
