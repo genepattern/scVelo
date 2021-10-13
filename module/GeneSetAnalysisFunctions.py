@@ -109,7 +109,7 @@ def find_candidate_transitions(adata, ssgsea_result, set, threshold, silent=Fals
     ssgsea_cell_df = GeneSetAnalysisFunctions.adata_import_ssgsea_scores(
         adata, ssgsea_result)
     set_transition = GeneSetAnalysisFunctions.create_transition_matrix(
-        ssgsea_result, ssgsea_cell_df, set)
+        ssgsea_result, set)
     set_transition_pass = set_transition[paga_conf_df > float(threshold)]
     set_transition_pass_list = set_transition_pass.values.tolist()
     flat_set_transition_pass_list = [
