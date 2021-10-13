@@ -49,26 +49,31 @@ def load_ssgsea_result(ssgsea_result):
     ssgsea_df.index = ssgsea_df.index.droplevel(1)  # Drop gene descriptions
     return ssgsea_df
 
-def detect_clusters(adata):
+
+def detect_clusters(adata, silent=True):
     if "clusters" in list(adata.obs):
         cluster_type = "clusters"
-        print(
-            "Found 'clusters' key in dataset")
+        if silent = False:
+            print(
+                "Found 'clusters' key in dataset")
     elif "clusters" not in list(adata.obs):
         if "leiden" in list(adata.obs):
             cluster_type = "leiden"
-            print(
-                "Found 'leiden' clustering in dataset.")
+            if silent = False:
+                print(
+                    "Found 'leiden' clustering in dataset.")
         elif "leiden" not in list(adata.obs):
             if "louvain" in list(adata.obs):
                 cluster_type = "louvain"
-                print(
-                    "Found 'louvain' clustering in dataset.")
+                if silent = False:
+                    print(
+                        "Found 'louvain' clustering in dataset.")
             elif "louvain" not in list(adata.obs):
                 if "walktrap" in list(adata.obs):
                     cluster_type = "walktrap"
-                    print(
-                        "Found 'walktrap' clustering in dataset.")
+                    if silent = False:
+                        print(
+                            "Found 'walktrap' clustering in dataset.")
                 else:
                     print("No clustering found in the dataset.")
                     sys.exit(1)
@@ -135,7 +140,7 @@ def create_transition_matrix(ssgsea_result, set):
 
 
 # Take the pairwise deltas from create_transition_matrix and screen out invalid transitions using the PAGA matrix as a mask then apply thresholding criteria
-def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold = 0.5, adj_threshold = 0.5, silent=False):
+def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.5, adj_threshold=0.5, silent=False):
     import GeneSetAnalysisFunctions
     import numpy as np
     import pandas as pd
@@ -144,14 +149,16 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold = 0.5, 
     # connectivities confidence
     paga_conf_df = scv.get_df(
         adata, 'paga/transitions_confidence', precision=2).T
-    paga_adj_df = scv.get_df(adata, 'paga/connectivities', precision=2).T # connectivities adjacency
+    # connectivities adjacency
+    paga_adj_df = scv.get_df(adata, 'paga/connectivities', precision=2).T
     # paga_tree_df = scv.get_df(adata, 'paga/connectivities_tree', precision=2).T # connectivities subtree
     cluster_key = GeneSetAnalysisFunctions.detect_clusters(adata)
     ssgsea_cell_df = GeneSetAnalysisFunctions.adata_import_ssgsea_scores(
         adata, cluster_key, ssgsea_result)
     set_transition = GeneSetAnalysisFunctions.create_transition_matrix(
         ssgsea_result, set)
-    set_transition_pass = set_transition[paga_conf_df[paga_adj_df > float(adj_threshold) ] > float(conf_threshold)]
+    set_transition_pass = set_transition[paga_conf_df[paga_adj_df > float(
+        adj_threshold)] > float(conf_threshold)]
     set_transition_pass_list = set_transition_pass.values.tolist()
     flat_set_transition_pass_list = [
         item for sublist in set_transition_pass_list for item in sublist if math.isnan(item) == False]
@@ -179,7 +186,7 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold = 0.5, 
 
 
 # Using the results of find_candidate_transitions keep candidates that have good directionality
-def find_good_transitions(adata, ssgsea_result, conf_threshold = 0.5, adj_threshold = 0.5, silent=False):
+def find_good_transitions(adata, ssgsea_result, conf_threshold=0.5, adj_threshold=0.5, silent=False):
     import GeneSetAnalysisFunctions
     import pandas as pd
     ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
@@ -187,7 +194,7 @@ def find_good_transitions(adata, ssgsea_result, conf_threshold = 0.5, adj_thresh
     all_set_results = []
     for set in all_sets:
         set_hits = GeneSetAnalysisFunctions.find_candidate_transitions(
-            adata=adata, ssgsea_result=ssgsea_result, set=set, conf_threshold = 0.5, adj_threshold = 0.5, silent=silent)
+            adata=adata, ssgsea_result=ssgsea_result, set=set, conf_threshold=0.5, adj_threshold=0.5, silent=silent)
         all_set_results.append(set_hits)
     all_set_results_flat = [
         item for sublist in all_set_results for item in sublist]
