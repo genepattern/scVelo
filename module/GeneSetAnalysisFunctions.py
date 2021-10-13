@@ -3,40 +3,44 @@
 # Commands to easily work with these functions
 # import sys, importlib
 # sys.path.insert(1, '/Users/acastanza/github/scVelo.ComputeVelocity/module')
+# import anndata as ad
+# import GeneSetAnalysisFunctions
 # importlib.reload(GeneSetAnalysisFunctions)
+# adata = ad.read_h5ad(options.input_file)
 
 # Convert to Gene.By.Sample.Score.Matrix
-def velocity_score_to_gct(adata, cluster_out, outname):
+def velocity_score_to_gct(adata, outkey='rank_velocity_genes', cluster_out, outname):
     import re
     import numpy as np
     import pandas as pd
     unique_values = set()
-    for col in scv.DataFrame(adata.uns['rank_velocity_genes']['names']):
+    for col in scv.DataFrame(adata.uns[outkey]['names']):
         unique_values.update(scv.DataFrame(
-            adata.uns['rank_velocity_genes']['names'])[col])
+            adata.uns[outkey]['names'])[col])
     unique_values = list(unique_values)
     unique_values.sort()
 
     gene_by_cluster = pd.DataFrame(columns=scv.DataFrame(
-        adata.uns['rank_velocity_genes']['names']).columns, index=unique_values)
-    for col in scv.DataFrame(adata.uns['rank_velocity_genes']['names']):
-        gene_by_cluster[col] = list(scv.DataFrame(adata.uns['rank_velocity_genes']['scores'])[
-            col][np.argsort(scv.DataFrame(adata.uns['rank_velocity_genes']['names'])[col].values)])
+        adata.uns[outkey]['names']).columns, index=unique_values)
+    for col in scv.DataFrame(adata.uns[outkey]['names']):
+        gene_by_cluster[col] = list(scv.DataFrame(adata.uns[outkey]['scores'])[
+            col][np.argsort(scv.DataFrame(adata.uns[outkey]['names'])[col].values)])
     gene_by_cluster.index.name = "NAME"
     gene_by_cluster.index = gene_by_cluster.index.str.replace(
         '\\..*', '', regex=True)
     gene_by_cluster.insert(loc=0, column='Description', value="NA")
-    text_file = open(outname + "_velocity_gene_scores_by_" +
+    text_file = open(outname + "_" + outkey + "_by_" +
                      cluster_out + ".gct", "w")
     text_file.write('#1.2\n')
     text_file.write(str(len(gene_by_cluster)) + "\t" +
                     str(len(gene_by_cluster.columns) - 1) + "\n")
     text_file.close()
-    gene_by_cluster.to_csv(outname + "_velocity_gene_scores_by_" +
+    gene_by_cluster.to_csv(outname + "_" + outkey + "_by_" +
                            cluster_out + ".gct", sep="\t", mode='a')
 
 
 def load_ssgsea_result(ssgsea_result):
+    import pandas as pd
     ssgsea_df = pd.read_csv(ssgsea_result, sep='\t', header=2, index_col=[
                             0, 1], skip_blank_lines=True)
     ssgsea_df.index = ssgsea_df.index.droplevel(1)  # Drop gene descriptions
@@ -145,6 +149,7 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold = 0.5 ,
 # Using the results of find_candidate_transitions keep candidates that have good directionality
 def find_good_transitions(adata, ssgsea_result, threshold, silent=False):
     import GeneSetAnalysisFunctions
+    import pandas as pd
     ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
     all_sets = ssgsea_raw_df.index.to_list()
     all_set_results = []
