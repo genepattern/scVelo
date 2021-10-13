@@ -105,8 +105,8 @@ def find_candidate_transitions(adata, ssgsea_result, set, threshold, silent=Fals
     # connectivities confidence
     paga_conf_df = scv.get_df(
         adata, 'paga/transitions_confidence', precision=2).T
-    # paga_adj_df = scv.get_df(adata, 'paga/connectivities') # , precision=2).T # connectivities adjacency
-    # paga_tree_df = scv.get_df(adata, 'paga/connectivities_tree') #, precision=2).T # connectivities subtree
+    # paga_adj_df = scv.get_df(adata, 'paga/connectivities', precision=2).T # connectivities adjacency
+    # paga_tree_df = scv.get_df(adata, 'paga/connectivities_tree', precision=2).T # connectivities subtree
     ssgsea_cell_df = GeneSetAnalysisFunctions.adata_import_ssgsea_scores(
         adata, ssgsea_result)
     set_transition = GeneSetAnalysisFunctions.create_transition_matrix(
