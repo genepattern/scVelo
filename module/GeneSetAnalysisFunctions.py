@@ -218,10 +218,3 @@ def find_good_transitions(adata, ssgsea_result, conf_threshold=0.25, adj_thresho
     filtered_set_hits = all_positive_changes.append(all_negative_changes)
     filtered_set_hits.set_index("Gene_Set", inplace=True)
     return(filtered_set_hits)
-
-# Get the two clusters latent time and cor() latent time with the clusters ES's. for PAGA transitions, (then compute threholds?)
-# time_and_cluster_per_cell = adata.obs[["leiden","velocity_pseudotime"]]
-# clusters = list(set(time_and_cluster_per_cell["leiden"]))
-# time_per_cluster = []
-# for cluster in clusters:
-#     time_per_cluster.append(time_and_cluster_per_cell["velocity_pseudotime"][time_and_cluster_per_cell["leiden"]==cluster].mean())
