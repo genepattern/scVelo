@@ -9,7 +9,7 @@
 # adata = ad.read_h5ad(options.input_file)
 
 # Convert to Gene.By.Sample.Score.Matrix
-def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"):
+def velocity_score_to_gct(adata, outkey='ranked_velocity_genes', outname="Dataset"):
     import re
     import numpy as np
     import pandas as pd
@@ -212,3 +212,8 @@ def find_good_transitions(adata, ssgsea_result, threshold, silent=False):
     return(all_filtered_changes)
 
 # Get the two clusters latent time and cor() latent time with the clusters ES's. for PAGA transitions, (then compute threholds?)
+# time_and_cluster_per_cell = adata.obs[["leiden","velocity_pseudotime"]]
+# clusters = list(set(time_and_cluster_per_cell["leiden"]))
+# time_per_cluster = []
+# for cluster in clusters:
+#     time_per_cluster.append(time_and_cluster_per_cell["velocity_pseudotime"][time_and_cluster_per_cell["leiden"]==cluster].mean())
