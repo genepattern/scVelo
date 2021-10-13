@@ -42,6 +42,7 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"
 
 
 def load_ssgsea_result(ssgsea_result):
+    import sys
     import pandas as pd
     ssgsea_df = pd.read_csv(ssgsea_result, sep='\t', header=2, index_col=[
                             0, 1], skip_blank_lines=True)
@@ -52,28 +53,25 @@ def detect_clusters(adata):
     if "clusters" in list(adata.obs):
         cluster_type = "clusters"
         print(
-            "Found 'clusters' key in dataset. We'll use this for plots and any differential kinetics.")
+            "Found 'clusters' key in dataset")
     elif "clusters" not in list(adata.obs):
         if "leiden" in list(adata.obs):
             cluster_type = "leiden"
             print(
-                "Found 'leiden' clustering in dataset. We'll use this for plots and any differential kinetics.")
+                "Found 'leiden' clustering in dataset.")
         elif "leiden" not in list(adata.obs):
             if "louvain" in list(adata.obs):
                 cluster_type = "louvain"
                 print(
-                    "Found 'louvain' clustering in dataset. We'll use this for plots and any differential kinetics.")
+                    "Found 'louvain' clustering in dataset.")
             elif "louvain" not in list(adata.obs):
                 if "walktrap" in list(adata.obs):
                     cluster_type = "walktrap"
                     print(
-                        "Found 'walktrap' clustering in dataset. We'll use this for plots and any differential kinetics.")
+                        "Found 'walktrap' clustering in dataset.")
                 else:
-                    print(
-                        "Didn't find any clustering in dataset, clustering data using method: 'leiden'.\nWe'll use this for plots and any differential kinetics.")
-                    sc.tl.leiden(adata, resolution=float(
-                        options.resolution))
-                    cluster_type = "leiden"
+                    print("No clustering found in the dataset.")
+                    sys.exit(1)
     return cluster_type
 
 
