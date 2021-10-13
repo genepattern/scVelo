@@ -6,7 +6,6 @@ import shutil
 import warnings
 from optparse import OptionParser
 
-import anndata
 import anndata as ad
 import scanpy as sc
 import numpy as np
@@ -62,7 +61,7 @@ def main():
 
     options = ap.parse_args()
 
-    adata = anndata.read_h5ad(options.input_file)
+    adata = ad.read_h5ad(options.input_file)
 
     scv.settings.figdir = "./figures"
 
