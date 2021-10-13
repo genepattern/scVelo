@@ -73,13 +73,12 @@ def ssgsea_plot_hits(adata, set_hits, ssgsea_result, basis, clusters, outname, f
 
 
 # Calculate the Gene Set ES Delta pairwise for every set
-def create_transition_matrix(ssgsea_result, ssgsea_cell_df, set):
+def create_transition_matrix(ssgsea_result, set):
     import GeneSetAnalysisFunctions
     import sys
     import pandas as pd
     ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
-    # If we get this information from ssgsea_result, then we don't need the ssgsea_cell_df, just need the unique sets from _raw_df
-    ssgsea_sets = list(ssgsea_cell_df.columns)
+    ssgsea_sets = list(ssgsea_raw_df.index)
     set_transition = pd.DataFrame(
         columns=ssgsea_raw_df.columns, index=ssgsea_raw_df.columns)
     if len(np.where(ssgsea_raw_df.index == set)) == 1:
@@ -170,3 +169,5 @@ def find_good_transitions(adata, ssgsea_result, threshold, silent=False):
     all_filtered_changes = all_positive_changes.append(all_negative_changes)
     all_filtered_changes.set_index("Gene_Set", inplace=True)
     return(all_filtered_changes)
+
+# Get the two clusters latent time and cor() latent time with the clusters ES's. for PAGA transitions, (then compute threholds?)
