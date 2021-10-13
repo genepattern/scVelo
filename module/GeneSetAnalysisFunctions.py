@@ -104,7 +104,7 @@ def ssgsea_plot_all(adata, ssgsea_result, basis, outname, format):  # Plotting
                                          set, cluster_key], color_map='seismic', save=set + "_" + outname + "_embedding." + format)
 
 
-def ssgsea_plot_hits(adata=adata, filtered_set_hits=filtered_set_hits, ssgsea_result=ssgsea_result, basis=basis, outname="dataset", format="png"):  # Plotting
+def ssgsea_plot_hits(adata, filtered_set_hits, ssgsea_result, basis, outname="dataset", format="png"):  # Plotting
     import GeneSetAnalysisFunctions
     import scvelo as scv
     cluster_key = GeneSetAnalysisFunctions.detect_clusters(adata)
