@@ -9,7 +9,7 @@
 # adata = ad.read_h5ad(options.input_file)
 
 # Convert to Gene.By.Sample.Score.Matrix
-def velocity_score_to_gct(adata, outkey='rank_velocity_genes', cluster_out, outname):
+def velocity_score_to_gct(adata, outkey='rank_velocity_genes', cluster_out=, outname=):
     import re
     import numpy as np
     import pandas as pd
@@ -46,39 +46,69 @@ def load_ssgsea_result(ssgsea_result):
     ssgsea_df.index = ssgsea_df.index.droplevel(1)  # Drop gene descriptions
     return ssgsea_df
 
+def detect_clusters(adata):
+    if "clusters" in list(adata.obs):
+        cluster_type = "clusters"
+        print(
+            "Found 'clusters' key in dataset. We'll use this for plots and any differential kinetics.")
+    elif "clusters" not in list(adata.obs):
+        if "leiden" in list(adata.obs):
+            cluster_type = "leiden"
+            print(
+                "Found 'leiden' clustering in dataset. We'll use this for plots and any differential kinetics.")
+        elif "leiden" not in list(adata.obs):
+            if "louvain" in list(adata.obs):
+                cluster_type = "louvain"
+                print(
+                    "Found 'louvain' clustering in dataset. We'll use this for plots and any differential kinetics.")
+            elif "louvain" not in list(adata.obs):
+                if "walktrap" in list(adata.obs):
+                    cluster_type = "walktrap"
+                    print(
+                        "Found 'walktrap' clustering in dataset. We'll use this for plots and any differential kinetics.")
+                else:
+                    print(
+                        "Didn't find any clustering in dataset, clustering data using method: 'leiden'.\nWe'll use this for plots and any differential kinetics.")
+                    sc.tl.leiden(adata, resolution=float(
+                        options.resolution))
+                    cluster_type = "leiden"
+    return cluster_type
+
 
 # Add Clusterwise ssGSEA scores to adata.obs as a cell level score for plotting
-def adata_import_ssgsea_scores(adata, ssgsea_result):
+def adata_import_ssgsea_scores(adata, cluster_key, ssgsea_result):
     import GeneSetAnalysisFunctions
-    ssgsea_df = load_ssgsea_result(ssgsea_result)
+    ssgsea_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
     ssgsea_cell_df = ssgsea_df.transpose()
-    ssgsea_cell_df = ssgsea_cell_df.reindex(list(adata.obs['leiden']))
+    ssgsea_cell_df = ssgsea_cell_df.reindex(list(adata.obs[cluster_key]))
     ssgsea_cell_df.index = range(len(ssgsea_cell_df.index))
     ssgsea_cell_df = ssgsea_cell_df.set_index(adata.obs.index)
     adata.obs[ssgsea_cell_df.columns] = ssgsea_cell_df[ssgsea_cell_df.columns]
     return ssgsea_cell_df
 
 
-def ssgsea_plot_all(adata, ssgsea_result, basis, clusters, outname, format):  # Plotting
+def ssgsea_plot_all(adata, ssgsea_result, basis, outname, format):  # Plotting
     import GeneSetAnalysisFunctions
     import scvelo as scv
+    cluster_key = GeneSetAnalysisFunctions.detect_clusters(adata)
     ssgsea_cell_df = GeneSetAnalysisFunctions.adata_import_ssgsea_scores(
-        adata, ssgsea_result)
+        adata, cluster_key, ssgsea_result)
     ssgsea_sets = list(ssgsea_cell_df.columns)
     for set in ssgsea_sets:
         scv.pl.velocity_embedding_stream(adata, basis=basis, color=[
-                                         set, clusters], color_map='seismic', save=set + "_" + outname + "_embedding." + format)
+                                         set, cluster_key], color_map='seismic', save=set + "_" + outname + "_embedding." + format)
 
 
-def ssgsea_plot_hits(adata, set_hits, ssgsea_result, basis, clusters, outname, format):  # Plotting
+def ssgsea_plot_hits(adata, set_hits, ssgsea_result, basis, outname, format):  # Plotting
     import GeneSetAnalysisFunctions
     import scvelo as scv
+    cluster_key = GeneSetAnalysisFunctions.detect_clusters(adata)
     ssgsea_cell_df = GeneSetAnalysisFunctions.adata_import_ssgsea_scores(
-        adata, ssgsea_result)
+        adata, cluster_key, ssgsea_result)
     for i in range(len(set_hits)):
         set = str(set_hits.index[i])
         scv.pl.velocity_embedding_stream(adata, basis=basis, color=[
-            set, clusters], color_map='seismic', add_outline=[set_hits.iloc[i][0], set_hits.iloc[i][2]], save=set + "_Cluster_" + str(set_hits.iloc[i][0]) + "_to_" + str(set_hits.iloc[i][2]) + "_" + outname + "_embedding." + format)
+            set, cluster_key], color_map='seismic', add_outline=[set_hits.iloc[i][0], set_hits.iloc[i][2]], save=set + "_Cluster_" + str(set_hits.iloc[i][0]) + "_to_" + str(set_hits.iloc[i][2]) + "_" + outname + "_embedding." + format)
 
 
 # Calculate the Gene Set ES Delta pairwise for every set
@@ -115,8 +145,9 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold = 0.5 ,
         adata, 'paga/transitions_confidence', precision=2).T
     paga_adj_df = scv.get_df(adata, 'paga/connectivities', precision=2).T # connectivities adjacency
     # paga_tree_df = scv.get_df(adata, 'paga/connectivities_tree', precision=2).T # connectivities subtree
+    cluster_key = GeneSetAnalysisFunctions.detect_clusters(adata)
     ssgsea_cell_df = GeneSetAnalysisFunctions.adata_import_ssgsea_scores(
-        adata, ssgsea_result)
+        adata, cluster_key, ssgsea_result)
     set_transition = GeneSetAnalysisFunctions.create_transition_matrix(
         ssgsea_result, set)
     set_transition_pass = set_transition[paga_conf_df[paga_adj_df > float(adj_threshold) ] > float(conf_threshold)]
