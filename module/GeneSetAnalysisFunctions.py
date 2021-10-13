@@ -9,17 +9,17 @@
 # adata = ad.read_h5ad(options.input_file)
 
 # Convert to Gene.By.Sample.Score.Matrix
-def velocity_score_to_gct(adata, outkey='rank_velocity_genes', cluster_out=, outname=):
+def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"):
     import re
     import numpy as np
     import pandas as pd
+    import GeneSetAnalysisFunctions
     unique_values = set()
     for col in scv.DataFrame(adata.uns[outkey]['names']):
         unique_values.update(scv.DataFrame(
             adata.uns[outkey]['names'])[col])
     unique_values = list(unique_values)
     unique_values.sort()
-
     gene_by_cluster = pd.DataFrame(columns=scv.DataFrame(
         adata.uns[outkey]['names']).columns, index=unique_values)
     for col in scv.DataFrame(adata.uns[outkey]['names']):
@@ -28,15 +28,16 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', cluster_out=, out
     gene_by_cluster.index.name = "NAME"
     gene_by_cluster.index = gene_by_cluster.index.str.replace(
         '\\..*', '', regex=True)
+    cluster_key = GeneSetAnalysisFunctions.detect_clusters(adata)
     gene_by_cluster.insert(loc=0, column='Description', value="NA")
     text_file = open(outname + "_" + outkey + "_by_" +
-                     cluster_out + ".gct", "w")
+                     cluster_key + "_clusters.gct", "w")
     text_file.write('#1.2\n')
     text_file.write(str(len(gene_by_cluster)) + "\t" +
                     str(len(gene_by_cluster.columns) - 1) + "\n")
     text_file.close()
     gene_by_cluster.to_csv(outname + "_" + outkey + "_by_" +
-                           cluster_out + ".gct", sep="\t", mode='a')
+                           cluster_key + "_clusters.gct", sep="\t", mode='a')
 
 
 def load_ssgsea_result(ssgsea_result):
