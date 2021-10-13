@@ -1,5 +1,10 @@
 # Functions to Enable Downstream Analysis of Gene Sets for Single Cell Datasets
 
+# Commands to easily work with these functions
+# import sys, importlib
+# sys.path.insert(1, '/Users/acastanza/github/scVelo.ComputeVelocity/module')
+# importlib.reload(GeneSetAnalysisFunctions)
+
 # Convert to Gene.By.Sample.Score.Matrix
 def velocity_score_to_gct(adata, cluster_out, outname):
     import re
