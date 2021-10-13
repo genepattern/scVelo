@@ -113,7 +113,7 @@ def ssgsea_plot_hits(adata, filtered_set_hits, ssgsea_result, basis, outname, fo
     for i in range(len(filtered_set_hits)):
         set = str(filtered_set_hits.index[i])
         scv.pl.velocity_embedding_stream(adata, basis=basis, color=[
-            set, cluster_key], color_map='seismic', add_outline=[filtered_set_hits.iloc[i][0], filtered_set_hits.iloc[i][2]], save=set + "_Cluster_" + str(filtered_set_hits.iloc[i][0]) + "_to_" + str(filtered_set_hits.iloc[i][2]) + "_" + outname + "_embedding." + format)
+            set, cluster_key], color_map='seismic', add_outline=[filtered_set_hits.iloc[i][0], filtered_set_hits.iloc[i][2]], save= outname + "_" + set + "_Cluster_" + str(filtered_set_hits.iloc[i][0]) + "_to_" + str(filtered_set_hits.iloc[i][2]) + "_" + basis + "_embedding." + format)
 
 
 # Calculate the Gene Set ES Delta pairwise for every set
