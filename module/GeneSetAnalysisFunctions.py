@@ -104,16 +104,16 @@ def ssgsea_plot_all(adata, ssgsea_result, basis, outname, format):  # Plotting
                                          set, cluster_key], color_map='seismic', save=set + "_" + outname + "_embedding." + format)
 
 
-def ssgsea_plot_hits(adata, set_hits, ssgsea_result, basis, outname, format):  # Plotting
+def ssgsea_plot_hits(adata, filtered_set_hits, ssgsea_result, basis, outname, format):  # Plotting
     import GeneSetAnalysisFunctions
     import scvelo as scv
     cluster_key = GeneSetAnalysisFunctions.detect_clusters(adata)
     ssgsea_cell_df = GeneSetAnalysisFunctions.adata_import_ssgsea_scores(
         adata, cluster_key, ssgsea_result)
-    for i in range(len(set_hits)):
-        set = str(set_hits.index[i])
+    for i in range(len(filtered_set_hits)):
+        set = str(filtered_set_hits.index[i])
         scv.pl.velocity_embedding_stream(adata, basis=basis, color=[
-            set, cluster_key], color_map='seismic', add_outline=[set_hits.iloc[i][0], set_hits.iloc[i][2]], save=set + "_Cluster_" + str(set_hits.iloc[i][0]) + "_to_" + str(set_hits.iloc[i][2]) + "_" + outname + "_embedding." + format)
+            set, cluster_key], color_map='seismic', add_outline=[filtered_set_hits.iloc[i][0], filtered_set_hits.iloc[i][2]], save=set + "_Cluster_" + str(filtered_set_hits.iloc[i][0]) + "_to_" + str(filtered_set_hits.iloc[i][2]) + "_" + outname + "_embedding." + format)
 
 
 # Calculate the Gene Set ES Delta pairwise for every set
@@ -215,9 +215,9 @@ def find_good_transitions(adata, ssgsea_result, conf_threshold=0.5, adj_threshol
                                     "Start_Cluster_ES", "End_Cluster", "End_Cluster_ES", "Cluster_ES_Delta"]
     all_negative_changes.sort_values(
         by="Cluster_ES_Delta", ascending=False, inplace=True)
-    all_filtered_changes = all_positive_changes.append(all_negative_changes)
-    all_filtered_changes.set_index("Gene_Set", inplace=True)
-    return(all_filtered_changes)
+    filtered_set_hits = all_positive_changes.append(all_negative_changes)
+    filtered_set_hits.set_index("Gene_Set", inplace=True)
+    return(filtered_set_hits)
 
 # Get the two clusters latent time and cor() latent time with the clusters ES's. for PAGA transitions, (then compute threholds?)
 # time_and_cluster_per_cell = adata.obs[["leiden","velocity_pseudotime"]]
