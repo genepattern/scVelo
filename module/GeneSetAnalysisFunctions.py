@@ -95,7 +95,7 @@ def create_transition_matrix(ssgsea_result, set):
 
 
 # Take the pairwise deltas from create_transition_matrix and screen out invalid transitions using the PAGA matrix as a mask then apply thresholding criteria
-def find_candidate_transitions(adata, ssgsea_result, set, threshold, silent=False):
+def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold = 0.5 , adj_threshold = 0.5, silent=False):
     import GeneSetAnalysisFunctions
     import numpy as np
     import pandas as pd
@@ -104,13 +104,13 @@ def find_candidate_transitions(adata, ssgsea_result, set, threshold, silent=Fals
     # connectivities confidence
     paga_conf_df = scv.get_df(
         adata, 'paga/transitions_confidence', precision=2).T
-    # paga_adj_df = scv.get_df(adata, 'paga/connectivities', precision=2).T # connectivities adjacency
+    paga_adj_df = scv.get_df(adata, 'paga/connectivities', precision=2).T # connectivities adjacency
     # paga_tree_df = scv.get_df(adata, 'paga/connectivities_tree', precision=2).T # connectivities subtree
     ssgsea_cell_df = GeneSetAnalysisFunctions.adata_import_ssgsea_scores(
         adata, ssgsea_result)
     set_transition = GeneSetAnalysisFunctions.create_transition_matrix(
         ssgsea_result, set)
-    set_transition_pass = set_transition[paga_conf_df > float(threshold)]
+    set_transition_pass = set_transition[paga_conf_df[paga_adj_df > float(conf_threshold) ] > float(threshold)]
     set_transition_pass_list = set_transition_pass.values.tolist()
     flat_set_transition_pass_list = [
         item for sublist in set_transition_pass_list for item in sublist if math.isnan(item) == False]
