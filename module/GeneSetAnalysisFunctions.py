@@ -14,6 +14,7 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"
     import numpy as np
     import pandas as pd
     import GeneSetAnalysisFunctions
+    import scvelo as scv
     unique_values = set()
     for col in scv.DataFrame(adata.uns[outkey]['names']):
         unique_values.update(scv.DataFrame(
