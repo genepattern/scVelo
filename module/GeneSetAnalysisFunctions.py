@@ -116,6 +116,7 @@ def create_transition_matrix(ssgsea_result, set):
     import GeneSetAnalysisFunctions
     import sys
     import pandas as pd
+    import numpy as np
     ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
     ssgsea_sets = list(ssgsea_raw_df.index)
     set_transition = pd.DataFrame(
