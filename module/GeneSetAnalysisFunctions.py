@@ -9,7 +9,7 @@
 # adata = ad.read_h5ad(options.input_file)
 
 # Convert to Gene.By.Sample.Score.Matrix
-def velocity_score_to_gct(adata, outkey='ranked_velocity_genes', outname="Dataset"):
+def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"):
     import re
     import numpy as np
     import pandas as pd
