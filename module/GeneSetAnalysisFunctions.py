@@ -15,6 +15,7 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"
     import pandas as pd
     import GeneSetAnalysisFunctions
     import scvelo as scv
+    # outkey='rank_velocity_genes' and outkey='rank_genes_groups' both work
     unique_values = set()
     for col in scv.DataFrame(adata.uns[outkey]['names']):
         unique_values.update(scv.DataFrame(
@@ -39,7 +40,9 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"
     text_file.close()
     gene_by_cluster.to_csv(outname + "_" + outkey + "_by_" +
                            cluster_key + "_clusters.gct", sep="\t", mode='a')
+    return(gene_by_cluster.drop(labels="Description", axis=1))
 
+#sumtest=Dataset_rank_velocity_genes.reindex(Dataset_rank_genes_groups.index).fillna(0) + Dataset_rank_genes_groups
 
 def load_ssgsea_result(ssgsea_result):
     import sys
@@ -218,3 +221,17 @@ def find_good_transitions(adata, ssgsea_result, conf_threshold=0.25, adj_thresho
     filtered_set_hits = all_positive_changes.append(all_negative_changes)
     filtered_set_hits.set_index("Gene_Set", inplace=True)
     return(filtered_set_hits)
+
+# Get the two clusters latent time and cor() latent time with the clusters ES's. for PAGA transitions, (then compute threholds?)
+# import nympy as np
+# import scipy
+# time_and_cluster_per_cell = adata.obs[["leiden","velocity_pseudotime"]]
+# clusters = list(set(time_and_cluster_per_cell["leiden"]))
+# time_per_cluster = []
+# for cluster in clusters:
+#     time_per_cluster.append(time_and_cluster_per_cell["velocity_pseudotime"][time_and_cluster_per_cell["leiden"]==cluster].median())
+# cluster_times = dict(zip(clusters,time_per_cluster))
+# np.asarray([float(cluster_times.get("0")),float(cluster_times.get("1"))])
+# for i in range(len(filtered_set_hits)):
+#     set = str(filtered_set_hits.index[i])
+#  scipy.stats.pearsonr(np.asarray([float(cluster_times.get("0")),float(cluster_times.get("1"))]),np.array([float(filtered_set_hits.iat[0,1]),float(filtered_set_hits.iat[0,3])]))
