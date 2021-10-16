@@ -42,7 +42,7 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"
                            cluster_key + "_clusters.gct", sep="\t", mode='a')
     return(gene_by_cluster.drop(labels="Description", axis=1))
 
-#sumtest=Dataset_rank_velocity_genes.reindex(Dataset_rank_genes_groups.index).fillna(0) + Dataset_rank_genes_groups
+    #sumtest=Dataset_rank_velocity_genes.reindex(Dataset_rank_genes_groups.index).fillna(0) + Dataset_rank_genes_groups
 
 def load_ssgsea_result(ssgsea_result):
     import sys
