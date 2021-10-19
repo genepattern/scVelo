@@ -156,8 +156,9 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.5, ad
     paga_adj_df = scv.get_df(adata, 'paga/connectivities', precision=2).T
     # paga_tree_df = scv.get_df(adata, 'paga/connectivities_tree', precision=2).T # connectivities subtree
     cluster_key = GeneSetAnalysisFunctions.detect_clusters(adata)
-    ssgsea_cell_df = GeneSetAnalysisFunctions.adata_import_ssgsea_scores(
-        adata, cluster_key, ssgsea_result)
+    if set not in adata.obs.columns:
+        ssgsea_cell_df = GeneSetAnalysisFunctions.adata_import_ssgsea_scores(
+            adata, cluster_key, ssgsea_result)
     set_transition = GeneSetAnalysisFunctions.create_transition_matrix(
         ssgsea_result, set)
     set_transition_pass = set_transition[paga_conf_df[paga_adj_df > float(
