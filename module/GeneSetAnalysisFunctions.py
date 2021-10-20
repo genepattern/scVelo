@@ -171,32 +171,23 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.5, ad
     flat_set_transition_full_list = list(map(abs,flat_set_transition_full_list))
     set_transition_pass = set_transition[paga_conf_df[paga_adj_df > float(
         adj_threshold)] > float(conf_threshold)]
-    set_transition_pass = set_transition_pass.round(4 #This doesn't round properly because python is a garbage language
-    set_transition_pass_list = set_transition_pass.values.tolist()
-    flat_set_transition_pass_list = [
-        item for sublist in set_transition_pass_list for item in sublist if math.isnan(item) == False]
-    flat_set_transition_pass_list_abs = list(map(abs,flat_set_transition_pass_list))
+    set_transition_pass_abs = set_transition_pass.abs().copy()
     mean = np.mean(flat_set_transition_full_list)
     standard_deviation = np.std(flat_set_transition_full_list)
-    distance_from_mean = abs(flat_set_transition_pass_list_abs - mean)
+    distance_from_mean = abs(set_transition_pass_abs - mean)
     max_deviations = 2
     filtered = np.logical_and(distance_from_mean < (
         max_deviations * standard_deviation), distance_from_mean > (1 * standard_deviation))
-    filtered_locs = list(np.where(filtered)[0])
-    transition_values = np.array(
-        flat_set_transition_pass_list)[filtered_locs]
-    transition_values = np.around(transition_values,4)
-    transition_values = list(transition_values)
+    filtered_locs = list(np.where(filtered))
+    transition_locs = list(filtered[filtered==True].stack().index)
     ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
     test_set = ssgsea_raw_df.iloc[[
         int(np.where(ssgsea_raw_df.index == set)[0])]]
     set_hits = []
-    for i in range(len(transition_values)):
+    for i in range(len(transition_locs)):
         if silent == False:
-            print("Gene set " + set + " was scored as a candidate for transition from Cluster " + str(np.where(set_transition_pass == transition_values[i])[0]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])) + ") to Cluster " + str(np.where(
-                set_transition_pass == transition_values[i])[1]) + " (Enrichment Score: " + str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))])) + ") at PAGA transition confidence >" + str(conf_threshold) + " and adjacency >" + str(adj_threshold))
-        set_hits.append([set, str(np.where(set_transition_pass == transition_values[i])[0]).strip("[]"), str(float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])), str(np.where(set_transition_pass == transition_values[i])[1]).strip("[]"), str(
-            float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))])), float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[1]))]) - float(test_set[str(int(np.where(set_transition_pass == transition_values[i])[0]))])])
+            print("Gene set " + set + " was scored as a candidate for transition from Cluster " + str(transition_locs[i][0]) + " (Enrichment Score: " + str(test_set.loc[set,transition_locs[i][0]].round(2)) + ") to Cluster " + str(transition_locs[i][1]) + " (Enrichment Score: " + str(test_set.loc[set,transition_locs[i][1]].round(2)) + ") at PAGA transition confidence >" + str(conf_threshold) + " and adjacency >" + str(adj_threshold))
+        set_hits.append([set, str(transition_locs[i][0]), test_set.loc[set,transition_locs[i][0]], str(transition_locs[i][1]), test_set.loc[set,transition_locs[i][1]], test_set.loc[set,transition_locs[i][1]] - test_set.loc[set,transition_locs[i][0]]])
     return(set_hits)
 
 
