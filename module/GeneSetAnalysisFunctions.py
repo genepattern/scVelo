@@ -208,7 +208,7 @@ def find_good_transitions(adata, ssgsea_result, conf_threshold = 0.25, adj_thres
     all_set_results=[]
     for set in all_sets:
         set_hits=GeneSetAnalysisFunctions.find_candidate_transitions(
-            adata = adata, ssgsea_result = ssgsea_result, set = set, conf_threshold, adj_threshold, mode="extreme", silent = silent)
+            adata = adata, ssgsea_result = ssgsea_result, set = set, conf_threshold = conf_threshold, adj_threshold = adj_threshold, mode = mode, silent = silent)
         all_set_results.append(set_hits)
     all_set_results_flat=[
         item for sublist in all_set_results for item in sublist]
