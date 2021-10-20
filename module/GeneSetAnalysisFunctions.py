@@ -161,14 +161,19 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.5, ad
             adata, cluster_key, ssgsea_result)
     set_transition = GeneSetAnalysisFunctions.create_transition_matrix(
         ssgsea_result, set)
+    set_transition_full = set_transition.copy()
+    set_transition_full[:] = np.where(np.arange(set_transition_full.shape[0])[:,None] >= np.arange(set_transition_full.shape[1]),np.nan,set_transition_full)
+    set_transition_full_list = set_transition_full.values.tolist()
+    flat_set_transition_full_list = [
+        item for sublist in set_transition_full_list for item in sublist if math.isnan(item) == False]
     set_transition_pass = set_transition[paga_conf_df[paga_adj_df > float(
         adj_threshold)] > float(conf_threshold)]
     set_transition_pass_list = set_transition_pass.values.tolist()
     flat_set_transition_pass_list = [
         item for sublist in set_transition_pass_list for item in sublist if math.isnan(item) == False]
-    mean = np.mean(flat_set_transition_pass_list)
-    standard_deviation = np.std(flat_set_transition_pass_list)
-    distance_from_mean = abs(flat_set_transition_pass_list - mean)
+    mean = np.mean(flat_set_transition_full_list)
+    standard_deviation = np.std(flat_set_transition_full_list)
+    distance_from_mean = abs(flat_set_transition_full_list - mean)
     max_deviations = 2
     filtered = np.logical_and(distance_from_mean < (
         max_deviations * standard_deviation), distance_from_mean > (1 * standard_deviation))
