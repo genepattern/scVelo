@@ -181,7 +181,7 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.5, ad
 #    max_deviations = 2
 #    filtered = np.logical_and(distance_from_mean < (
 #        max_deviations * standard_deviation), distance_from_mean > (1 * standard_deviation))
-    filtered = distance_from_mean > (2 * standard_deviation))
+    filtered = distance_from_mean > (2 * standard_deviation)
     filtered_locs=list(np.where(filtered))
     transition_locs=list(filtered[filtered == True].stack().index)
     ssgsea_raw_df=GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
