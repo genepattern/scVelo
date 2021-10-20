@@ -146,7 +146,7 @@ def create_transition_matrix(ssgsea_result, set):
 
 
 # Take the pairwise deltas from create_transition_matrix and screen out invalid transitions using the PAGA matrix as a mask then apply thresholding criteria
-def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.5, adj_threshold=0.5, mode="extreme", silent=False):
+def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.25, adj_threshold=0.5, mode="extreme", silent=False):
     import GeneSetAnalysisFunctions
     import numpy as np
     import pandas as pd
@@ -208,7 +208,7 @@ def find_good_transitions(adata, ssgsea_result, conf_threshold = 0.25, adj_thres
     all_set_results=[]
     for set in all_sets:
         set_hits=GeneSetAnalysisFunctions.find_candidate_transitions(
-            adata = adata, ssgsea_result = ssgsea_result, set = set, conf_threshold = 0.5, adj_threshold = 0.5, mode="extreme", silent = silent)
+            adata = adata, ssgsea_result = ssgsea_result, set = set, conf_threshold, adj_threshold, mode="extreme", silent = silent)
         all_set_results.append(set_hits)
     all_set_results_flat=[
         item for sublist in all_set_results for item in sublist]
