@@ -7,6 +7,8 @@
 # import GeneSetAnalysisFunctions
 # importlib.reload(GeneSetAnalysisFunctions)
 # adata = ad.read_h5ad(options.input_file)
+# import matplotlib
+# matplotlib.use('Agg')
 
 # Convert to Gene.By.Sample.Score.Matrix
 def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"):
@@ -151,9 +153,9 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.5, ad
     import math
     # connectivities confidence
     paga_conf_df = scv.get_df(
-        adata, 'paga/transitions_confidence', precision=2).T
+        adata, 'paga/transitions_confidence', precision=4).T
     # connectivities adjacency
-    paga_adj_df = scv.get_df(adata, 'paga/connectivities', precision=2).T
+    paga_adj_df = scv.get_df(adata, 'paga/connectivities', precision=4).T
     # paga_tree_df = scv.get_df(adata, 'paga/connectivities_tree', precision=2).T # connectivities subtree
     cluster_key = GeneSetAnalysisFunctions.detect_clusters(adata)
     if set not in adata.obs.columns:
@@ -166,20 +168,24 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.5, ad
     set_transition_full_list = set_transition_full.values.tolist()
     flat_set_transition_full_list = [
         item for sublist in set_transition_full_list for item in sublist if math.isnan(item) == False]
+    flat_set_transition_full_list = list(map(abs,flat_set_transition_full_list))
     set_transition_pass = set_transition[paga_conf_df[paga_adj_df > float(
         adj_threshold)] > float(conf_threshold)]
+    set_transition_pass = set_transition_pass.round(4 #This doesn't round properly because python is a garbage language
     set_transition_pass_list = set_transition_pass.values.tolist()
     flat_set_transition_pass_list = [
         item for sublist in set_transition_pass_list for item in sublist if math.isnan(item) == False]
+    flat_set_transition_pass_list_abs = list(map(abs,flat_set_transition_pass_list))
     mean = np.mean(flat_set_transition_full_list)
     standard_deviation = np.std(flat_set_transition_full_list)
-    distance_from_mean = abs(flat_set_transition_full_list - mean)
+    distance_from_mean = abs(flat_set_transition_pass_list_abs - mean)
     max_deviations = 2
     filtered = np.logical_and(distance_from_mean < (
         max_deviations * standard_deviation), distance_from_mean > (1 * standard_deviation))
     filtered_locs = list(np.where(filtered)[0])
     transition_values = np.array(
         flat_set_transition_pass_list)[filtered_locs]
+    transition_values = np.around(transition_values,4)
     transition_values = list(transition_values)
     ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
     test_set = ssgsea_raw_df.iloc[[
