@@ -44,7 +44,8 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"
                            cluster_key + "_clusters.gct", sep="\t", mode='a')
     return(gene_by_cluster.drop(labels="Description", axis=1))
 
-    #sumtest=Dataset_rank_velocity_genes.reindex(Dataset_rank_genes_groups.index).fillna(0) + Dataset_rank_genes_groups
+    # sumtest=Dataset_rank_velocity_genes.reindex(Dataset_rank_genes_groups.index).fillna(0) + Dataset_rank_genes_groups
+
 
 def load_ssgsea_result(ssgsea_result):
     import sys
@@ -118,7 +119,7 @@ def ssgsea_plot_hits(adata, filtered_set_hits, ssgsea_result, basis, outname="da
     for i in range(len(filtered_set_hits)):
         set = str(filtered_set_hits.index[i])
         scv.pl.velocity_embedding_stream(adata, basis=basis, color=[
-            set, cluster_key], color_map='seismic', add_outline=[filtered_set_hits.iloc[i][0], filtered_set_hits.iloc[i][2]], save= outname + "_" + set + "_Cluster_" + str(filtered_set_hits.iloc[i][0]) + "_to_" + str(filtered_set_hits.iloc[i][2]) + "_" + basis + "_embedding." + format)
+            set, cluster_key], color_map='seismic', add_outline=[filtered_set_hits.iloc[i][0], filtered_set_hits.iloc[i][2]], save=outname + "_" + set + "_Cluster_" + str(filtered_set_hits.iloc[i][0]) + "_to_" + str(filtered_set_hits.iloc[i][2]) + "_" + basis + "_embedding." + format)
 
 
 # Calculate the Gene Set ES Delta pairwise for every set
@@ -164,45 +165,50 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.5, ad
     set_transition = GeneSetAnalysisFunctions.create_transition_matrix(
         ssgsea_result, set)
     set_transition_full = set_transition.copy()
-    set_transition_full[:] = np.where(np.arange(set_transition_full.shape[0])[:,None] >= np.arange(set_transition_full.shape[1]),np.nan,set_transition_full)
+    set_transition_full[:] = np.where(np.arange(set_transition_full.shape[0])[
+                                      :, None] >= np.arange(set_transition_full.shape[1]), np.nan, set_transition_full)
     set_transition_full_list = set_transition_full.values.tolist()
     flat_set_transition_full_list = [
         item for sublist in set_transition_full_list for item in sublist if math.isnan(item) == False]
-    flat_set_transition_full_list = list(map(abs,flat_set_transition_full_list))
+    flat_set_transition_full_list = list(
+        map(abs, flat_set_transition_full_list))
     set_transition_pass = set_transition[paga_conf_df[paga_adj_df > float(
         adj_threshold)] > float(conf_threshold)]
     set_transition_pass_abs = set_transition_pass.abs().copy()
     mean = np.mean(flat_set_transition_full_list)
     standard_deviation = np.std(flat_set_transition_full_list)
     distance_from_mean = abs(set_transition_pass_abs - mean)
-    max_deviations = 2
-    filtered = np.logical_and(distance_from_mean < (
-        max_deviations * standard_deviation), distance_from_mean > (1 * standard_deviation))
-    filtered_locs = list(np.where(filtered))
-    transition_locs = list(filtered[filtered==True].stack().index)
-    ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
-    test_set = ssgsea_raw_df.iloc[[
+#    max_deviations = 2
+#    filtered = np.logical_and(distance_from_mean < (
+#        max_deviations * standard_deviation), distance_from_mean > (1 * standard_deviation))
+    filtered = distance_from_mean > (2 * standard_deviation))
+    filtered_locs=list(np.where(filtered))
+    transition_locs=list(filtered[filtered == True].stack().index)
+    ssgsea_raw_df=GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
+    test_set=ssgsea_raw_df.iloc[[
         int(np.where(ssgsea_raw_df.index == set)[0])]]
-    set_hits = []
+    set_hits=[]
     for i in range(len(transition_locs)):
         if silent == False:
-            print("Gene set " + set + " was scored as a candidate for transition from Cluster " + str(transition_locs[i][0]) + " (Enrichment Score: " + str(test_set.loc[set,transition_locs[i][0]].round(2)) + ") to Cluster " + str(transition_locs[i][1]) + " (Enrichment Score: " + str(test_set.loc[set,transition_locs[i][1]].round(2)) + ") at PAGA transition confidence >" + str(conf_threshold) + " and adjacency >" + str(adj_threshold))
-        set_hits.append([set, str(transition_locs[i][0]), test_set.loc[set,transition_locs[i][0]], str(transition_locs[i][1]), test_set.loc[set,transition_locs[i][1]], test_set.loc[set,transition_locs[i][1]] - test_set.loc[set,transition_locs[i][0]]])
+            print("Gene set " + set + " was scored as a candidate for transition from Cluster " + str(transition_locs[i][0]) + " (Enrichment Score: " + str(test_set.loc[set, transition_locs[i][0]].round(2)) + ") to Cluster " + str(
+                transition_locs[i][1]) + " (Enrichment Score: " + str(test_set.loc[set, transition_locs[i][1]].round(2)) + ") at PAGA transition confidence >" + str(conf_threshold) + " and adjacency >" + str(adj_threshold))
+        set_hits.append([set, str(transition_locs[i][0]), test_set.loc[set, transition_locs[i][0]], str(transition_locs[i][1]),
+                        test_set.loc[set, transition_locs[i][1]], test_set.loc[set, transition_locs[i][1]] - test_set.loc[set, transition_locs[i][0]]])
     return(set_hits)
 
 
 # Using the results of find_candidate_transitions keep candidates that have good directionality
-def find_good_transitions(adata, ssgsea_result, conf_threshold=0.25, adj_threshold=0.5, silent=False):
+def find_good_transitions(adata, ssgsea_result, conf_threshold = 0.25, adj_threshold = 0.5, silent = False):
     import GeneSetAnalysisFunctions
     import pandas as pd
-    ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
-    all_sets = ssgsea_raw_df.index.to_list()
-    all_set_results = []
+    ssgsea_raw_df=GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
+    all_sets=ssgsea_raw_df.index.to_list()
+    all_set_results=[]
     for set in all_sets:
-        set_hits = GeneSetAnalysisFunctions.find_candidate_transitions(
-            adata=adata, ssgsea_result=ssgsea_result, set=set, conf_threshold=0.5, adj_threshold=0.5, silent=silent)
+        set_hits=GeneSetAnalysisFunctions.find_candidate_transitions(
+            adata = adata, ssgsea_result = ssgsea_result, set = set, conf_threshold = 0.5, adj_threshold = 0.5, silent = silent)
         all_set_results.append(set_hits)
-    all_set_results_flat = [
+    all_set_results_flat=[
         item for sublist in all_set_results for item in sublist]
     all_set_results_df = pd.DataFrame(all_set_results_flat)
     # Sets have a Positive Change
