@@ -146,7 +146,7 @@ def create_transition_matrix(ssgsea_result, set):
 
 
 # Take the pairwise deltas from create_transition_matrix and screen out invalid transitions using the PAGA matrix as a mask then apply thresholding criteria
-def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.5, adj_threshold=0.5, silent=False):
+def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.5, adj_threshold=0.5, mode="extreme", silent=False):
     import GeneSetAnalysisFunctions
     import numpy as np
     import pandas as pd
@@ -178,10 +178,12 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.5, ad
     mean = np.mean(flat_set_transition_full_list)
     standard_deviation = np.std(flat_set_transition_full_list)
     distance_from_mean = abs(set_transition_pass_abs - mean)
-#    max_deviations = 2
-#    filtered = np.logical_and(distance_from_mean < (
-#        max_deviations * standard_deviation), distance_from_mean > (1 * standard_deviation))
-    filtered = distance_from_mean > (2 * standard_deviation)
+    if mode == "range":
+        max_deviations = 2
+        filtered = np.logical_and(distance_from_mean < (
+            max_deviations * standard_deviation), distance_from_mean > (1 * standard_deviation))
+    if mode == "extreme":
+        filtered = distance_from_mean > (2 * standard_deviation)
     filtered_locs=list(np.where(filtered))
     transition_locs=list(filtered[filtered == True].stack().index)
     ssgsea_raw_df=GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
@@ -198,7 +200,7 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.5, ad
 
 
 # Using the results of find_candidate_transitions keep candidates that have good directionality
-def find_good_transitions(adata, ssgsea_result, conf_threshold = 0.25, adj_threshold = 0.5, silent = False):
+def find_good_transitions(adata, ssgsea_result, conf_threshold = 0.25, adj_threshold = 0.5, mode="extreme", silent = False):
     import GeneSetAnalysisFunctions
     import pandas as pd
     ssgsea_raw_df=GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
@@ -206,7 +208,7 @@ def find_good_transitions(adata, ssgsea_result, conf_threshold = 0.25, adj_thres
     all_set_results=[]
     for set in all_sets:
         set_hits=GeneSetAnalysisFunctions.find_candidate_transitions(
-            adata = adata, ssgsea_result = ssgsea_result, set = set, conf_threshold = 0.5, adj_threshold = 0.5, silent = silent)
+            adata = adata, ssgsea_result = ssgsea_result, set = set, conf_threshold = 0.5, adj_threshold = 0.5, mode="extreme", silent = silent)
         all_set_results.append(set_hits)
     all_set_results_flat=[
         item for sublist in all_set_results for item in sublist]
