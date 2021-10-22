@@ -15,10 +15,14 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"
     import re
     import numpy as np
     import pandas as pd
+    import scipy as sp
     import GeneSetAnalysisFunctions
     import scvelo as scv
     if outkey in adata.layers:
-        gene_by_cell = pd.DataFrame(adata.layers[outkey].todense()).transpose()
+        if sci.sparse.issparse(adata.layers[outkey]):
+            gene_by_cell = pd.DataFrame(adata.layers[outkey].todense()).transpose()
+        else:
+            gene_by_cell = pd.DataFrame(adata.layers[outkey].transpose()
         gene_by_cell.index=adata.var.index
         gene_by_cell.columns=adata.obs.index
         out_matrix = gene_by_cell
