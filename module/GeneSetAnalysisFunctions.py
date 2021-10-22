@@ -90,7 +90,7 @@ def collapse_dataset(dataset, chip, mode="sum"):
 
 def read_genesets_gmt(gs_db, thres_min = 2, thres_max = 2000)
     # Reimplementation of the R ssGSEA GMT Parser
-    return([{'N_gs' : Ng}, {'gs' : gs}, {'gs_names' : gs_names}, {'gs_desc' : gs_desc}, {'size_G' : size_G}, {'max_N_gs' : max_Ng}])
+    return({'N_gs' : Ng, 'gs' : gs, 'gs_names' : gs_names, 'gs_desc' : gs_desc, 'size_G' : size_G, 'max_N_gs' : max_Ng})
 
 # Reimplementation of the R ssGSEA GMX Parser
 # Reads a gene set database file (in GMX file format)
@@ -119,7 +119,7 @@ def read_genesets_gmx(gs_gmx, thres_min = 2, thres_max = 2000)
     # gs_desc = vector of descriptions of gene sets (of length N_gs)
     # size_G = vector with sizes of each gene set (of length N_gs)
     # max_N_gs = total number of gene sets defined in gmx file; includes those that do not satisfy min/max thresholds
-    return([{'N_gs' : Ng}, {'gs' : gs}, {'gs_names' : gs_names}, {'gs_desc' : gs_desc}, {'size_G' : gs_sizes}, {'max_N_gs' : max_Ng}])
+    return({'N_gs' : Ng, 'gs' : gs, 'gs_names' : gs_names, 'gs_desc' : gs_desc, 'size_G' : gs_sizes, 'max_N_gs' : max_Ng})
 
 
 def load_ssgsea_result(ssgsea_result):
