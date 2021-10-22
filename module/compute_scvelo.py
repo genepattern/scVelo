@@ -87,19 +87,19 @@ def main():
         if "highly_variable" not in list(adata.var):
             print("Calculation of highly variable genes was not selected but no precomputed set was detected in the dataset so doing it anyway using method 'seurat_v3'.")
             sc.pp.highly_variable_genes(adata, flavor="seurat_v3", n_top_genes=int(
-                options.topgenes), check_values=False)
+                options.topgenes), subset=False, check_values=False)
     else:
         print("Realculation of highly variable genes was requested; calculating using method " + options.hvg)
         sc.pp.highly_variable_genes(adata, flavor=options.hvg, n_top_genes=int(
-            options.topgenes), check_values=False)
+            options.topgenes), subset=False, check_values=False)
 
     # scVelo Core Functions
     if options.enforce == "True":
         scv.pp.filter_and_normalize(adata, min_shared_counts=int(
-            options.minshared), n_top_genes=int(options.topgenes), enforce=True)
+            options.minshared), n_top_genes=int(options.topgenes), subset_highly_variable=False, enforce=True)
     elif options.enforce == "False":
         scv.pp.filter_and_normalize(adata, min_shared_counts=int(
-            options.minshared), n_top_genes=int(options.topgenes), layers_normalize={'spliced', 'unspliced', 'ambiguous'})
+            options.minshared), n_top_genes=int(options.topgenes), subset_highly_variable=False, layers_normalize={'spliced', 'unspliced', 'ambiguous'})
     else:
         warnings.warn(
             print("Absolutely no normalization was selected. Using all data layers as-is."))
