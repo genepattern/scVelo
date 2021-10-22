@@ -22,7 +22,7 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"
         if isspmatrix(adata.layers[outkey]):
             gene_by_cell = pd.DataFrame(adata.layers[outkey].todense()).transpose()
         else:
-            gene_by_cell = pd.DataFrame(adata.layers[outkey].transpose()
+            gene_by_cell = pd.DataFrame(adata.layers[outkey].transpose())
         gene_by_cell.index=adata.var.index
         gene_by_cell.columns=adata.obs.index
         out_matrix = gene_by_cell
@@ -57,6 +57,34 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"
     return(out_matrix.drop(labels="Description", axis=1))
 
     # sumtest=Dataset_rank_velocity_genes.reindex(Dataset_rank_genes_groups.index).fillna(0) + Dataset_rank_genes_groups
+
+
+def read_chip(chip):
+    import os, sys
+    import pandas as pd
+    chip_df = pd.read_csv(chip, sep='\t', index_col=0, skip_blank_lines=True)
+    return(chip_df)
+
+
+def collapse_dataset(dataset, chip, mode="sum"):
+    import GeneSetAnalysisFunctions
+    import pandas as pd
+    if isinstance(chip, pd.DataFrame) == False:
+        chip = GeneSetAnalysisFunctions.read_chip(chip)
+    joined_df = chip.join(dataset, how='inner')
+    joined_df.reset_index(drop=True, inplace=True)
+    annotations = joined_df[["Gene Symbol", "Gene Title"]].drop_duplicates().copy()
+    joined_df.drop("Gene Title", axis=1, inplace=True)
+    if mode == "sum":
+        collapsed_df = joined_df.groupby(["Gene Symbol"]).sum()
+    if mode == "mean":
+        collapsed_df = joined_df.groupby(["Gene Symbol"]).mean()
+    if mode == "median":
+        collapsed_df = joined_df.groupby(["Gene Symbol"]).median()
+    if mode == "max":
+        collapsed_df = joined_df.groupby(["Gene Symbol"]).max()
+    collapsed_df.index.name = "NAME"
+    return(collapsed_df)
 
 
 def load_ssgsea_result(ssgsea_result):
