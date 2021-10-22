@@ -90,10 +90,15 @@ def collapse_dataset(dataset, chip, mode="sum"):
 
 def read_genesets_gmt(gs_db, thres_min = 2, thres_max = 2000)
     # Reimplementation of the R ssGSEA GMT Parser
-    return([{'N_gs' : Ng}, {'gs' : gs}, {'gs_names' : gs_names}, {'gs_desc' : gs_desc}, {'size_G' : gs_sizes}, {'max_N_gs' : max_Ng}])
+    return([{'N_gs' : Ng}, {'gs' : gs}, {'gs_names' : gs_names}, {'gs_desc' : gs_desc}, {'size_G' : size_G}, {'max_N_gs' : max_Ng}])
 
+# Reimplementation of the R ssGSEA GMX Parser
+# Reads a gene set database file (in GMX file format)
+# and creates an Pandas Datafrme with each row corresponding to a single
+# gene set and containing a list of the gene names making up
+# that gene set.  Gene sets that do not satisfy the min and max threshold
+# criteria will be filtered out. Returned in a dict with other information
 def read_genesets_gmx(gs_gmx, thres_min = 2, thres_max = 2000)
-    # Reimplementation of the R ssGSEA GMX Parser
     import pandas as pd
     import numpy as np
     df_temp = pd.read_csv(gs_gmx, sep='\t', skip_blank_lines=True).transpose().dropna(how='all')
