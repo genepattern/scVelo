@@ -17,32 +17,36 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"
     import pandas as pd
     import GeneSetAnalysisFunctions
     import scvelo as scv
+    if outkey == "cell_level":
+        df = pd.DataFrame(adata.X)
+    else:
     # outkey='rank_velocity_genes' and outkey='rank_genes_groups' both work
-    unique_values = set()
-    for col in scv.DataFrame(adata.uns[outkey]['names']):
-        unique_values.update(scv.DataFrame(
-            adata.uns[outkey]['names'])[col])
-    unique_values = list(unique_values)
-    unique_values.sort()
-    gene_by_cluster = pd.DataFrame(columns=scv.DataFrame(
-        adata.uns[outkey]['names']).columns, index=unique_values)
-    for col in scv.DataFrame(adata.uns[outkey]['names']):
-        gene_by_cluster[col] = list(scv.DataFrame(adata.uns[outkey]['scores'])[
-            col][np.argsort(scv.DataFrame(adata.uns[outkey]['names'])[col].values)])
-    gene_by_cluster.index.name = "NAME"
-    gene_by_cluster.index = gene_by_cluster.index.str.replace(
+        cluster_key = GeneSetAnalysisFunctions.detect_clusters(adata)
+        unique_values = set()
+        for col in scv.DataFrame(adata.uns[outkey]['names']):
+            unique_values.update(scv.DataFrame(
+                adata.uns[outkey]['names'])[col])
+        unique_values = list(unique_values)
+        unique_values.sort()
+        gene_by_cluster = pd.DataFrame(columns=scv.DataFrame(
+            adata.uns[outkey]['names']).columns, index=unique_values)
+        for col in scv.DataFrame(adata.uns[outkey]['names']):
+            gene_by_cluster[col] = list(scv.DataFrame(adata.uns[outkey]['scores'])[
+                col][np.argsort(scv.DataFrame(adata.uns[outkey]['names'])[col].values)])
+        out_matrix = gene_by_cluster
+        filename = outname + "_" + outkey + "_by_" +
+                             cluster_key + "_clusters.gct"
+    out_matrix.index.name = "NAME"
+    out_matrix.index = gene_by_cluster.index.str.replace(
         '\\..*', '', regex=True)
-    cluster_key = GeneSetAnalysisFunctions.detect_clusters(adata)
-    gene_by_cluster.insert(loc=0, column='Description', value="NA")
-    text_file = open(outname + "_" + outkey + "_by_" +
-                     cluster_key + "_clusters.gct", "w")
+    out_matrix.insert(loc=0, column='Description', value="NA")
+    text_file = open(filename, "w")
     text_file.write('#1.2\n')
-    text_file.write(str(len(gene_by_cluster)) + "\t" +
-                    str(len(gene_by_cluster.columns) - 1) + "\n")
+    text_file.write(str(len(out_matrix)) + "\t" +
+                    str(len(out_matrix.columns) - 1) + "\n")
     text_file.close()
-    gene_by_cluster.to_csv(outname + "_" + outkey + "_by_" +
-                           cluster_key + "_clusters.gct", sep="\t", mode='a')
-    return(gene_by_cluster.drop(labels="Description", axis=1))
+    out_matrix.to_csv(filename, sep="\t", mode='a')
+    return(out_matrix.drop(labels="Description", axis=1))
 
     # sumtest=Dataset_rank_velocity_genes.reindex(Dataset_rank_genes_groups.index).fillna(0) + Dataset_rank_genes_groups
 
@@ -167,6 +171,7 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.25, a
     set_transition_full = set_transition.copy()
     set_transition_full[:] = np.where(np.arange(set_transition_full.shape[0])[
                                       :, None] >= np.arange(set_transition_full.shape[1]), np.nan, set_transition_full)
+    # Maybe apply the paga_adj_df here to make sure the standard deviations are based on just the adjacent clusters
     set_transition_full_list = set_transition_full.values.tolist()
     flat_set_transition_full_list = [
         item for sublist in set_transition_full_list for item in sublist if math.isnan(item) == False]
