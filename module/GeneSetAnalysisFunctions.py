@@ -22,7 +22,7 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"
         gene_by_cell.index=adata.var.index
         gene_by_cell.columns=adata.obs.index
         out_matrix = gene_by_cell
-        filename = outname + "_" + "cell_level_" + outkey + "_by_genes.gct"
+        filename = outname + "_" + "cell_level_genes_" + outkey + ".gct"
     else:
     # outkey='rank_velocity_genes' and outkey='rank_genes_groups' both work
         cluster_key = GeneSetAnalysisFunctions.detect_clusters(adata)
