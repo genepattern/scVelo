@@ -42,8 +42,7 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"
             gene_by_cluster[col] = list(scv.DataFrame(adata.uns[outkey]['scores'])[
                 col][np.argsort(scv.DataFrame(adata.uns[outkey]['names'])[col].values)])
         out_matrix = gene_by_cluster
-        filename = outname + "_" + outkey + "_by_" +
-                             cluster_key + "_clusters.gct"
+        filename = outname + "_" + outkey + "_by_" + cluster_key + "_clusters.gct"
     out_matrix.index.name = "NAME"
     out_matrix.index = out_matrix.index.str.replace(
         '\\..*', '', regex=True)
