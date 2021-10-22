@@ -17,12 +17,12 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"
     import pandas as pd
     import GeneSetAnalysisFunctions
     import scvelo as scv
-    if outkey == "cell_level":
-        gene_by_cell = pd.DataFrame(adata.layers['counts'].todense()).transpose()
+    if outkey in adata.layers:
+        gene_by_cell = pd.DataFrame(adata.layers[outkey].todense()).transpose()
         gene_by_cell.index=adata.var.index
         gene_by_cell.columns=adata.obs.index
         out_matrix = gene_by_cell
-        filename = outname + "_" + outkey + "_gene_counts.gct"
+        filename = outname + "_" + "cell_level_" + outkey + "_by_genes.gct"
     else:
     # outkey='rank_velocity_genes' and outkey='rank_genes_groups' both work
         cluster_key = GeneSetAnalysisFunctions.detect_clusters(adata)
