@@ -88,9 +88,57 @@ def collapse_dataset(dataset, chip, mode="sum"):
     collapsed_df.index.name = "NAME"
     return(collapsed_df)
 
+
+# Reimplementation of the R ssGSEA GMT Parser
+# Reads a gene set database file (in GMX file format)
+# and creates an Pandas Datafrme with each row corresponding to a single
+# gene set and containing a list of the gene names making up
+# that gene set.  Gene sets that do not satisfy the min and max threshold
+# criteria will be filtered out. Returned in a dict with other information
 def read_genesets_gmt(gs_db, thres_min = 2, thres_max = 2000)
-    # Reimplementation of the R ssGSEA GMT Parser
+    # temp <- readLines(gs.db)
+    # max.Ng <- length(temp)
+    # # temp.size.G will contain size of each gene set
+    # temp.size.G <- vector(length = max.Ng, mode = "numeric")
+    # for (i in 1:max.Ng) {
+    #     temp.size.G[i] <- length(unlist(strsplit(temp[[i]], "\t"))) - 2
+    # }
+    # max.size.G <- max(temp.size.G)
+    # gs <- matrix(rep("null", max.Ng*max.size.G), nrow=max.Ng, ncol= max.size.G)
+    # temp.names <- vector(length = max.Ng, mode = "character")
+    # temp.desc <- vector(length = max.Ng, mode = "character")
+    # gs.count <- 1
+    # for (i in 1:max.Ng) {
+    #     gene.set.size <- length(unlist(strsplit(temp[[i]], "\t"))) - 2
+    #     gs.line <- noquote(unlist(strsplit(temp[[i]], "\t")))
+    #     gene.set.name <- gs.line[1]
+    #     gene.set.desc <- gs.line[2]
+    #     gene.set.tags <- vector(length = gene.set.size, mode = "character")
+    #     for (j in 1:gene.set.size) {
+    #         gene.set.tags[j] <- gs.line[j + 2]
+    #     }
+    #     if (is.null(gene.names)) {
+    #         existing.set <- rep(TRUE, length(gene.set.tags))
+    #     } else {
+    #         existing.set <- is.element(gene.set.tags, gene.names)
+    #     }
+    #     set.size <- length(existing.set[existing.set == T])
+    #     if ((set.size < thres.min) || (set.size > thres.max)) next
+    #     temp.size.G[gs.count] <- set.size
+    #     gs[gs.count,] <- c(gene.set.tags[existing.set], rep("null", max.size.G - temp.size.G[gs.count]))
+    #     temp.names[gs.count] <- gene.set.name
+    #     temp.desc[gs.count] <- gene.set.desc
+    #     gs.count <- gs.count + 1
+    # }
+    # Ng <- gs.count - 1
+    # gs.names <- vector(length = Ng, mode = "character")
+    # gs.desc <- vector(length = Ng, mode = "character")
+    # size.G <- vector(length = Ng, mode = "numeric")
+    # gs.names <- temp.names[1:Ng]
+    # gs.desc <- temp.desc[1:Ng]
+    # size.G <- temp.size.G[1:Ng]
     return({'N_gs' : Ng, 'gs' : gs, 'gs_names' : gs_names, 'gs_desc' : gs_desc, 'size_G' : size_G, 'max_N_gs' : max_Ng})
+
 
 # Reimplementation of the R ssGSEA GMX Parser
 # Reads a gene set database file (in GMX file format)
