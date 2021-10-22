@@ -20,15 +20,16 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"
     import scvelo as scv
     if outkey in adata.layers:
         if isspmatrix(adata.layers[outkey]):
-            gene_by_cell = pd.DataFrame(adata.layers[outkey].todense()).transpose()
+            gene_by_cell = pd.DataFrame(
+                adata.layers[outkey].todense()).transpose()
         else:
             gene_by_cell = pd.DataFrame(adata.layers[outkey].transpose())
-        gene_by_cell.index=adata.var.index
-        gene_by_cell.columns=adata.obs.index
+        gene_by_cell.index = adata.var.index
+        gene_by_cell.columns = adata.obs.index
         out_matrix = gene_by_cell
         filename = outname + "_" + "cell_level_genes_" + outkey + ".gct"
     else:
-    # outkey='rank_velocity_genes' and outkey='rank_genes_groups' both work
+        # outkey='rank_velocity_genes' and outkey='rank_genes_groups' both work
         cluster_key = GeneSetAnalysisFunctions.detect_clusters(adata)
         unique_values = set()
         for col in scv.DataFrame(adata.uns[outkey]['names']):
@@ -59,7 +60,8 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"
 
 
 def read_chip(chip):
-    import os, sys
+    import os
+    import sys
     import pandas as pd
     chip_df = pd.read_csv(chip, sep='\t', index_col=0, skip_blank_lines=True)
     return(chip_df)
@@ -72,7 +74,8 @@ def collapse_dataset(dataset, chip, mode="sum"):
         chip = GeneSetAnalysisFunctions.read_chip(chip)
     joined_df = chip.join(dataset, how='inner')
     joined_df.reset_index(drop=True, inplace=True)
-    annotations = joined_df[["Gene Symbol", "Gene Title"]].drop_duplicates().copy()
+    annotations = joined_df[["Gene Symbol",
+                             "Gene Title"]].drop_duplicates().copy()
     joined_df.drop("Gene Title", axis=1, inplace=True)
     if mode == "sum":
         collapsed_df = joined_df.groupby(["Gene Symbol"]).sum()
@@ -224,33 +227,33 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.25, a
             max_deviations * standard_deviation), distance_from_mean > (1 * standard_deviation))
     if mode == "extreme":
         filtered = distance_from_mean > (2 * standard_deviation)
-    filtered_locs=list(np.where(filtered))
-    transition_locs=list(filtered[filtered == True].stack().index)
-    ssgsea_raw_df=GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
-    test_set=ssgsea_raw_df.iloc[[
+    filtered_locs = list(np.where(filtered))
+    transition_locs = list(filtered[filtered == True].stack().index)
+    ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
+    test_set = ssgsea_raw_df.iloc[[
         int(np.where(ssgsea_raw_df.index == set)[0])]]
-    set_hits=[]
+    set_hits = []
     for i in range(len(transition_locs)):
         if silent == False:
             print("Gene set " + set + " was scored as a candidate for transition from Cluster " + str(transition_locs[i][0]) + " (Enrichment Score: " + str(test_set.loc[set, transition_locs[i][0]].round(2)) + ") to Cluster " + str(
                 transition_locs[i][1]) + " (Enrichment Score: " + str(test_set.loc[set, transition_locs[i][1]].round(2)) + ") at PAGA transition confidence >" + str(conf_threshold) + " and adjacency >" + str(adj_threshold))
         set_hits.append([set, str(transition_locs[i][0]), test_set.loc[set, transition_locs[i][0]], str(transition_locs[i][1]),
-                        test_set.loc[set, transition_locs[i][1]], test_set.loc[set, transition_locs[i][1]] - test_set.loc[set, transition_locs[i][0]]])
+                         test_set.loc[set, transition_locs[i][1]], test_set.loc[set, transition_locs[i][1]] - test_set.loc[set, transition_locs[i][0]]])
     return(set_hits)
 
 
 # Using the results of find_candidate_transitions keep candidates that have good directionality
-def find_good_transitions(adata, ssgsea_result, conf_threshold = 0.25, adj_threshold = 0.5, mode="extreme", silent = False):
+def find_good_transitions(adata, ssgsea_result, conf_threshold=0.25, adj_threshold=0.5, mode="extreme", silent=False):
     import GeneSetAnalysisFunctions
     import pandas as pd
-    ssgsea_raw_df=GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
-    all_sets=ssgsea_raw_df.index.to_list()
-    all_set_results=[]
+    ssgsea_raw_df = GeneSetAnalysisFunctions.load_ssgsea_result(ssgsea_result)
+    all_sets = ssgsea_raw_df.index.to_list()
+    all_set_results = []
     for set in all_sets:
-        set_hits=GeneSetAnalysisFunctions.find_candidate_transitions(
-            adata = adata, ssgsea_result = ssgsea_result, set = set, conf_threshold = conf_threshold, adj_threshold = adj_threshold, mode = mode, silent = silent)
+        set_hits = GeneSetAnalysisFunctions.find_candidate_transitions(
+            adata=adata, ssgsea_result=ssgsea_result, set=set, conf_threshold=conf_threshold, adj_threshold=adj_threshold, mode=mode, silent=silent)
         all_set_results.append(set_hits)
-    all_set_results_flat=[
+    all_set_results_flat = [
         item for sublist in all_set_results for item in sublist]
     all_set_results_df = pd.DataFrame(all_set_results_flat)
     # Sets have a Positive Change
