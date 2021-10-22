@@ -88,6 +88,34 @@ def collapse_dataset(dataset, chip, mode="sum"):
     collapsed_df.index.name = "NAME"
     return(collapsed_df)
 
+def read_genesets_gmt(gs_db, thres_min = 2, thres_max = 2000)
+    # Reimplementation of the R ssGSEA GMT Parser
+    return([{'N_gs' : Ng}, {'gs' : gs}, {'gs_names' : gs_names}, {'gs_desc' : gs_desc}, {'size_G' : gs_sizes}, {'max_N_gs' : max_Ng}])
+
+def read_genesets_gmx(gs_gmx, thres_min = 2, thres_max = 2000)
+    # Reimplementation of the R ssGSEA GMX Parser
+    import pandas as pd
+    import numpy as np
+    df_temp = pd.read_csv(gs_gmx, sep='\t', skip_blank_lines=True).transpose().dropna(how='all')
+    all_gs_names = df_temp.index.tolist().copy()
+    all_gs_desc = df_temp[0].tolist().copy()
+    all_gs = df_temp.drop(labels=0, axis=1)
+    all_gs_sizes = all_gs.count(axis=1).tolist()
+    pass_thresholds = np.logical_and(all_gs.count(axis=1) >= thres_min, all_gs.count(axis=1) <= thres_max).to_list()
+    gs_names = np.array(all_gs_names)[np.array(pass_thresholds)].tolist().copy()
+    gs_desc = np.array(all_gs_desc)[np.array(pass_thresholds)].tolist().copy()
+    gs_sizes = np.array(all_gs_sizes)[np.array(pass_thresholds)].tolist().copy()
+    gs = all_gs[pass_thresholds]
+    max_Ng = len(all_gs_names)
+    Ng = len(gs_names)
+    # N_gs = number of gene sets defined in gmx file that satisfy the min and max thresholds
+    # gs = matrix containing gene set collections, one per line, satisfying min/max thresholds
+    # gs_names = vector of names of gene sets (of length N_gs)
+    # gs_desc = vector of descriptions of gene sets (of length N_gs)
+    # size_G = vector with sizes of each gene set (of length N_gs)
+    # max_N_gs = total number of gene sets defined in gmx file; includes those that do not satisfy min/max thresholds
+    return([{'N_gs' : Ng}, {'gs' : gs}, {'gs_names' : gs_names}, {'gs_desc' : gs_desc}, {'size_G' : gs_sizes}, {'max_N_gs' : max_Ng}])
+
 
 def load_ssgsea_result(ssgsea_result):
     import sys
