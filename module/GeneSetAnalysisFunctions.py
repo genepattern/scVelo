@@ -96,10 +96,13 @@ def collapse_dataset(dataset, chip, mode="sum"):
 # that gene set.  Gene sets that do not satisfy the min and max threshold
 # criteria will be filtered out. Returned in a dict with other information
 def read_genesets_gmt(gs_db, thres_min = 2, thres_max = 2000)
-    # temp <- readLines(gs.db)
-    # max.Ng <- length(temp)
-    # # temp.size.G will contain size of each gene set
-    # temp.size.G <- vector(length = max.Ng, mode = "numeric")
+    import pandas as pd
+    import numpy as np
+    f = open(gs_db, "r")
+    temp = f.readlines()
+    max_Ng = len(temp)
+    # temp_size_G will contain size of each gene set
+    temp_size_G = list(range(max_Ng))
     # for (i in 1:max.Ng) {
     #     temp.size.G[i] <- length(unlist(strsplit(temp[[i]], "\t"))) - 2
     # }
