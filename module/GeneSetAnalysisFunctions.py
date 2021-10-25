@@ -95,52 +95,44 @@ def collapse_dataset(dataset, chip, mode="sum"):
 # gene set and containing a list of the gene names making up
 # that gene set.  Gene sets that do not satisfy the min and max threshold
 # criteria will be filtered out. Returned in a dict with other information
-def read_genesets_gmt(gs_db, thres_min = 2, thres_max = 2000)
+def read_genesets_gmt(gs_db, thres_min=2, thres_max=2000):
     import pandas as pd
     import numpy as np
-    f = open(gs_db, "r")
-    temp = f.readlines()
+    with open(gs_db) as f:
+        temp = f.read().splitlines()
     max_Ng = len(temp)
     # temp_size_G will contain size of each gene set
     temp_size_G = list(range(max_Ng))
-    # for (i in 1:max.Ng) {
-    #     temp.size.G[i] <- length(unlist(strsplit(temp[[i]], "\t"))) - 2
-    # }
-    # max.size.G <- max(temp.size.G)
-    # gs <- matrix(rep("null", max.Ng*max.size.G), nrow=max.Ng, ncol= max.size.G)
-    # temp.names <- vector(length = max.Ng, mode = "character")
-    # temp.desc <- vector(length = max.Ng, mode = "character")
-    # gs.count <- 1
-    # for (i in 1:max.Ng) {
-    #     gene.set.size <- length(unlist(strsplit(temp[[i]], "\t"))) - 2
-    #     gs.line <- noquote(unlist(strsplit(temp[[i]], "\t")))
-    #     gene.set.name <- gs.line[1]
-    #     gene.set.desc <- gs.line[2]
-    #     gene.set.tags <- vector(length = gene.set.size, mode = "character")
-    #     for (j in 1:gene.set.size) {
-    #         gene.set.tags[j] <- gs.line[j + 2]
-    #     }
-    #     if (is.null(gene.names)) {
-    #         existing.set <- rep(TRUE, length(gene.set.tags))
-    #     } else {
-    #         existing.set <- is.element(gene.set.tags, gene.names)
-    #     }
-    #     set.size <- length(existing.set[existing.set == T])
-    #     if ((set.size < thres.min) || (set.size > thres.max)) next
-    #     temp.size.G[gs.count] <- set.size
-    #     gs[gs.count,] <- c(gene.set.tags[existing.set], rep("null", max.size.G - temp.size.G[gs.count]))
-    #     temp.names[gs.count] <- gene.set.name
-    #     temp.desc[gs.count] <- gene.set.desc
-    #     gs.count <- gs.count + 1
-    # }
-    # Ng <- gs.count - 1
-    # gs.names <- vector(length = Ng, mode = "character")
-    # gs.desc <- vector(length = Ng, mode = "character")
-    # size.G <- vector(length = Ng, mode = "numeric")
-    # gs.names <- temp.names[1:Ng]
-    # gs.desc <- temp.desc[1:Ng]
-    # size.G <- temp.size.G[1:Ng]
-    return({'N_gs' : Ng, 'gs' : gs, 'gs_names' : gs_names, 'gs_desc' : gs_desc, 'size_G' : size_G, 'max_N_gs' : max_Ng})
+    for i in range(max_Ng):
+        temp_size_G[i] = len(temp[i].split("\t")) - 2
+    max_size_G = max(temp_size_G)
+    gs = pd.DataFrame(np.nan, index=range(max_Ng), columns=range(max_size_G))
+    temp_names = list(range(max_Ng))
+    temp_desc = list(range(max_Ng))
+    gs_count = 0
+    for i in range(max_Ng):
+        gene_set_size = len(temp[i].split("\t")) - 2
+        gs_line = temp[i].split("\t")
+        gene_set_name = gs_line[0]
+        gene_set_desc = gs_line[1]
+        gene_set_tags = list(range(gene_set_size))
+        for j in range(gene_set_size):
+            gene_set_tags[j] = gs_line[j + 2]
+        if np.logical_and(gene_set_size >= thres_min, gene_set_size <= thres_max):
+            temp_size_G[gs_count] = gene_set_size
+            gs.iloc[gs_count] = gene_set_tags + \
+                list(np.full((max_size_G - temp_size_G[gs_count]),np.nan))
+            temp_names[gs_count] = gene_set_name
+            temp_desc[gs_count] = gene_set_desc
+            gs_count = gs_count + 1
+    Ng = gs_count
+    gs_names = list(range(Ng))
+    gs_desc = list(range(Ng))
+    size_G = list(range(Ng))
+    gs_names = temp_names[0:Ng]
+    gs_desc = temp_desc[0:Ng]
+    size_G = temp_size_G[0:Ng]
+    return({'N_gs': Ng, 'gs': gs, 'gs_names': gs_names, 'gs_desc': gs_desc, 'size_G': size_G, 'max_N_gs': max_Ng})
 
 
 # Reimplementation of the R ssGSEA GMX Parser
@@ -149,7 +141,7 @@ def read_genesets_gmt(gs_db, thres_min = 2, thres_max = 2000)
 # gene set and containing a list of the gene names making up
 # that gene set.  Gene sets that do not satisfy the min and max threshold
 # criteria will be filtered out. Returned in a dict with other information
-def read_genesets_gmx(gs_gmx, thres_min = 2, thres_max = 2000)
+def read_genesets_gmx(gs_gmx, thres_min = 2, thres_max = 2000):
     import pandas as pd
     import numpy as np
     df_temp = pd.read_csv(gs_gmx, sep='\t', skip_blank_lines=True).transpose().dropna(how='all')
