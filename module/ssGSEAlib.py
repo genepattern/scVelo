@@ -1,3 +1,13 @@
+# Copyright (c) 2012-2020 Broad Institute, Inc., Massachusetts Institute of Technology, and Regents of the University of California.  All rights reserved.
+#
+# Projects gene expression data or ATARiS consistency scores (in either
+# case, encoded in GCT input files) to gene set enrichment scores.
+# (note: for clarity comments will mostly refer to expression data)
+#
+# Original Authors: Pablo Tamayo, Chet Birger
+# Reimplementation in Python by: Anthony Castanza
+#
+
 
 # Reimplementation of the R ssGSEA GMT Parser
 # Reads a gene set database file (in GMX file format)
@@ -82,6 +92,20 @@ def read_genesets_gmx(gs_gmx, thres_min=2, thres_max=2000):
     return({'N_gs': Ng, 'gs': gs, 'gs_names': gs_names, 'gs_desc': gs_desc, 'size_G': gs_sizes, 'max_N_gs': max_Ng})
 
 
+# Simple implementation of a GCT parser
+# Accepts a GCT file and returns a Pandas Dataframe with a single index
+def read_gct(gct):
+    import sys
+    import pandas as pd
+    dataset = pd.read_csv(gct, sep='\t', header=2, index_col=[
+                            0, 1], skip_blank_lines=True)
+    dataset.index = dataset.index.droplevel(1)  # Drop gene descriptions
+    return dataset
+
+
+# Simple implementation of a CHIP Parser for use with ssGSEA
+# Reads in a CHIP formatted file and returns a pandas dataframe containing
+# the probe to gene mappings
 def read_chip(chip):
     import os
     import sys
@@ -90,11 +114,18 @@ def read_chip(chip):
     return(chip_df)
 
 
+# Simple implementation of GSEA DEsktop's Collapse Dataset functions for use
+# with ssSGEA
+# Accepts an expression dataset in GCT format, a CHIP file, and a
+# collapse metric and returns a pandas dataframe formatted version of the
+# dataset collapsed from probe level to gene level using the specified metric.
 def collapse_dataset(dataset, chip, mode="sum"):
-    import GeneSetAnalysisFunctions
+    import ssGSEAlib
     import pandas as pd
+    if isinstance(dataset, pd.DataFrame) == False:
+        dataset = ssGSEAlib.read_gct(chip)
     if isinstance(chip, pd.DataFrame) == False:
-        chip = GeneSetAnalysisFunctions.read_chip(chip)
+        chip = ssGSEAlib.read_chip(chip)
     joined_df = chip.join(dataset, how='inner')
     joined_df.reset_index(drop=True, inplace=True)
     annotations = joined_df[["Gene Symbol",
