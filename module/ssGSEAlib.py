@@ -4,8 +4,10 @@
 # case, encoded in GCT input files) to gene set enrichment scores.
 # (note: for clarity comments will mostly refer to expression data)
 #
-# Original Authors: Pablo Tamayo, Chet Birger
-# Reimplementation in Python by: Anthony Castanza
+# Original Authors: 
+# Pablo Tamayo, Chet Birger
+# Reimplementation in Python, and additional Helper functions by:
+# Anthony S. Castanza
 #
 
 
