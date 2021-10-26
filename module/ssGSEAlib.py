@@ -96,6 +96,17 @@ def ssGSEA_project_dataset(
     # gene sets across all databases (max.N)
     max_G = 0
     max_N = 0
+    for gsdb in gene_sets_dbfile_list:
+        gsdb_split = gsdb.split(".")
+        if gsdb_split[-1] == "gmt":
+            GSDB = ssGSEAlib.read_genesets_gmt(gsdb, thres_min = 2, thres_max = 2000)
+        else:
+            # is a gmx formatted file
+            GSDB = rssGSEAlib.ead_genesets_gmx(gsdb, thres_min = 2, thres_max = 2000)
+        max.G <- max(max.G, max(GSDB$size.G))
+        max.N <- max.N +  GSDB$N.gs
+
+
 
 # projects gene expression data onto a single
 # gene set by calculating the gene set enrichment score
