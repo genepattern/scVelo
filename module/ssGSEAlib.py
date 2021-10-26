@@ -49,10 +49,12 @@ def ssGSEA_project_dataset(
 
     # validate input parameters
     if gene_symbol_column != "Name" and gene_symbol_column != "Description":
-        sys.exit("invalid value for gene.symbol.column argument: " +  gene_symbol_column)
+        sys.exit("invalid value for gene.symbol.column argument: " +
+                 gene_symbol_column)
 
     if sample_norm_type != "none" and sample_norm_type != "rank" and sample_norm_type != "log" and sample_norm_type != "log.rank":
-        sys.exit("invalid value for sample.norm.type.argument: " + sample_norm_type)
+        sys.exit("invalid value for sample.norm.type.argument: " +
+                 sample_norm_type)
 
     if combine_mode != "combine.off" and combine_mode != "combine.replace" and combine_mode != "combine.add":
         sys.exit("invalid value for combine.mode argument: ", combine_mode)
@@ -68,25 +70,25 @@ def ssGSEA_project_dataset(
     elif gene_symbol_column == "Description":
         gene_names = dataset['row_descriptions'].tolist()
         m.index = gene_names
-        m.index.names=["NAME"]
+        m.index.names = ["NAME"]
 
     gene_descs = dataset['row_descriptions'].tolist()
     sample_names = m.columns.to_list()
 
-    Ns = len(m.iloc[0]) # Number of Samples
-    Ng = len(m.iloc[:, 0]) # Number of Genes
+    Ns = len(m.iloc[0])  # Number of Samples
+    Ng = len(m.iloc[:, 0])  # Number of Genes
 
     # Sample normalization
     if sample_norm_type == "none":
         print("No normalization to be made")
     elif sample_norm_type == "rank":
         for j in range(Ns):  # column rank normalization
-            m.iloc[:, j] = m.iloc[:, j].rank(method = "average")
-        m = 10000*m/Ng
+            m.iloc[:, j] = m.iloc[:, j].rank(method="average")
+        m = 10000 * m / Ng
     elif sample_norm_type == "log.rank":
         for j in range(Ns):  # column rank normalization
-            m.iloc[:, j] = m.iloc[:, j].rank(method = "average")
-        m = np.log(10000*m/Ng + np.exp(1))
+            m.iloc[:, j] = m.iloc[:, j].rank(method="average")
+        m = np.log(10000 * m / Ng + np.exp(1))
     elif sample_norm_type == "log":
         m[m < 1] = 1
         m = np.log(m + np.exp(1))
@@ -100,9 +102,11 @@ def ssGSEA_project_dataset(
     for gsdb in gene_sets_dbfile_list:
         gsdb_split = gsdb.split(".")
         if gsdb_split[-1] == "gmt":
-            GSDB = ssGSEAlib.read_genesets_gmt(gsdb, thres_min = 2, thres_max = 2000)
-        else: # is a gmx formatted file
-            GSDB = rssGSEAlib.ead_genesets_gmx(gsdb, thres_min = 2, thres_max = 2000)
+            GSDB = ssGSEAlib.read_genesets_gmt(
+                gsdb, thres_min=2, thres_max=2000)
+        else:  # is a gmx formatted file
+            GSDB = rssGSEAlib.ead_genesets_gmx(
+                gsdb, thres_min=2, thres_max=2000)
         max_G = max(max_G, max(GSDB['size_G']))
         max_N = max_N + GSDB['N_gs']
 
@@ -116,31 +120,34 @@ def ssGSEA_project_dataset(
     for gsdb in gene_sets_dbfile_list:
         gsdb_split = gsdb.split(".")
         if gsdb_split[-1] == "gmt":
-            GSDB = ssGSEAlib.read_genesets_gmt(gsdb, thres_min = 2, thres_max = 2000)
-        else: # is a gmx formatted file
-            GSDB = rssGSEAlib.ead_genesets_gmx(gsdb, thres_min = 2, thres_max = 2000)
+            GSDB = ssGSEAlib.read_genesets_gmt(
+                gsdb, thres_min=2, thres_max=2000)
+        else:  # is a gmx formatted file
+            GSDB = rssGSEAlib.ead_genesets_gmx(
+                gsdb, thres_min=2, thres_max=2000)
         N_gs = GSDB['N_gs']
         gs_names[start:(start + N_gs)] = GSDB['gs_names']
         gs_descs[start:(start + N_gs)] = GSDB['gs_desc']
         size_G[start:(start + N_gs)] = GSDB['size_G']
-        gs.iloc[start:(start + N_gs), 0:max(GSDB['size_G'])] = GSDB['gs'].iloc[0:N_gs, 0:max(GSDB['size_G'])]
+        gs.iloc[start:(start + N_gs), 0:max(GSDB['size_G'])
+                       ] = GSDB['gs'].iloc[0:N_gs, 0:max(GSDB['size_G'])]
         start = start + N_gs
     N_gs = max_N
 
     # Select desired gene sets
 
     if gene_set_selection[0] != "ALL":
-        locs = list(np.where(np.isin(gs_names,gene_set_selection))[0])
+        locs = list(np.where(np.isin(gs_names, gene_set_selection))[0])
         N_gs = len(locs)
         if N_gs == 0:
             sys.exit("No matches with gene_set_selection")
         if N.gs > 1:
             gs = gs.iloc[locs]
-        else: # Force vector to matrix if only one gene set specified
+        else:  # Force vector to matrix if only one gene set specified
             gs = pd.DataFrame(gs.iloc[locs).transpose()
-        gs_names = np.array(gs_names)[locs].tolist()
-        gs_descs = np.array(gs_descs)[locs].tolist()
-        size_G = np.array(size_G)[locs].tolist()
+        gs_names= np.array(gs_names)[locs].tolist()
+        gs_descs= np.array(gs_descs)[locs].tolist()
+        size_G= np.array(size_G)[locs].tolist()
 
 
 
@@ -168,41 +175,41 @@ def read_genesets_gmt(gs_db, thres_min=2, thres_max=2000):
     import pandas as pd
     import numpy as np
     with open(gs_db) as f:
-        temp = f.read().splitlines()
-    max_Ng = len(temp)
+        temp= f.read().splitlines()
+    max_Ng= len(temp)
     # temp_size_G will contain size of each gene set
-    temp_size_G = list(range(max_Ng))
+    temp_size_G= list(range(max_Ng))
     for i in range(max_Ng):
-        temp_size_G[i] = len(temp[i].split("\t")) - 2
-    max_size_G = max(temp_size_G)
-    gs = pd.DataFrame(np.nan, index=range(max_Ng), columns=range(max_size_G))
-    temp_names = list(range(max_Ng))
-    temp_desc = list(range(max_Ng))
-    gs_count = 0
+        temp_size_G[i]= len(temp[i].split("\t")) - 2
+    max_size_G= max(temp_size_G)
+    gs= pd.DataFrame(np.nan, index=range(max_Ng), columns=range(max_size_G))
+    temp_names= list(range(max_Ng))
+    temp_desc= list(range(max_Ng))
+    gs_count= 0
     for i in range(max_Ng):
-        gene_set_size = len(temp[i].split("\t")) - 2
-        gs_line = temp[i].split("\t")
-        gene_set_name = gs_line[0]
-        gene_set_desc = gs_line[1]
-        gene_set_tags = list(range(gene_set_size))
+        gene_set_size= len(temp[i].split("\t")) - 2
+        gs_line= temp[i].split("\t")
+        gene_set_name= gs_line[0]
+        gene_set_desc= gs_line[1]
+        gene_set_tags= list(range(gene_set_size))
         for j in range(gene_set_size):
-            gene_set_tags[j] = gs_line[j + 2]
+            gene_set_tags[j]= gs_line[j + 2]
         if np.logical_and(gene_set_size >= thres_min, gene_set_size <= thres_max):
-            temp_size_G[gs_count] = gene_set_size
-            gs.iloc[gs_count] = gene_set_tags + \
+            temp_size_G[gs_count]= gene_set_size
+            gs.iloc[gs_count]= gene_set_tags + \
                 list(np.full((max_size_G - temp_size_G[gs_count]), np.nan))
-            temp_names[gs_count] = gene_set_name
-            temp_desc[gs_count] = gene_set_desc
-            gs_count = gs_count + 1
-    Ng = gs_count
-    gs_names = list(range(Ng))
-    gs_desc = list(range(Ng))
-    size_G = list(range(Ng))
-    gs_names = temp_names[0:Ng]
-    gs_desc = temp_desc[0:Ng]
-    size_G = temp_size_G[0:Ng]
+            temp_names[gs_count]= gene_set_name
+            temp_desc[gs_count]= gene_set_desc
+            gs_count= gs_count + 1
+    Ng= gs_count
+    gs_names= list(range(Ng))
+    gs_desc= list(range(Ng))
+    size_G= list(range(Ng))
+    gs_names= temp_names[0:Ng]
+    gs_desc= temp_desc[0:Ng]
+    size_G= temp_size_G[0:Ng]
     gs.dropna(how='all', inplace=True)
-    gs.index = gs_names
+    gs.index= gs_names
     return {'N_gs': Ng, 'gs': gs, 'gs_names': gs_names, 'gs_desc': gs_desc, 'size_G': size_G, 'max_N_gs': max_Ng}
 
 
@@ -215,23 +222,23 @@ def read_genesets_gmt(gs_db, thres_min=2, thres_max=2000):
 def read_genesets_gmx(gs_gmx, thres_min=2, thres_max=2000):
     import pandas as pd
     import numpy as np
-    df_temp = pd.read_csv(
+    df_temp= pd.read_csv(
         gs_gmx, sep='\t', skip_blank_lines=True).transpose().dropna(how='all')
-    all_gs_names = df_temp.index.tolist().copy()
-    all_gs_desc = df_temp[0].tolist().copy()
-    all_gs = df_temp.drop(labels=0, axis=1)
-    all_gs_sizes = all_gs.count(axis=1).tolist()
-    pass_thresholds = np.logical_and(all_gs.count(
+    all_gs_names= df_temp.index.tolist().copy()
+    all_gs_desc= df_temp[0].tolist().copy()
+    all_gs= df_temp.drop(labels=0, axis=1)
+    all_gs_sizes= all_gs.count(axis=1).tolist()
+    pass_thresholds= np.logical_and(all_gs.count(
         axis=1) >= thres_min, all_gs.count(axis=1) <= thres_max).to_list()
-    gs_names = np.array(all_gs_names)[np.array(
+    gs_names= np.array(all_gs_names)[np.array(
         pass_thresholds)].tolist().copy()
-    gs_desc = np.array(all_gs_desc)[np.array(pass_thresholds)].tolist().copy()
-    gs_sizes = np.array(all_gs_sizes)[np.array(
+    gs_desc= np.array(all_gs_desc)[np.array(pass_thresholds)].tolist().copy()
+    gs_sizes= np.array(all_gs_sizes)[np.array(
         pass_thresholds)].tolist().copy()
-    gs = all_gs[pass_thresholds]
-    max_Ng = len(all_gs_names)
-    Ng = len(gs_names)
-    gs.columns = range(len(gs.columns))
+    gs= all_gs[pass_thresholds]
+    max_Ng= len(all_gs_names)
+    Ng= len(gs_names)
+    gs.columns= range(len(gs.columns))
     # N_gs = number of gene sets defined in gmx file that satisfy the min and max thresholds
     # gs = matrix containing gene set collections, one per line, satisfying min/max thresholds
     # gs_names = vector of names of gene sets (of length N_gs)
@@ -246,12 +253,12 @@ def read_genesets_gmx(gs_gmx, thres_min=2, thres_max=2000):
 def read_gct(gct):
     import sys
     import pandas as pd
-    dataset = pd.read_csv(gct, sep='\t', header=2, index_col=[
+    dataset= pd.read_csv(gct, sep='\t', header=2, index_col=[
         0, 1], skip_blank_lines=True)
-    dataset.index.names=["NAME","Description"]
-    dataset_descriptions = dataset.index.to_frame(index=False)
+    dataset.index.names= ["NAME", "Description"]
+    dataset_descriptions= dataset.index.to_frame(index=False)
     dataset_descriptions.set_index(["NAME"], inplace=True)
-    dataset.index = dataset.index.droplevel(1)  # Drop gene descriptions
+    dataset.index= dataset.index.droplevel(1)  # Drop gene descriptions
     return {'data': dataset, 'row_descriptions': dataset_descriptions["Description"].values}
 
 
@@ -262,7 +269,7 @@ def read_chip(chip):
     import os
     import sys
     import pandas as pd
-    chip_df = pd.read_csv(chip, sep='\t', index_col=0, skip_blank_lines=True)
+    chip_df= pd.read_csv(chip, sep='\t', index_col=0, skip_blank_lines=True)
     return chip_df
 
 
@@ -275,23 +282,23 @@ def collapse_dataset(dataset, chip, mode="sum"):
     import ssGSEAlib
     import pandas as pd
     if isinstance(dataset, dict) == False:
-        dataset = ssGSEAlib.read_gct(dataset)
+        dataset= ssGSEAlib.read_gct(dataset)
     if isinstance(chip, pd.DataFrame) == False:
-        chip = ssGSEAlib.read_chip(chip)
+        chip= ssGSEAlib.read_chip(chip)
     if isinstance(dataset, dict) == True:
-        dataset = dataset['data']
-    joined_df = chip.join(dataset, how='inner')
+        dataset= dataset['data']
+    joined_df= chip.join(dataset, how='inner')
     joined_df.reset_index(drop=True, inplace=True)
-    annotations = joined_df[["Gene Symbol",
+    annotations= joined_df[["Gene Symbol",
                              "Gene Title"]].drop_duplicates().copy()
     joined_df.drop("Gene Title", axis=1, inplace=True)
     if mode == "sum":
-        collapsed_df = joined_df.groupby(["Gene Symbol"]).sum()
+        collapsed_df= joined_df.groupby(["Gene Symbol"]).sum()
     if mode == "mean":
-        collapsed_df = joined_df.groupby(["Gene Symbol"]).mean()
+        collapsed_df= joined_df.groupby(["Gene Symbol"]).mean()
     if mode == "median":
-        collapsed_df = joined_df.groupby(["Gene Symbol"]).median()
+        collapsed_df= joined_df.groupby(["Gene Symbol"]).median()
     if mode == "max":
-        collapsed_df = joined_df.groupby(["Gene Symbol"]).max()
-    collapsed_df.index.name = "NAME"
+        collapsed_df= joined_df.groupby(["Gene Symbol"]).max()
+    collapsed_df.index.name= "NAME"
     return {'data': collapsed_df, 'row_descriptions': annotations["Gene Title"].values}
