@@ -132,7 +132,9 @@ def read_genesets_gmt(gs_db, thres_min=2, thres_max=2000):
     gs_names = temp_names[0:Ng]
     gs_desc = temp_desc[0:Ng]
     size_G = temp_size_G[0:Ng]
-    return({'N_gs': Ng, 'gs': gs.dropna(how='all'), 'gs_names': gs_names, 'gs_desc': gs_desc, 'size_G': size_G, 'max_N_gs': max_Ng})
+    gs.dropna(how='all', inplace=True)
+    gs.index = gs_names
+    return({'N_gs': Ng, 'gs': gs, 'gs_names': gs_names, 'gs_desc': gs_desc, 'size_G': size_G, 'max_N_gs': max_Ng})
 
 
 # Reimplementation of the R ssGSEA GMX Parser
@@ -156,6 +158,7 @@ def read_genesets_gmx(gs_gmx, thres_min = 2, thres_max = 2000):
     gs = all_gs[pass_thresholds]
     max_Ng = len(all_gs_names)
     Ng = len(gs_names)
+    gs.columns = range(len(gs.columns))
     # N_gs = number of gene sets defined in gmx file that satisfy the min and max thresholds
     # gs = matrix containing gene set collections, one per line, satisfying min/max thresholds
     # gs_names = vector of names of gene sets (of length N_gs)
