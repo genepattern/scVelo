@@ -43,6 +43,7 @@ def ssGSEA_project_dataset(
     # dataset) file in order to include that gene set in data set projection
     min_overlap=1):
     import sys
+    import pandas as pd
     import numpy as np
     import ssGSEAlib
 
@@ -100,12 +101,25 @@ def ssGSEA_project_dataset(
         gsdb_split = gsdb.split(".")
         if gsdb_split[-1] == "gmt":
             GSDB = ssGSEAlib.read_genesets_gmt(gsdb, thres_min = 2, thres_max = 2000)
-        else:
-            # is a gmx formatted file
+        else: # is a gmx formatted file
             GSDB = rssGSEAlib.ead_genesets_gmx(gsdb, thres_min = 2, thres_max = 2000)
+
         max_G = max(max_G, max(GSDB['size_G']))
         max_N = max_N + GSDB['N_gs']
 
+    # create matrix (gs) containing all gene set definitions
+    N_gs = 0
+    gs = pd.DataFrame(np.nan, index=range(max_N), columns=range(max_G))
+    gs_names = list(range(max_N))
+    gs_descs = list(range(max_N))
+    size_G = list(range(max_N))
+    start = 1
+    for gsdb in gene_sets_dbfile_list:
+        gsdb_split = gsdb.split(".")
+        if gsdb_split[-1] == "gmt":
+            GSDB = ssGSEAlib.read_genesets_gmt(gsdb, thres_min = 2, thres_max = 2000)
+        else: # is a gmx formatted file
+            GSDB = rssGSEAlib.ead_genesets_gmx(gsdb, thres_min = 2, thres_max = 2000)
 
 
 # projects gene expression data onto a single
