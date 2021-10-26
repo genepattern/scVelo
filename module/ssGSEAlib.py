@@ -42,7 +42,18 @@ def ssGSEA_project_dataset(
     # min overlap required between genes in gene set and genes in input (feature
     # dataset) file in order to include that gene set in data set projection
     min_overlap=1):
-    print("Not Working Yet")
+    import sys
+    import ssGSEAlib
+
+    # validate input parameters
+    if gene_symbol_column != "Name" and gene_symbol_column != "Description":
+        sys.exit("invalid value for gene.symbol.column argument: " +  gene_symbol_column)
+
+    if sample_norm_type != "none" and sample_norm_type != "rank" and sample_norm_type != "log" and sample_norm_type != "log.rank":
+        sys.exit("invalid value for sample.norm.type.argument: " + sample_norm_type)
+
+    if combine_mode != "combine.off" and combine_mode != "combine.replace" and combine_mode != "combine.add"):
+        sys.exit("invalid value for combine.mode argument: ", combine_mode)
 
 
 
