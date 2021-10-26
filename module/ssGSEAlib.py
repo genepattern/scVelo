@@ -103,7 +103,6 @@ def ssGSEA_project_dataset(
             GSDB = ssGSEAlib.read_genesets_gmt(gsdb, thres_min = 2, thres_max = 2000)
         else: # is a gmx formatted file
             GSDB = rssGSEAlib.ead_genesets_gmx(gsdb, thres_min = 2, thres_max = 2000)
-
         max_G = max(max_G, max(GSDB['size_G']))
         max_N = max_N + GSDB['N_gs']
 
@@ -113,13 +112,36 @@ def ssGSEA_project_dataset(
     gs_names = list(range(max_N))
     gs_descs = list(range(max_N))
     size_G = list(range(max_N))
-    start = 1
+    start = 0
     for gsdb in gene_sets_dbfile_list:
         gsdb_split = gsdb.split(".")
         if gsdb_split[-1] == "gmt":
             GSDB = ssGSEAlib.read_genesets_gmt(gsdb, thres_min = 2, thres_max = 2000)
         else: # is a gmx formatted file
             GSDB = rssGSEAlib.ead_genesets_gmx(gsdb, thres_min = 2, thres_max = 2000)
+        N_gs = GSDB['N_gs']
+        gs_names[start:(start + N_gs)] = GSDB['gs_names']
+        gs_descs[start:(start + N_gs)] = GSDB['gs_desc']
+        size_G[start:(start + N_gs)] = GSDB['size_G']
+        gs.iloc[start:(start + N_gs), 0:max(GSDB['size_G'])] = GSDB['gs'].iloc[0:N_gs, 0:max(GSDB['size_G'])]
+        start = start + N_gs
+    N_gs = max_N
+
+    # Select desired gene sets
+
+    if gene_set_selection[0] != "ALL":
+        locs = list(np.where(np.isin(gs_names,gene_set_selection))[0])
+        N_gs = len(locs)
+        if N_gs == 0:
+            sys.exit("No matches with gene_set_selection")
+        if N.gs > 1:
+            gs = gs.iloc[locs]
+        else: # Force vector to matrix if only one gene set specified
+            gs = pd.DataFrame(gs.iloc[locs).transpose()
+        gs_names = np.array(gs_names)[locs].tolist()
+        gs_descs = np.array(gs_descs)[locs].tolist()
+        size_G = np.array(size_G)[locs].tolist()
+
 
 
 # projects gene expression data onto a single
