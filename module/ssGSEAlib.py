@@ -149,6 +149,30 @@ def ssGSEA_project_dataset(
         gs_descs= np.array(gs_descs)[locs].tolist()
         size_G= np.array(size_G)[locs].tolist()
 
+    # Loop over gene sets
+
+    # score_matrix records the enrichment score for each pairing
+    # of gene set and sample
+    score_matrix = pd.DataFrame(0, index=range(N_gs), columns=range(Ns))
+    for gs_i in range(N_gs):
+        gene_set = gs.iloc[gs_i, 0:size_G[gs_i]].tolist()
+        gene_overlap = list(set(gene_set).intersection(gene_names))
+        print(gs_i + 1 , "gene set:", gs_names[gs_i], " overlap=", len(gene_overlap))
+        if len(gene_overlap) < min_overlap:
+            # if overlap between gene set and genes in input data set
+            # are below a minimum overlap, no enrichment scores are
+            # calculated for that gene set.
+            score_matrix.iloc[gs_i] = [np.nan]* Ns
+            continue
+        else:
+            gene_set_locs = list(np.where(np.isin(gene_set, gene_overlap))[0])
+            gene_names_locs = list(np.where(np.isin(gene_names, gene_overlap))[0])
+            msig = m.iloc[gene_names_locs]
+            msig_names = np.array(gene_names)[gene_names_locs].tolist()
+            gs_score = ssGSEAlib.project_to_geneset(data_array = m, gene_set = gene_overlap, weight = weight,)
+            score_matrix.iloc[gs_i] = gs_score[ES_vector]
+
+
 
 
 # projects gene expression data onto a single
