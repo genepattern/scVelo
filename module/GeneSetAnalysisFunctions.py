@@ -132,7 +132,7 @@ def read_genesets_gmt(gs_db, thres_min=2, thres_max=2000):
     gs_names = temp_names[0:Ng]
     gs_desc = temp_desc[0:Ng]
     size_G = temp_size_G[0:Ng]
-    return({'N_gs': Ng, 'gs': gs, 'gs_names': gs_names, 'gs_desc': gs_desc, 'size_G': size_G, 'max_N_gs': max_Ng})
+    return({'N_gs': Ng, 'gs': gs.dropna(how='all'), 'gs_names': gs_names, 'gs_desc': gs_desc, 'size_G': size_G, 'max_N_gs': max_Ng})
 
 
 # Reimplementation of the R ssGSEA GMX Parser
