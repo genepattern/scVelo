@@ -150,8 +150,11 @@ def read_gct(gct):
     import pandas as pd
     dataset = pd.read_csv(gct, sep='\t', header=2, index_col=[
         0, 1], skip_blank_lines=True)
+    dataset.index.names=["NAME","Description"]
+    dataset_descriptions = dataset.index.to_frame(index=False)
+    dataset_descriptions.set_index(["NAME"], inplace=True)
     dataset.index = dataset.index.droplevel(1)  # Drop gene descriptions
-    return dataset
+    return {'data': dataset, 'row_descriptions': dataset_descriptions["Description"].values}
 
 
 # Simple implementation of a CHIP Parser for use with ssGSEA
@@ -173,10 +176,11 @@ def read_chip(chip):
 def collapse_dataset(dataset, chip, mode="sum"):
     import ssGSEAlib
     import pandas as pd
-    if isinstance(dataset, pd.DataFrame) == False:
-        dataset = ssGSEAlib.read_gct(chip)
+    if isinstance(dataset, dict) == False:
+        dataset = ssGSEAlib.read_gct(dataset)
     if isinstance(chip, pd.DataFrame) == False:
         chip = ssGSEAlib.read_chip(chip)
+    dataset = dataset['data']
     joined_df = chip.join(dataset, how='inner')
     joined_df.reset_index(drop=True, inplace=True)
     annotations = joined_df[["Gene Symbol",
@@ -191,4 +195,4 @@ def collapse_dataset(dataset, chip, mode="sum"):
     if mode == "max":
         collapsed_df = joined_df.groupby(["Gene Symbol"]).max()
     collapsed_df.index.name = "NAME"
-    return collapsed_df
+    return {'data': collapsed_df, 'row_descriptions': annotations["Gene Title"].values}
