@@ -54,7 +54,7 @@ def velocity_score_to_gct(adata, outkey='rank_velocity_genes', outname="Dataset"
                     str(len(out_matrix.columns) - 1) + "\n")
     text_file.close()
     out_matrix.to_csv(filename, sep="\t", mode='a')
-    return(out_matrix.drop(labels="Description", axis=1))
+    return out_matrix.drop(labels="Description", axis=1)
 
     # sumtest=Dataset_rank_velocity_genes.reindex(Dataset_rank_genes_groups.index).fillna(0) + Dataset_rank_genes_groups
 
@@ -209,7 +209,7 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.25, a
                 transition_locs[i][1]) + " (Enrichment Score: " + str(test_set.loc[set, transition_locs[i][1]].round(2)) + ") at PAGA transition confidence >" + str(conf_threshold) + " and adjacency >" + str(adj_threshold))
         set_hits.append([set, str(transition_locs[i][0]), test_set.loc[set, transition_locs[i][0]], str(transition_locs[i][1]),
                          test_set.loc[set, transition_locs[i][1]], test_set.loc[set, transition_locs[i][1]] - test_set.loc[set, transition_locs[i][0]]])
-    return(set_hits)
+    return set_hits
 
 
 # Using the results of find_candidate_transitions keep candidates that have good directionality
@@ -244,7 +244,7 @@ def find_good_transitions(adata, ssgsea_result, conf_threshold=0.25, adj_thresho
         by="Cluster_ES_Delta", ascending=False, inplace=True)
     filtered_set_hits = all_positive_changes.append(all_negative_changes)
     filtered_set_hits.set_index("Gene_Set", inplace=True)
-    return(filtered_set_hits)
+    return filtered_set_hits
 
 # Get the two clusters latent time and cor() latent time with the clusters ES's. for PAGA transitions, (then compute threholds?)
 # import nympy as np

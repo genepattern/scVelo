@@ -41,22 +41,22 @@ def ssGSEA_project_dataset(
     combine_mode="combine.add",
     # min overlap required between genes in gene set and genes in input (feature
     # dataset) file in order to include that gene set in data set projection
-        min_overlap=1):
-
+    min_overlap=1):
+    print("Not Working Yet")
 
 
 
 # projects gene expression data onto a single
 # gene set by calculating the gene set enrichment score
-project_to_geneset(
+def project_to_geneset(
     # data.matrix containing gene expression data
-    data.array,
+    data_array,
     # gene set projecting expression data to
-    gene.set,
+    gene_set,
     # exponential weight applied to ranking in calculation of
     # enrichment score
-        weight=0):
-
+    weight=0):
+    print("Not Working Yet")
 
 
 
@@ -105,7 +105,7 @@ def read_genesets_gmt(gs_db, thres_min=2, thres_max=2000):
     size_G = temp_size_G[0:Ng]
     gs.dropna(how='all', inplace=True)
     gs.index = gs_names
-    return({'N_gs': Ng, 'gs': gs, 'gs_names': gs_names, 'gs_desc': gs_desc, 'size_G': size_G, 'max_N_gs': max_Ng})
+    return {'N_gs': Ng, 'gs': gs, 'gs_names': gs_names, 'gs_desc': gs_desc, 'size_G': size_G, 'max_N_gs': max_Ng}
 
 
 # Reimplementation of the R ssGSEA GMX Parser
@@ -140,7 +140,7 @@ def read_genesets_gmx(gs_gmx, thres_min=2, thres_max=2000):
     # gs_desc = vector of descriptions of gene sets (of length N_gs)
     # size_G = vector with sizes of each gene set (of length N_gs)
     # max_N_gs = total number of gene sets defined in gmx file; includes those that do not satisfy min/max thresholds
-    return({'N_gs': Ng, 'gs': gs, 'gs_names': gs_names, 'gs_desc': gs_desc, 'size_G': gs_sizes, 'max_N_gs': max_Ng})
+    return {'N_gs': Ng, 'gs': gs, 'gs_names': gs_names, 'gs_desc': gs_desc, 'size_G': gs_sizes, 'max_N_gs': max_Ng}
 
 
 # Simple implementation of a GCT parser
@@ -162,7 +162,7 @@ def read_chip(chip):
     import sys
     import pandas as pd
     chip_df = pd.read_csv(chip, sep='\t', index_col=0, skip_blank_lines=True)
-    return(chip_df)
+    return chip_df
 
 
 # Simple implementation of GSEA DEsktop's Collapse Dataset functions for use
@@ -191,4 +191,4 @@ def collapse_dataset(dataset, chip, mode="sum"):
     if mode == "max":
         collapsed_df = joined_df.groupby(["Gene Symbol"]).max()
     collapsed_df.index.name = "NAME"
-    return(collapsed_df)
+    return collapsed_df
