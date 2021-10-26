@@ -43,6 +43,7 @@ def ssGSEA_project_dataset(
     # dataset) file in order to include that gene set in data set projection
     min_overlap=1):
     import sys
+    import numpy as np
     import ssGSEAlib
 
     # validate input parameters
@@ -52,10 +53,49 @@ def ssGSEA_project_dataset(
     if sample_norm_type != "none" and sample_norm_type != "rank" and sample_norm_type != "log" and sample_norm_type != "log.rank":
         sys.exit("invalid value for sample.norm.type.argument: " + sample_norm_type)
 
-    if combine_mode != "combine.off" and combine_mode != "combine.replace" and combine_mode != "combine.add"):
+    if combine_mode != "combine.off" and combine_mode != "combine.replace" and combine_mode != "combine.add":
         sys.exit("invalid value for combine.mode argument: ", combine_mode)
 
+    # Read input dataset (GCT format)
+    dataset = ssGSEAlib.read_gct(input_ds)
+    m = dataset['data'].copy()
 
+    # "Name" refers to column 1; "Description" to column 2
+    # in Ataris or hairpin gct files the gene symbols are column 2
+    if gene_symbol_column.upper() == "NAME":
+        gene_names = m.index.tolist()
+    elif gene_symbol_column == "Description":
+        gene_names = dataset['row_descriptions'].tolist()
+        m.index = gene_names
+        m.index.names=["NAME"]
+
+    gene_descs = dataset['row_descriptions'].tolist()
+    sample_names = m.columns.to_list()
+
+    Ns = len(m.iloc[0]) # Number of Samples
+    Ng = len(m.iloc[:, 0]) # Number of Genes
+
+    # Sample normalization
+    if sample_norm_type == "none":
+        print("No normalization to be made")
+    elif sample_norm_type == "rank":
+        for j in range(Ns):  # column rank normalization
+            m.iloc[:, j] = m.iloc[:, j].rank(method = "average")
+        m = 10000*m/Ng
+    elif sample_norm_type == "log.rank":
+        for j in range(Ns):  # column rank normalization
+            m.iloc[:, j] = m.iloc[:, j].rank(method = "average")
+        m = np.log(10000*m/Ng + np.exp(1))
+    elif sample_norm_type == "log":
+        m[m < 1] = 1
+        m = np.log(m + np.exp(1))
+
+    # Read gene set databases
+
+    # identify largest gene set size (max.G) and total number of
+    # gene sets across all databases (max.N)
+    max_G = 0
+    max_N = 0
 
 # projects gene expression data onto a single
 # gene set by calculating the gene set enrichment score
