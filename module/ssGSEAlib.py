@@ -103,8 +103,8 @@ def ssGSEA_project_dataset(
         else:
             # is a gmx formatted file
             GSDB = rssGSEAlib.ead_genesets_gmx(gsdb, thres_min = 2, thres_max = 2000)
-        max.G <- max(max.G, max(GSDB$size.G))
-        max.N <- max.N +  GSDB$N.gs
+        max_G = max(max_G, max(GSDB['size_G']))
+        max_N = max_N + GSDB['N_gs']
 
 
 
