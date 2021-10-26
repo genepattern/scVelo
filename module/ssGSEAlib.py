@@ -180,7 +180,8 @@ def collapse_dataset(dataset, chip, mode="sum"):
         dataset = ssGSEAlib.read_gct(dataset)
     if isinstance(chip, pd.DataFrame) == False:
         chip = ssGSEAlib.read_chip(chip)
-    dataset = dataset['data']
+    if isinstance(dataset, dict) == True:
+        dataset = dataset['data']
     joined_df = chip.join(dataset, how='inner')
     joined_df.reset_index(drop=True, inplace=True)
     annotations = joined_df[["Gene Symbol",
