@@ -4,11 +4,60 @@
 # case, encoded in GCT input files) to gene set enrichment scores.
 # (note: for clarity comments will mostly refer to expression data)
 #
-# Original Authors: 
+# Original Authors:
 # Pablo Tamayo, Chet Birger
 # Reimplementation in Python, and additional Helper functions by:
 # Anthony S. Castanza
 #
+
+
+def ssGSEA_project_dataset(
+    # name of gct input file containing
+    # gene expression data
+    input_ds,
+    # name of gct output file name containing
+    # single-sample gene-set enrichment scores
+    output_ds,
+    # list of full pathnames of gmt input files
+    # containing gene set definitions
+    gene_sets_dbfile_list,
+    # column containing gene symbols within gct input file
+    #  "Name", "Description"
+    gene_symbol_column="Name",
+    # "ALL" or list with names of gene sets
+    gene_set_selection="ALL",
+    # normalization method applied to input feature data:
+    # "none", "rank", "log" or "log.rank"
+    sample_norm_type="none",
+    # exponential weight applied to ranking in calculation of
+    # enrichment score
+    weight=0.75,
+    # "combine.off" do not combine *_UP and *_DN versions in
+    #   a single score. "combine.replace" combine *_UP and
+    #   *_DN versions in a single score that replaces the individual
+    # *_UP and *_DN versions. "combine.add" combine *_UP and
+    # *_DN versions in a single score and add it but keeping
+    # the individual *_UP and *_DN versions.
+    combine_mode="combine.add",
+    # min overlap required between genes in gene set and genes in input (feature
+    # dataset) file in order to include that gene set in data set projection
+        min_overlap=1):
+
+
+
+
+# projects gene expression data onto a single
+# gene set by calculating the gene set enrichment score
+project_to_geneset(
+    # data.matrix containing gene expression data
+    data.array,
+    # gene set projecting expression data to
+    gene.set,
+    # exponential weight applied to ranking in calculation of
+    # enrichment score
+        weight=0):
+
+
 
 
 # Reimplementation of the R ssGSEA GMT Parser
@@ -100,7 +149,7 @@ def read_gct(gct):
     import sys
     import pandas as pd
     dataset = pd.read_csv(gct, sep='\t', header=2, index_col=[
-                            0, 1], skip_blank_lines=True)
+        0, 1], skip_blank_lines=True)
     dataset.index = dataset.index.droplevel(1)  # Drop gene descriptions
     return dataset
 
