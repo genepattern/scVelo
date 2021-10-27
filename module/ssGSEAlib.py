@@ -262,7 +262,6 @@ def project_to_geneset(
                        np.append(valleys, 0)) * (gaps)
         ES=sum(RES)
         ES_vector[sample_index]=ES
-
     return ES_vector
 # end of Project.to.GeneSet
 
