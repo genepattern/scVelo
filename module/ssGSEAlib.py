@@ -137,7 +137,7 @@ def ssGSEA_project_dataset(
     # Select desired gene sets
     if isinstance(gene_set_selection, list) == False:
         gene_set_selection = gene_set_selection.split(",")
-    if gene_set_selection[0] != "ALL":
+    if gene_set_selection[0].upper() != "ALL":
         locs = list(np.where(np.isin(gs_names, gene_set_selection))[0])
         N_gs = len(locs)
         if N_gs == 0:
