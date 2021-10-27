@@ -145,7 +145,7 @@ def ssGSEA_project_dataset(
         elif N.gs > 1:
             gs = gs.iloc[locs]
         else:  # Force vector to matrix if only one gene set specified
-            gs = pd.DataFrame(gs.iloc[locs]).transpose()
+            gs = pd.DataFrame(gs.iloc[3]).transpose()
         gs_names=np.array(gs_names)[locs].tolist()
         gs_descs=np.array(gs_descs)[locs].tolist()
         size_G=np.array(size_G)[locs].tolist()
@@ -189,6 +189,7 @@ def project_to_geneset(
     # exponential weight applied to ranking in calculation of
     # enrichment score
     weight=0):
+    import numpy as np
 
     gene_names=data_array.index.tolist()
     n_rows=data_array.shape[0]
