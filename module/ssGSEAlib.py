@@ -206,7 +206,7 @@ def project_to_geneset(
         # Note that when input GCT file is ATARiS-generated, elements of
         # gene.names may not be unique; the following code insures each element
         # of gene.names that is present in the gene.set is referenced in gene.set2
-        gene_set2 = np.array(range(len(gene_names)))[list(np.isin(gene_names, gene_set))]
+        gene_set2 = np.array(range(len(gene_names)))[list(np.isin(gene_names, gene_set))].tolist()
 
         # transform the normalized expression data for a single sample into ranked (in decreasing order)
         # expression values
