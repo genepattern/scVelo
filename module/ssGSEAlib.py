@@ -176,7 +176,48 @@ def ssGSEA_project_dataset(
                 data_array=m, gene_set=gene_overlap, weight=weight)
             score_matrix.iloc[gs_i]=gs_score["ES_vector"]
 
+    # overlap pruning
 
+    # eliminate gene sets for which there was insufficient overlap
+    locs = ~np.isnan(score_matrix.iloc[:,0])
+    print("N_gs before overlap prunning:", N_gs)
+    N_gs = sum(locs)
+    print("N_gs after overlap prunning:", N_gs)
+    score_matrix = score_matrix[locs]
+    gs_names = np.array(gs_names)[locs.tolist()].tolist()
+    gs_descs = np.array(gs_descs)[locs.tolist()].tolist()
+
+    # Gene sets with the suffix "_UP" or "_DN" identify gene sets that are known to go up or down across
+    # the phenotype of interest. The parameter combine.mode ( = "combine.off", "combine.replace" or "combine.add")
+    # controls whether to replace or augment the UP and DN enrichment scores with a single combined score
+    # (ES_UP - ES_DN)
+    initial_up_entries = 0
+    final_up_entries = 0
+    initial_dn_entries = 0
+    final_dn_entries = 0
+    combined_entries = 0
+    other_entries = 0
+
+    if combine_mode == "combine.off"
+        score_matrix_2 = score_matrix
+        gs_names_2 = gs_names
+        gs_descs_2 = gs_descs
+    elif combine_mode == "combine.replace" or combine_mode == "combine.add":
+        score_matrix_2 = None
+        gs_names_2 = None
+        gs_descs_2 = None
+        # note: overlap pruning might have reduced N.gs to zero!
+        if N_gs > 0:
+            for i in range(N_gs):
+                temp = gs_names[i].split("_")
+                if len(temp) > 1:
+                    body = '_'.join(temp[0:len(temp) -1])
+                else: # This fixes a devation between R and Python where Python would return an empty set if len(temp)=1
+                    body = temp
+                suffix = temp[-1]
+                print("i:", i, "gene set:", gs_names[i], "body:", body, "suffix:", suffix)
+                if suffix == "UP":  # This is an "UP" gene set
+    sys.exit("Not Implemented")
 
 
 # projects gene expression data onto a single
