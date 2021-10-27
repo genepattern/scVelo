@@ -250,7 +250,6 @@ def project_to_geneset(
 
         # calculates the area under RES by adding up areas of individual
         # rectangles + triangles
-        sys.exit("Not Working Yet")
         gaps = gaps+1
         RES = np.append(valleys,0) * (gaps) + 0.5*( np.insert(RES[0:Nh],0,0) - np.append(valleys,0) ) * (gaps)
         ES = sum(RES)
