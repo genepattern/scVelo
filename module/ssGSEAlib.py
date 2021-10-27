@@ -218,45 +218,45 @@ def project_to_geneset(
             x = data_array.iloc[gene_list, sample_index]
             ranked_expression = (x - np.mean(x))/np.std(x)
 
-        # tag.indicator flags, within the ranked list of genes, those that are in the gene set
-        sys.exit("Not Working Yet")
-        tag.indicator <- sign(match(gene.list, gene.set2, nomatch=0))    # notice that the sign is 0 (no tag) or 1 (tag)
-        no.tag.indicator <- 1 - tag.indicator
-        N <- length(gene.list)
-        Nh <- length(gene.set2)
-        Nm <-  N - Nh
+        # tag_indicator flags, within the ranked list of genes, those that are in the gene set
+        tag_indicator = np.isin(gene_list, gene_set2).astype(int)    # notice that the sign is 0 (no tag) or 1 (tag)
+        no_tag_indicator = 1 - tag_indicator
+        N = len(gene_list)
+        Nh = len(gene_set2)
+        Nm =  N - Nh
         # ind are indices into ranked.expression, whose values are in decreasing order, corresonding to
         # genes that are in the gene set
-        ind = which(tag.indicator==1)
-        ranked.expression <- abs(ranked.expression[ind])^weight
+        ind = np.where(tag_indicator==1)[0]
+        ranked_expression = abs(ranked_expression.iloc[ind])**weight
 
-        sum.ranked.expression = sum(ranked.expression)
+        sum_ranked_expression = sum(ranked_expression)
         # "up" represents the peaks in the mountain plot; i.e., increments in the running-sum
-        up = ranked.expression/sum.ranked.expression
+        up = ranked_expression/sum_ranked_expression
         # "gaps" contains the lengths of the gaps between ranked pathway genes
-        gaps = (c(ind-1, N) - c(0, ind))
+        gaps = (np.append((ind-1),(N-1)) - np.insert(ind, 0, -1))
         # "down" contain the valleys in the mountain plot; i.e., the decrements in the running-sum
         down = gaps/Nm
         # calculate the cumulative sums at each of the ranked pathway genes
-        RES = cumsum(c(up,up[Nh])-down)
-        valleys = RES[1:Nh]-up
+        RES = np.cumsum(np.append(up,up[Nh-1])-down)
+        valleys = RES[0:Nh]-up
 
-        max.ES = max(RES)
-        min.ES = min(valleys)
+        max_ES = np.max(RES)
+        min_ES = np.min(valleys)
 
-        if( max.ES > -min.ES ){
-            arg.ES <- which.max(RES)
-        } else {
-            arg.ES <- which.min(RES)
-        }
+        if max_ES > -min_ES:
+            arg_ES = np.argmax(RES)
+        else:
+            arg_ES = np.argmin(RES)
+
         # calculates the area under RES by adding up areas of individual
         # rectangles + triangles
+        sys.exit("Not Working Yet")
         gaps = gaps+1
-        RES = c(valleys,0) * (gaps) + 0.5*( c(0,RES[1:Nh]) - c(valleys,0) ) * (gaps)
+        RES = np.append(valleys,0) * (gaps) + 0.5*( np.insert(RES[0:Nh],0,0) - np.append(valleys,0) ) * (gaps)
         ES = sum(RES)
-        ES.vector[sample.index] <- ES
+        ES_vector[sample_index] = ES
 
-    return list(ES_vector))
+    return ES_vector
 # end of Project.to.GeneSet
 
 
