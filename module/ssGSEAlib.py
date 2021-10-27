@@ -210,17 +210,16 @@ def project_to_geneset(
 
         # transform the normalized expression data for a single sample into ranked (in decreasing order)
         # expression values
-        sys.exit("Not Working Yet")
-        if (weight == 0) {
+        if weight == 0:
             # don't bother doing calcuation, just set to 1
-            ranked.expression <- rep(1, n.rows)
-        } else if (weight > 0) {
+            ranked_expression = [1]* n_rows
+        elif weight > 0:
             # calculate z.score of normalized (e.g., ranked) expression values
-            x <- data.array[gene.list, sample.index]
-            ranked.expression <- (x - mean(x))/sd(x)
-        }
+            x = data_array.iloc[gene_list, sample_index]
+            ranked_expression = (x - np.mean(x))/np.std(x)
 
         # tag.indicator flags, within the ranked list of genes, those that are in the gene set
+        sys.exit("Not Working Yet")
         tag.indicator <- sign(match(gene.list, gene.set2, nomatch=0))    # notice that the sign is 0 (no tag) or 1 (tag)
         no.tag.indicator <- 1 - tag.indicator
         N <- length(gene.list)
