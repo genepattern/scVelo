@@ -198,7 +198,7 @@ def ssGSEA_project_dataset(
     combined_entries = 0
     other_entries = 0
 
-    if combine_mode == "combine.off"
+    if combine_mode == "combine.off":
         score_matrix_2 = score_matrix
         gs_names_2 = gs_names
         gs_descs_2 = gs_descs
@@ -216,8 +216,18 @@ def ssGSEA_project_dataset(
                     body = temp
                 suffix = temp[-1]
                 print("i:", i, "gene set:", gs_names[i], "body:", body, "suffix:", suffix)
-                if suffix == "UP":  # This is an "UP" gene set
-    sys.exit("Not Implemented")
+                #if suffix == "UP":  # This is an "UP" gene set
+        sys.exit("Not Implemented")
+
+
+    if len(score_matrix_2.iloc[:,0]) == 0:
+        sys.exit("No output gct file written: no gene sets satisfied the min overlap criterion")
+    else:
+        score_matrix_2.columns = sample_names
+        score_matrix_2.index = gs_names_2
+        gct = {'data': score_matrix_2, 'row_descriptions': gs_descs_2}
+        ssGSEAlib.write_gct(gct, output_ds)
+# end of SSGSEA.project.dataset
 
 
 # projects gene expression data onto a single
@@ -445,3 +455,39 @@ def collapse_dataset(dataset, chip, mode="sum"):
         collapsed_df=joined_df.groupby(["Gene Symbol"]).max()
     collapsed_df.index.name="NAME"
     return {'data': collapsed_df, 'row_descriptions': annotations["Gene Title"].values}
+
+
+# Save a GCT result to a file, ensuring the filename has the extension .gct
+def write_gct(gct, filename, check_file_extension=True):
+    import ssGSEAlib
+    import sys
+    if check_file_extension:
+        filename = ssGSEAlib.check_extension(filename, ".gct")
+
+    rows = str(len(gct['data']))
+    columns = str(len(gct['data'].columns))
+
+    if len(gct['row_descriptions'])!=int(rows):
+        sys.exit("Number of row descriptions (", len(gct['row_descriptions']), ") not equal to number of row names (", rows, ").")
+
+    row_descriptions = gct['row_descriptions']
+    if row_descriptions == None:
+        row_descriptions = ['NA']*int(rows)
+
+    m = gct['data'].copy()
+    m.insert(loc=0, column='Description', value=gct['row_descriptions'])
+    f = open(filename, "w")
+    f.write('#1.2\n')
+    f.write(rows + "\t" + columns + "\n")
+    f.close()
+    m.to_csv(filename, sep="\t", index_label="NAME", mode='a')
+    return(filename)
+
+
+# extension e.g. '.gct'
+def check_extension(file_name, extension):
+    import re
+    ext = re.search(extension+"$", file_name.lower())
+    if ext == None:
+        file_name = file_name + extension
+    return file_name
