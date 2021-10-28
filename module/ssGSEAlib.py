@@ -200,9 +200,9 @@ def ssGSEA_project_dataset(
         gs_names_2 = gs_names
         gs_descs_2 = gs_descs
     elif combine_mode == "combine.replace" or combine_mode == "combine.add":
-        score_matrix_2 = None
-        gs_names_2 = None
-        gs_descs_2 = None
+        score_matrix_2 = pandas.DataFrame() 
+        gs_names_2 = []
+        gs_descs_2 = []
         # note: overlap pruning might have reduced N.gs to zero!
         if N_gs > 0:
             for i in range(N_gs):
@@ -213,8 +213,37 @@ def ssGSEA_project_dataset(
                     body = temp
                 suffix = temp[-1]
                 print("i:", i, "gene set:", gs_names[i], "body:", body, "suffix:", suffix)
-                #if suffix == "UP":  # This is an "UP" gene set
-        sys.exit("Not Implemented")
+                if suffix == "UP":  # This is an "UP" gene set
+                    initial_up_entries = initial_up_entries + 1
+                    target = body + "_DN"
+                    loc = numpy.where(numpy.isin(gs_names, target))[0]
+                    if loc.size != 0: # found corresponding "DN" gene set: create combined entry
+                        score = score_matrix.iloc[i] - score_matrix.iloc[loc]
+                        score_matrix_2 = score_matrix_2.append(score)
+                        gs_names_2 = gs_names_2 + [body]
+                        gs_descs_2 = gs_descs_2 + [gs_descs[i]+ " combined UP & DN"]
+                        combined_entries = combined_entries + 1
+                        if combine_mode == "combine.add":  # also add the "UP entry
+                            score_matrix_2 = score_matrix_2.append( score_matrix.iloc[i])
+                            gs_names_2 = gs_names_2 + [gs_names[i]]
+                            gs_descs_2 = gs_descs_2 + [gs_descs[i]]
+                            final_up_entries = final_up_entries + 1
+                    else: # did not find corresponding "DN" gene set: create "UP" entry
+                        score_matrix_2 = score_matrix_2.append(score_matrix.iloc[i])
+                        gs_names_2 = gs_names_2 + [gs_names[i]]
+                        gs_descs_2 = gs_descs_2 + [gs_descs[i]]
+                        final_up_entries <- final_up_entries + 1
+                elif suffix == "DN": # This is a "DN" gene set
+                    sys.exit("Not Implemented")
+
+        print("initial_up_entries:", initial_up_entries)
+        print("final_up_entries:", final_up_entries)
+        print("initial_dn_entries:", initial_dn_entries)
+        print("final_dn_entries:", final_dn_entries)
+        print("other_entries:", other_entries)
+        print("combined_entries:", combined_entries)
+
+        print(paste("total entries:", length(score.matrix.2[,1])))
 
 
     if len(score_matrix_2.iloc[:,0]) == 0:
