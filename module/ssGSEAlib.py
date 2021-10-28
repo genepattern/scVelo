@@ -458,11 +458,11 @@ def collapse_dataset(dataset, chip, mode="sum"):
 
 
 # Save a GCT result to a file, ensuring the filename has the extension .gct
-def write_gct(gct, filename, check_file_extension=True):
+def write_gct(gct, file_name, check_file_extension=True):
     import ssGSEAlib
     import sys
     if check_file_extension:
-        filename = ssGSEAlib.check_extension(filename, ".gct")
+        file_name = ssGSEAlib.check_extension(file_name, ".gct")
 
     rows = str(len(gct['data']))
     columns = str(len(gct['data'].columns))
@@ -476,12 +476,10 @@ def write_gct(gct, filename, check_file_extension=True):
 
     m = gct['data'].copy()
     m.insert(loc=0, column='Description', value=gct['row_descriptions'])
-    f = open(filename, "w")
-    f.write('#1.2\n')
-    f.write(rows + "\t" + columns + "\n")
-    f.close()
-    m.to_csv(filename, sep="\t", index_label="NAME", mode='a')
-    return(filename)
+    with open(file_name, 'w') as file:
+        file.write('#1.2\n' + rows + '\t' + columns + '\n')
+        m.to_csv(file, sep='\t', index_label="NAME", mode='w+')
+    return(file_name)
 
 
 # extension e.g. '.gct'
