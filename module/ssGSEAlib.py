@@ -234,7 +234,26 @@ def ssGSEA_project_dataset(
                         gs_descs_2 = gs_descs_2 + [gs_descs[i]]
                         final_up_entries <- final_up_entries + 1
                 elif suffix == "DN": # This is a "DN" gene set
-                    sys.exit("Not Implemented")
+                    initial_dn_entries = initial_dn_entries + 1
+                    target = body + "_UP"
+                    loc = numpy.where(numpy.isin(gs_names, target))[0]
+                    if loc.size = 0: # did not find corresponding "UP" gene set: create "DN" entry
+                        score_matrix_2 = score_matrix_2.append(score_matrix.iloc[i])
+                        gs_names_2 = gs_names_2 + [gs_names[i]]
+                        gs_descs_2 = gs_descs_2 + [gs_descs[i]]
+                        final_dn_entries = final_dn_entries + 1
+                    else: # it found corresponding "UP" gene set
+                        if combine_mode == "combine.add": # create "DN" entry
+                            score_matrix_2 = score_matrix_2.append(score_matrix.iloc[i])
+                            gs_names_2 = gs_names_2 + [gs_names[i]]
+                            gs_descs_2 = gs_descs_2 + [gs_descs[i]]
+                            final_dn_entries = final_dn_entries + 1
+                else # This is neither "UP nor "DN" gene set: create individual entry
+                    score_matrix_2 = score_matrix_2.append(score_matrix.iloc[i])
+                    gs_names_2 = gs_names_2 + [gs_names[i]]
+                    gs_descs_2 = gs_descs_2 + [gs_descs[i]]
+                    other_entries = other_entries + 1
+            # end for loop over gene sets
 
         print("initial_up_entries:", initial_up_entries)
         print("final_up_entries:", final_up_entries)
@@ -244,7 +263,6 @@ def ssGSEA_project_dataset(
         print("combined_entries:", combined_entries)
 
         print(paste("total entries:", length(score.matrix.2[,1])))
-
 
     if len(score_matrix_2.iloc[:,0]) == 0:
         sys.exit("No output gct file written: no gene sets satisfied the min overlap criterion")
