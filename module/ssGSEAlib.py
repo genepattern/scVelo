@@ -9,6 +9,7 @@
 # Reimplementation in Python, and additional Helper functions by:
 # Anthony S. Castanza
 #
+import os, sys, pandas, numpy
 
 
 def ssGSEA_project_dataset(
@@ -42,10 +43,6 @@ def ssGSEA_project_dataset(
     # min overlap required between genes in gene set and genes in input (feature
     # dataset) file in order to include that gene set in data set projection
     min_overlap=1):
-    import sys
-    import pandas as pd
-    import numpy as np
-    import ssGSEAlib
 
     # validate input parameters
     if gene_symbol_column != "Name" and gene_symbol_column != "Description":
@@ -60,7 +57,7 @@ def ssGSEA_project_dataset(
         sys.exit("invalid value for combine.mode argument: ", combine_mode)
 
     # Read input dataset (GCT format)
-    dataset = ssGSEAlib.read_gct(input_ds)
+    dataset = read_gct(input_ds)
     m = dataset['data'].copy()
 
     # "Name" refers to column 1; "Description" to column 2
@@ -88,10 +85,10 @@ def ssGSEA_project_dataset(
     elif sample_norm_type == "log.rank":
         for j in range(Ns):  # column rank normalization
             m.iloc[:, j] = m.iloc[:, j].rank(method="average")
-        m = np.log(10000 * m / Ng + np.exp(1))
+        m = numpy.log(10000 * m / Ng + numpy.exp(1))
     elif sample_norm_type == "log":
         m[m < 1] = 1
-        m = np.log(m + np.exp(1))
+        m = numpy.log(m + numpy.exp(1))
 
     # Read gene set databases
 
@@ -102,17 +99,17 @@ def ssGSEA_project_dataset(
     for gsdb in gene_sets_dbfile_list:
         gsdb_split = gsdb.split(".")
         if gsdb_split[-1] == "gmt":
-            GSDB = ssGSEAlib.read_genesets_gmt(
+            GSDB = read_genesets_gmt(
                 gsdb, thres_min=2, thres_max=2000)
         else:  # is a gmx formatted file
-            GSDB = rssGSEAlib.ead_genesets_gmx(
+            GSDB = read_genesets_gmx(
                 gsdb, thres_min=2, thres_max=2000)
         max_G = max(max_G, max(GSDB['size_G']))
         max_N = max_N + GSDB['N_gs']
 
     # create matrix (gs) containing all gene set definitions
     N_gs = 0
-    gs = pd.DataFrame(np.nan, index=range(max_N), columns=range(max_G))
+    gs = pandas.DataFrame(numpy.nan, index=range(max_N), columns=range(max_G))
     gs_names = list(range(max_N))
     gs_descs = list(range(max_N))
     size_G = list(range(max_N))
@@ -120,10 +117,10 @@ def ssGSEA_project_dataset(
     for gsdb in gene_sets_dbfile_list:
         gsdb_split = gsdb.split(".")
         if gsdb_split[-1] == "gmt":
-            GSDB = ssGSEAlib.read_genesets_gmt(
+            GSDB = read_genesets_gmt(
                 gsdb, thres_min=2, thres_max=2000)
         else:  # is a gmx formatted file
-            GSDB = rssGSEAlib.ead_genesets_gmx(
+            GSDB = read_genesets_gmx(
                 gsdb, thres_min=2, thres_max=2000)
         N_gs = GSDB['N_gs']
         gs_names[start:(start + N_gs)] = GSDB['gs_names']
@@ -138,23 +135,23 @@ def ssGSEA_project_dataset(
     if isinstance(gene_set_selection, list) == False:
         gene_set_selection = gene_set_selection.split(",")
     if gene_set_selection[0].upper() != "ALL":
-        locs = list(np.where(np.isin(gs_names, gene_set_selection))[0])
+        locs = list(numpy.where(numpy.isin(gs_names, gene_set_selection))[0])
         N_gs = len(locs)
         if N_gs == 0:
             sys.exit("No matches with gene_set_selection")
         elif N.gs > 1:
             gs = gs.iloc[locs]
         else:  # Force vector to matrix if only one gene set specified
-            gs = pd.DataFrame(gs.iloc[3]).transpose()
-        gs_names=np.array(gs_names)[locs].tolist()
-        gs_descs=np.array(gs_descs)[locs].tolist()
-        size_G=np.array(size_G)[locs].tolist()
+            gs = pandas.DataFrame(gs.iloc[3]).transpose()
+        gs_names=numpy.array(gs_names)[locs].tolist()
+        gs_descs=numpy.array(gs_descs)[locs].tolist()
+        size_G=numpy.array(size_G)[locs].tolist()
 
     # Loop over gene sets
 
     # score_matrix records the enrichment score for each pairing
     # of gene set and sample
-    score_matrix=pd.DataFrame(0, index=range(N_gs), columns=range(Ns))
+    score_matrix=pandas.DataFrame(0, index=range(N_gs), columns=range(Ns))
     for gs_i in range(N_gs):
         gene_set=gs.iloc[gs_i, 0:size_G[gs_i]].tolist()
         gene_overlap=list(set(gene_set).intersection(gene_names))
@@ -164,28 +161,28 @@ def ssGSEA_project_dataset(
             # if overlap between gene set and genes in input data set
             # are below a minimum overlap, no enrichment scores are
             # calculated for that gene set.
-            score_matrix.iloc[gs_i]=[np.nan] * Ns
+            score_matrix.iloc[gs_i]=[numpy.nan] * Ns
             continue
         else:
-            gene_set_locs=list(np.where(np.isin(gene_set, gene_overlap))[0])
+            gene_set_locs=list(numpy.where(numpy.isin(gene_set, gene_overlap))[0])
             gene_names_locs=list(
-                np.where(np.isin(gene_names, gene_overlap))[0])
+                numpy.where(numpy.isin(gene_names, gene_overlap))[0])
             msig=m.iloc[gene_names_locs]
-            msig_names=np.array(gene_names)[gene_names_locs].tolist()
-            gs_score=ssGSEAlib.project_to_geneset(
+            msig_names=numpy.array(gene_names)[gene_names_locs].tolist()
+            gs_score=project_to_geneset(
                 data_array=m, gene_set=gene_overlap, weight=weight)
             score_matrix.iloc[gs_i]=gs_score["ES_vector"]
 
     # overlap pruning
 
     # eliminate gene sets for which there was insufficient overlap
-    locs = ~np.isnan(score_matrix.iloc[:,0])
+    locs = ~numpy.isnan(score_matrix.iloc[:,0])
     print("N_gs before overlap prunning:", N_gs)
     N_gs = sum(locs)
     print("N_gs after overlap prunning:", N_gs)
     score_matrix = score_matrix[locs]
-    gs_names = np.array(gs_names)[locs.tolist()].tolist()
-    gs_descs = np.array(gs_descs)[locs.tolist()].tolist()
+    gs_names = numpy.array(gs_names)[locs.tolist()].tolist()
+    gs_descs = numpy.array(gs_descs)[locs.tolist()].tolist()
 
     # Gene sets with the suffix "_UP" or "_DN" identify gene sets that are known to go up or down across
     # the phenotype of interest. The parameter combine.mode ( = "combine.off", "combine.replace" or "combine.add")
@@ -226,7 +223,7 @@ def ssGSEA_project_dataset(
         score_matrix_2.columns = sample_names
         score_matrix_2.index = gs_names_2
         gct = {'data': score_matrix_2, 'row_descriptions': gs_descs_2}
-        ssGSEAlib.write_gct(gct, output_ds)
+        write_gct(gct, output_ds)
 # end of SSGSEA.project.dataset
 
 
@@ -240,7 +237,6 @@ def project_to_geneset(
     # exponential weight applied to ranking in calculation of
     # enrichment score
     weight=0):
-    import numpy as np
 
     gene_names=data_array.index.tolist()
     n_rows=data_array.shape[0]
@@ -262,8 +258,8 @@ def project_to_geneset(
         # Note that when input GCT file is ATARiS-generated, elements of
         # gene.names may not be unique; the following code insures each element
         # of gene.names that is present in the gene.set is referenced in gene.set2
-        gene_set2=np.array(range(len(gene_names)))[
-                           list(np.isin(gene_names, gene_set))].tolist()
+        gene_set2=numpy.array(range(len(gene_names)))[
+                           list(numpy.isin(gene_names, gene_set))].tolist()
 
         # transform the normalized expression data for a single sample into ranked (in decreasing order)
         # expression values
@@ -273,45 +269,45 @@ def project_to_geneset(
         elif weight > 0:
             # calculate z.score of normalized (e.g., ranked) expression values
             x=data_array.iloc[gene_list, sample_index]
-            ranked_expression=(x - np.mean(x)) / np.std(x)
+            ranked_expression=(x - numpy.mean(x)) / numpy.std(x)
 
         # tag_indicator flags, within the ranked list of genes, those that are in the gene set
         # notice that the sign is 0 (no tag) or 1 (tag)
-        tag_indicator=np.isin(gene_list, gene_set2).astype(int)
+        tag_indicator=numpy.isin(gene_list, gene_set2).astype(int)
         no_tag_indicator=1 - tag_indicator
         N=len(gene_list)
         Nh=len(gene_set2)
         Nm=N - Nh
         # ind are indices into ranked.expression, whose values are in decreasing order, corresonding to
         # genes that are in the gene set
-        ind=np.where(tag_indicator == 1)[0]
+        ind=numpy.where(tag_indicator == 1)[0]
         ranked_expression=abs(ranked_expression.iloc[ind])**weight
 
         sum_ranked_expression=sum(ranked_expression)
         # "up" represents the peaks in the mountain plot; i.e., increments in the running-sum
         up=ranked_expression / sum_ranked_expression
         # "gaps" contains the lengths of the gaps between ranked pathway genes
-        gaps=(np.append((ind - 1), (N - 1)) - np.insert(ind, 0, -1))
+        gaps=(numpy.append((ind - 1), (N - 1)) - numpy.insert(ind, 0, -1))
         # "down" contain the valleys in the mountain plot; i.e., the decrements in the running-sum
         down=gaps / Nm
         # calculate the cumulative sums at each of the ranked pathway genes
-        RES=np.cumsum(np.append(up, up[Nh - 1]) - down)
+        RES=numpy.cumsum(numpy.append(up, up[Nh - 1]) - down)
         valleys=RES[0:Nh] - up
 
-        max_ES=np.max(RES)
-        min_ES=np.min(valleys)
+        max_ES=numpy.max(RES)
+        min_ES=numpy.min(valleys)
 
         if max_ES > -min_ES:
-            arg_ES=np.argmax(RES)
+            arg_ES=numpy.argmax(RES)
         else:
-            arg_ES=np.argmin(RES)
+            arg_ES=numpy.argmin(RES)
 
         # calculates the area under RES by adding up areas of individual
         # rectangles + triangles
         gaps=gaps + 1
-        RES=np.append(valleys, 0) * (gaps) + 0.5 * \
-                      (np.insert(RES[0:Nh], 0, 0) - \
-                       np.append(valleys, 0)) * (gaps)
+        RES=numpy.append(valleys, 0) * (gaps) + 0.5 * \
+                      (numpy.insert(RES[0:Nh], 0, 0) - \
+                       numpy.append(valleys, 0)) * (gaps)
         ES=sum(RES)
         ES_vector[sample_index]=ES
     return {"ES_vector": ES_vector}
@@ -325,8 +321,6 @@ def project_to_geneset(
 # that gene set.  Gene sets that do not satisfy the min and max threshold
 # criteria will be filtered out. Returned in a dict with other information
 def read_genesets_gmt(gs_db, thres_min=2, thres_max=2000):
-    import pandas as pd
-    import numpy as np
     with open(gs_db) as f:
         temp=f.read().splitlines()
     max_Ng=len(temp)
@@ -335,7 +329,7 @@ def read_genesets_gmt(gs_db, thres_min=2, thres_max=2000):
     for i in range(max_Ng):
         temp_size_G[i]=len(temp[i].split("\t")) - 2
     max_size_G=max(temp_size_G)
-    gs=pd.DataFrame(np.nan, index=range(max_Ng), columns=range(max_size_G))
+    gs=pandas.DataFrame(numpy.nan, index=range(max_Ng), columns=range(max_size_G))
     temp_names=list(range(max_Ng))
     temp_desc=list(range(max_Ng))
     gs_count=0
@@ -347,10 +341,10 @@ def read_genesets_gmt(gs_db, thres_min=2, thres_max=2000):
         gene_set_tags=list(range(gene_set_size))
         for j in range(gene_set_size):
             gene_set_tags[j]=gs_line[j + 2]
-        if np.logical_and(gene_set_size >= thres_min, gene_set_size <= thres_max):
+        if numpy.logical_and(gene_set_size >= thres_min, gene_set_size <= thres_max):
             temp_size_G[gs_count]=gene_set_size
             gs.iloc[gs_count]=gene_set_tags + \
-                list(np.full((max_size_G - temp_size_G[gs_count]), np.nan))
+                list(numpy.full((max_size_G - temp_size_G[gs_count]), numpy.nan))
             temp_names[gs_count]=gene_set_name
             temp_desc[gs_count]=gene_set_desc
             gs_count=gs_count + 1
@@ -373,20 +367,18 @@ def read_genesets_gmt(gs_db, thres_min=2, thres_max=2000):
 # that gene set.  Gene sets that do not satisfy the min and max threshold
 # criteria will be filtered out. Returned in a dict with other information
 def read_genesets_gmx(gs_gmx, thres_min=2, thres_max=2000):
-    import pandas as pd
-    import numpy as np
-    df_temp=pd.read_csv(
+    df_temp=pandas.read_csv(
         gs_gmx, sep='\t', skip_blank_lines=True).transpose().dropna(how='all')
     all_gs_names=df_temp.index.tolist().copy()
     all_gs_desc=df_temp[0].tolist().copy()
     all_gs=df_temp.drop(labels=0, axis=1)
     all_gs_sizes=all_gs.count(axis=1).tolist()
-    pass_thresholds=np.logical_and(all_gs.count(
+    pass_thresholds=numpy.logical_and(all_gs.count(
         axis=1) >= thres_min, all_gs.count(axis=1) <= thres_max).to_list()
-    gs_names=np.array(all_gs_names)[np.array(
+    gs_names=numpy.array(all_gs_names)[numpy.array(
         pass_thresholds)].tolist().copy()
-    gs_desc=np.array(all_gs_desc)[np.array(pass_thresholds)].tolist().copy()
-    gs_sizes=np.array(all_gs_sizes)[np.array(
+    gs_desc=numpy.array(all_gs_desc)[numpy.array(pass_thresholds)].tolist().copy()
+    gs_sizes=numpy.array(all_gs_sizes)[numpy.array(
         pass_thresholds)].tolist().copy()
     gs=all_gs[pass_thresholds]
     max_Ng=len(all_gs_names)
@@ -404,9 +396,7 @@ def read_genesets_gmx(gs_gmx, thres_min=2, thres_max=2000):
 # Simple implementation of a GCT parser
 # Accepts a GCT file and returns a Pandas Dataframe with a single index
 def read_gct(gct):
-    import sys
-    import pandas as pd
-    dataset=pd.read_csv(gct, sep='\t', header=2, index_col=[
+    dataset=pandas.read_csv(gct, sep='\t', header=2, index_col=[
         0, 1], skip_blank_lines=True)
     dataset.index.names=["NAME", "Description"]
     dataset_descriptions=dataset.index.to_frame(index=False)
@@ -419,10 +409,7 @@ def read_gct(gct):
 # Reads in a CHIP formatted file and returns a pandas dataframe containing
 # the probe to gene mappings
 def read_chip(chip):
-    import os
-    import sys
-    import pandas as pd
-    chip_df=pd.read_csv(chip, sep='\t', index_col=0, skip_blank_lines=True)
+    chip_df=pandas.read_csv(chip, sep='\t', index_col=0, skip_blank_lines=True)
     return chip_df
 
 
@@ -435,9 +422,9 @@ def collapse_dataset(dataset, chip, mode="sum"):
     import ssGSEAlib
     import pandas as pd
     if isinstance(dataset, dict) == False:
-        dataset=ssGSEAlib.read_gct(dataset)
-    if isinstance(chip, pd.DataFrame) == False:
-        chip=ssGSEAlib.read_chip(chip)
+        dataset=read_gct(dataset)
+    if isinstance(chip, pandas.DataFrame) == False:
+        chip=read_chip(chip)
     if isinstance(dataset, dict) == True:
         dataset=dataset['data']
     joined_df=chip.join(dataset, how='inner')
@@ -459,10 +446,8 @@ def collapse_dataset(dataset, chip, mode="sum"):
 
 # Save a GCT result to a file, ensuring the filename has the extension .gct
 def write_gct(gct, file_name, check_file_extension=True):
-    import ssGSEAlib
-    import sys
     if check_file_extension:
-        file_name = ssGSEAlib.check_extension(file_name, ".gct")
+        file_name = check_extension(file_name, ".gct")
 
     rows = str(len(gct['data']))
     columns = str(len(gct['data'].columns))
