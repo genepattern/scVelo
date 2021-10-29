@@ -63,7 +63,7 @@ def main():
 
     ssGSEAlib.ssGSEA_project_dataset(input_gct,
                                             output_prefix,
-                                            gene_sets_dbfile_list = options.gene_sets_dbfile_list,
+                                            gene_sets_dbfile_list,
                                             gene_symbol_column = options.gene_symbol_column,
                                             gene_set_selection = options.gene_set_selection,
                                             sample_norm_type = options.sample_norm_type,
