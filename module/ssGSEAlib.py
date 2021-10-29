@@ -252,7 +252,7 @@ def ssGSEA_project_dataset(
                             gs_names_2 = gs_names_2 + [gs_names[i]]
                             gs_descs_2 = gs_descs_2 + [gs_descs[i]]
                             final_dn_entries = final_dn_entries + 1
-                else # This is neither "UP nor "DN" gene set: create individual entry
+                else: # This is neither "UP nor "DN" gene set: create individual entry
                     score_matrix_2 = score_matrix_2.append(score_matrix.iloc[i])
                     gs_names_2 = gs_names_2 + [gs_names[i]]
                     gs_descs_2 = gs_descs_2 + [gs_descs[i]]
