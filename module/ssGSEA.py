@@ -46,7 +46,9 @@ def main():
         temp = options.input_gct_filename.split("/") # Extract input file name
         input_file_name = temp[-1]
         temp = input_file_name.split(".gct")
-        options.output_prefix =  temp[0]+".PROJ"
+        output_prefix =  temp[0]+".PROJ.gct"
+    else
+        output_prefix = options.output_prefix + ".gct"
 
     if options.gene_sets_db_list_filename != None:
         with open(options.gene_sets_db_list_filename) as f:
