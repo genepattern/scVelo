@@ -266,7 +266,7 @@ def ssGSEA_project_dataset(
         print("other_entries:", other_entries)
         print("combined_entries:", combined_entries)
 
-        print(paste("total entries:", length(score.matrix.2[,1])))
+        print("total entries:", len(score_matrix_2.iloc[:, 0]))
 
     if len(score_matrix_2.iloc[:,0]) == 0:
         sys.exit("No output gct file written: no gene sets satisfied the min overlap criterion")
