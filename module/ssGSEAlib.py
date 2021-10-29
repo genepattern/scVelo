@@ -57,7 +57,11 @@ def ssGSEA_project_dataset(
         sys.exit("invalid value for combine.mode argument: "+ combine_mode)
 
     # Read input dataset (GCT format)
-    dataset = read_gct(input_ds)
+    if isinstance(dataset, dict) == False:
+        dataset=read_gct(input_ds)
+    else:
+        dataset=input_ds
+
     m = dataset['data'].copy()
 
     # "Name" refers to column 1; "Description" to column 2
