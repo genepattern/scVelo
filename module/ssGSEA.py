@@ -47,7 +47,7 @@ def main():
         input_file_name = temp[-1]
         temp = input_file_name.split(".gct")
         output_prefix =  temp[0]+".PROJ.gct"
-    else
+    else:
         output_prefix = options.output_prefix + ".gct"
 
     if options.gene_sets_db_list_filename != None:
