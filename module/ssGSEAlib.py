@@ -54,7 +54,7 @@ def ssGSEA_project_dataset(
                  sample_norm_type)
 
     if combine_mode != "combine.off" and combine_mode != "combine.replace" and combine_mode != "combine.add":
-        sys.exit("invalid value for combine.mode argument: ", combine_mode)
+        sys.exit("invalid value for combine.mode argument: "+ combine_mode)
 
     # Read input dataset (GCT format)
     dataset = read_gct(input_ds)
@@ -500,7 +500,7 @@ def write_gct(gct, file_name, check_file_extension=True):
     columns = str(len(gct['data'].columns))
 
     if len(gct['row_descriptions'])!=int(rows):
-        sys.exit("Number of row descriptions (", len(gct['row_descriptions']), ") not equal to number of row names (", rows, ").")
+        sys.exit("Number of row descriptions ("+ len(gct['row_descriptions'])+ ") not equal to number of row names ("+ rows+ ").")
 
     row_descriptions = gct['row_descriptions']
     if row_descriptions == None:
