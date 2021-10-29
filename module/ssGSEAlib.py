@@ -241,7 +241,7 @@ def ssGSEA_project_dataset(
                     initial_dn_entries = initial_dn_entries + 1
                     target = body + "_UP"
                     loc = numpy.where(numpy.isin(gs_names, target))[0]
-                    if loc.size = 0: # did not find corresponding "UP" gene set: create "DN" entry
+                    if loc.size == 0: # did not find corresponding "UP" gene set: create "DN" entry
                         score_matrix_2 = score_matrix_2.append(score_matrix.iloc[i])
                         gs_names_2 = gs_names_2 + [gs_names[i]]
                         gs_descs_2 = gs_descs_2 + [gs_descs[i]]
