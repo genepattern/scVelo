@@ -4,8 +4,6 @@
 
 # processes the cmd line for the ssGSEA.project.dataset
 import os, sys, argparse
-sys.path.insert(1, os.path.join(libdir,"ssGSEAlib.py"))
-import ssGSEAlib
 
 def main():
     usage = "%prog [options]" + "\n"
@@ -36,6 +34,10 @@ def main():
                     dest="chip_file", nargs='?', default=None, help="CHIP file containing Gene ID to Gene Symbol mappings for use with collapse_mode!='none'.")
 
     options = ap.parse_args()
+
+    sys.path.insert(1, os.path.join(options.libdir,"ssGSEAlib.py"))
+	import ssGSEAlib
+
 
     if options.input_gct_filename == None:
         sys.exit("Missing input_gct_filename")
