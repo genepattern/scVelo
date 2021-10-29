@@ -66,7 +66,7 @@ def main():
                                             gene_sets_dbfile_list,
                                             gene_symbol_column = options.gene_symbol_column,
                                             gene_set_selection = options.gene_set_selection,
-                                            sample_norm_type = options.sample_norm_type,
+                                            sample_norm_type = options.sample_normalization_method,
                                             weight = options.weighting_exponent,
                                             min_overlap = options.min_overlap,
                                             combine_mode = options.combine_mode)
