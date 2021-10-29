@@ -57,7 +57,7 @@ def ssGSEA_project_dataset(
         sys.exit("invalid value for combine.mode argument: "+ combine_mode)
 
     # Read input dataset (GCT format)
-    if isinstance(dataset, dict) == False:
+    if isinstance(input_ds, dict) == False:
         dataset=read_gct(input_ds)
     else:
         dataset=input_ds
@@ -76,8 +76,8 @@ def ssGSEA_project_dataset(
     gene_descs = dataset['row_descriptions'].tolist()
     sample_names = m.columns.to_list()
 
-    Ns = len(m.iloc[0])  # Number of Samples
-    Ng = len(m.iloc[:, 0])  # Number of Genes
+    Ns = len(m.columns)  # Number of Samples
+    Ng = len(m.index)  # Number of Genes
 
     # Sample normalization
     if sample_norm_type == "none":
