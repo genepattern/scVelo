@@ -46,9 +46,9 @@ def main():
         temp = options.input_gct_filename.split("/") # Extract input file name
         input_file_name = temp[-1]
         temp = input_file_name.split(".gct")
-        output_prefix =  temp[0]+".PROJ.gct"
+        output_ds =  temp[0]+".PROJ.gct"
     else:
-        output_prefix = options.output_prefix + ".gct"
+        output_ds = options.output_prefix + ".gct"
 
     if options.gene_sets_db_list_filename != None:
         with open(options.gene_sets_db_list_filename) as f:
@@ -57,19 +57,19 @@ def main():
         sys.exit("No Gene Set DB files provided")
 
     if options.collapse_mode != "none":
-        input_gct = ssGSEAlib.collapse_dataset(options.input_gct_filename, options.chip_file, mode=options.collapse_mode)
+        input_ds = ssGSEAlib.collapse_dataset(options.input_gct_filename, options.chip_file, mode=options.collapse_mode)
     else:
-        input_gct = options.input_gct_filename
+        input_ds = options.input_gct_filename
 
-    ssGSEAlib.ssGSEA_project_dataset(input_gct,
-                                            output_prefix,
+    ssGSEAlib.ssGSEA_project_dataset(input_ds,
+                                            output_ds,
                                             gene_sets_dbfile_list,
                                             gene_symbol_column = options.gene_symbol_column,
                                             gene_set_selection = options.gene_set_selection,
                                             sample_norm_type = options.sample_normalization_method,
                                             weight = options.weighting_exponent,
-                                            min_overlap = options.min_overlap,
-                                            combine_mode = options.combine_mode)
+                                            combine_mode = options.combine_mode,
+                                            min_overlap = options.min_overlap)
 
 if __name__ == '__main__':
     main()
