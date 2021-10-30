@@ -173,7 +173,7 @@ def ssGSEA_project_dataset(
                 numpy.where(numpy.isin(gene_names, gene_overlap))[0])
             msig=m.iloc[gene_names_locs]
             msig_names=numpy.array(gene_names)[gene_names_locs].tolist()
-            gs_score=ssGSEAlib.project_to_geneset(
+            gs_score=project_to_geneset(
                 data_array=m, gene_set=gene_overlap, weight=weight)
             score_matrix.iloc[gs_i]=gs_score["ES_vector"]
 

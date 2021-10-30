@@ -27,7 +27,7 @@ def main():
     ap.add_argument("-v", "--min", action="store",
                     dest="min_overlap", nargs='?', type=int, default=1, help="Gene sets with overlap smaller than this are excluded from the analysis.")
     ap.add_argument("-C", "--combine", action="store",
-                    dest="combine_mode", nargs='?', default='combine.all', help="Options for combining enrichment scores for paired *_UP and *_DN gene sets. Valid options are 'combine.off' (default, do not combine paired sets), 'combine.replace' (replace the parent gene sets with just the combined set). 'combine.add' (report the combined set in addition to the parent sets).")
+                    dest="combine_mode", nargs='?', default='combine.add', help="Options for combining enrichment scores for paired *_UP and *_DN gene sets. Valid options are 'combine.off' (default, do not combine paired sets), 'combine.replace' (replace the parent gene sets with just the combined set). 'combine.add' (report the combined set in addition to the parent sets).")
     ap.add_argument("-m", "--collapse_mode", action="store",
                     dest="collapse_mode", nargs='?', default='none', help="Method to use for collapsing dataset from gene ids to gene symbols. Valid options are 'none' (default, do not collapse the dataset), 'sum' (recommended for RNA-seq data), 'max' (GSEA Desktop default, recommended for microarrays), 'mean', and 'median'.")
     ap.add_argument("-f", "--chip_file", action="store",
