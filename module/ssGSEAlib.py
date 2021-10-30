@@ -130,8 +130,8 @@ def ssGSEA_project_dataset(
         gs_names[start:(start + N_gs)] = GSDB['gs_names']
         gs_descs[start:(start + N_gs)] = GSDB['gs_desc']
         size_G[start:(start + N_gs)] = GSDB['size_G']
-        gs.iloc[start:start + N_gs, 0:max(GSDB['size_G'])] = GSDB['gs']
-        start = start + N_gs 
+        gs.iloc[list(range(start,start + N_gs)), list(range(max(GSDB['size_G'])))] = GSDB['gs']
+        start = start + N_gs
     gs.index=gs_names
     N_gs = max_N
 
