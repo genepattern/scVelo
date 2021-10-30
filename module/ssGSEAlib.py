@@ -130,9 +130,9 @@ def ssGSEA_project_dataset(
         gs_names[start:(start + N_gs)] = GSDB['gs_names']
         gs_descs[start:(start + N_gs)] = GSDB['gs_desc']
         size_G[start:(start + N_gs)] = GSDB['size_G']
-        gs.iloc[start:(start + N_gs), 0:max(GSDB['size_G'])
-                       ] = GSDB['gs'].iloc[0:N_gs, 0:max(GSDB['size_G'])]
-        start = start + N_gs
+        gs.iloc[start:start + N_gs, 0:max(GSDB['size_G'])] = GSDB['gs']
+        start = start + N_gs 
+    gs.index=gs_names
     N_gs = max_N
 
     # Select desired gene sets
@@ -173,7 +173,7 @@ def ssGSEA_project_dataset(
                 numpy.where(numpy.isin(gene_names, gene_overlap))[0])
             msig=m.iloc[gene_names_locs]
             msig_names=numpy.array(gene_names)[gene_names_locs].tolist()
-            gs_score=project_to_geneset(
+            gs_score=ssGSEAlib.project_to_geneset(
                 data_array=m, gene_set=gene_overlap, weight=weight)
             score_matrix.iloc[gs_i]=gs_score["ES_vector"]
 
