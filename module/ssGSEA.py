@@ -3,7 +3,7 @@
 # ssGSEA
 
 # processes the cmd line for the ssGSEA.project.dataset
-import os, sys, argparse
+import sys, argparse
 
 def main():
     usage = "%prog [options]" + "\n"
