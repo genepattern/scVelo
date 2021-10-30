@@ -35,7 +35,7 @@ def main():
 
     options = ap.parse_args()
 
-    sys.path.insert(1, os.path.join(options.libdir,"ssGSEAlib.py"))
+    sys.path.insert(1, options.libdir)
     import ssGSEAlib
 
 
