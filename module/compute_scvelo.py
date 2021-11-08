@@ -61,7 +61,7 @@ def main():
 
     options = ap.parse_args()
 
-    adata = ad.read_h5ad(options.input_file)
+    adata = sc.read(options.input_file)
 
     scv.settings.figdir = "./figures"
 
