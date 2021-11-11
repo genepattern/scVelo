@@ -15,7 +15,7 @@ import GeneSetAnalysisFunctions
 
 
 # Convert to Gene.By.Sample.Score.Matrix
-def get_gene_values(adata, key='X', outname="Dataset", write_gct=True):
+def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset", write_gct=True):
     if key.upper() == 'X':
         if isspmatrix(adata.X):
             gene_by_cell = pandas.DataFrame(
@@ -56,6 +56,8 @@ def get_gene_values(adata, key='X', outname="Dataset", write_gct=True):
     out_matrix.index.name = "NAME"
     out_matrix.index = out_matrix.index.str.replace(
         '\\..*', '', regex=True)
+    if int(genes_min_nonzero_cells) > 0:
+        out_matrix = out_matrix[out_matrix.mask(out_matrix!=0).count(axis=1) > int(genes_min_nonzero_cells)]
     out_matrix.insert(loc=0, column='Description', value="NA")
     if write_gct == True:
         text_file = open(filename, "w")
@@ -98,10 +100,10 @@ def detect_clusters(adata, silent=True):
     return cluster_type
 
 
-def make_pseudobulk(adata, key='X', method="sum", min_nonzero_cells=0, clustering="detect", outname="Dataset", write_gct=True):
+def make_pseudobulk(adata, key='X', method="sum", genes_min_nonzero_cells=0, clustering="detect", outname="Dataset", write_gct=True):
     gene_values = get_gene_values(adata, key='X', write_gct=False)
-    if int(min_nonzero_cells) > 0:
-        gene_values = gene_values[gene_values.mask(df!=0).count(axis=1) > int(min_nonzero_cells)]
+    if int(genes_min_nonzero_cells) > 0:
+        gene_values = gene_values[gene_values.mask(out_matrix!=0).count(axis=1) > int(genes_min_nonzero_cells)]
     if clustering == "detect":
         clustering = detect_clusters(adata, silent=True)
     cluster_assignments = adata.obs[clustering]
