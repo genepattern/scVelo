@@ -66,7 +66,7 @@ def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset"
                         str(len(out_matrix.columns) - 1) + "\n")
         text_file.close()
         out_matrix.to_csv(filename, sep="\t", mode='a')
-    return out_matrix.drop(labels="Description", axis=1)
+    return {'data': out_matrix.drop(labels="Description", axis=1)}
     # sumtest=Dataset_rank_velocity_genes.reindex(Dataset_rank_genes_groups.index).fillna(0) + Dataset_rank_genes_groups
 
 
@@ -102,6 +102,7 @@ def detect_clusters(adata, silent=True):
 
 def make_pseudobulk(adata, key='X', method="sum", genes_min_nonzero_cells=0, clustering="detect", outname="Dataset", write_gct=True):
     gene_values = get_gene_values(adata, key='X', write_gct=False)
+    gene_values = gene_values['data']
     if int(genes_min_nonzero_cells) > 0:
         gene_values = gene_values[gene_values.mask(out_matrix!=0).count(axis=1) > int(genes_min_nonzero_cells)]
     if clustering == "detect":
