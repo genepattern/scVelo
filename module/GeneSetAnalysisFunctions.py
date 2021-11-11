@@ -65,15 +65,7 @@ def get_gene_values(adata, outkey='X', outname="Dataset", write_gct=True):
         text_file.close()
         out_matrix.to_csv(filename, sep="\t", mode='a')
     return out_matrix.drop(labels="Description", axis=1)
-
     # sumtest=Dataset_rank_velocity_genes.reindex(Dataset_rank_genes_groups.index).fillna(0) + Dataset_rank_genes_groups
-
-
-def load_ssgsea_result(ssgsea_result):
-    ssgsea_df = pandas.read_csv(ssgsea_result, sep='\t', header=2, index_col=[
-                            0, 1], skip_blank_lines=True)
-    ssgsea_df.index = ssgsea_df.index.droplevel(1)  # Drop gene descriptions
-    return ssgsea_df
 
 
 def detect_clusters(adata, silent=True):
@@ -104,6 +96,43 @@ def detect_clusters(adata, silent=True):
                     print("No clustering found in the dataset.")
                     sys.exit(1)
     return cluster_type
+
+
+def make_pseudobulk(adata, outkey='X', method="sum", clustering="detect", outname="Dataset", write_gct=True):
+    gene_values = get_gene_values(adata, outkey='X', write_gct=False)
+    if clustering == "detect":
+        clustering = detect_clusters(adata, silent=True)
+    cluster_assignments = adata.obs[clustering]
+    gene_values = gene_values.transpose()
+    gene_values.insert(loc=0, column='Clusters', value=cluster_assignments)
+    if method == "sum":
+        pseudobulk_df=gene_values.groupby(["Clusters"]).sum()
+    if method == "mean":
+        pseudobulk_df=gene_values.groupby(["Clusters"]).mean()
+    if method == "median":
+        pseudobulk_df=gene_values.groupby(["Clusters"]).median()
+    if method == "max":
+        pseudobulk_df=gene_values.groupby(["Clusters"]).max()
+    pseudobulk_df = pseudobulk_df.transpose()
+    pseudobulk_df.columns=pseudobulk_df.columns.to_list()
+    pseudobulk_df.index.name="NAME"
+    pseudobulk_df.insert(loc=0, column='Description', value="NA")
+    if write_gct == True:
+        text_file = open(filename, "w")
+        text_file.write('#1.2\n')
+        text_file.write(str(len(pseudobulk_df)) + "\t" +
+                        str(len(pseudobulk_df.columns) - 1) + "\n")
+        text_file.close()
+        pseudobulk_df.to_csv(filename, sep="\t", mode='a')
+    return pseudobulk_df.drop(labels="Description", axis=1)
+
+
+
+def load_ssgsea_result(ssgsea_result):
+    ssgsea_df = pandas.read_csv(ssgsea_result, sep='\t', header=2, index_col=[
+                            0, 1], skip_blank_lines=True)
+    ssgsea_df.index = ssgsea_df.index.droplevel(1)  # Drop gene descriptions
+    return ssgsea_df
 
 
 # Add Clusterwise ssGSEA scores to adata.obs as a cell level score for plotting
