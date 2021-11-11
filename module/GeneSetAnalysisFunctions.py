@@ -149,12 +149,14 @@ def expand_ssgsea_cluster_scores(adata, cluster_key, ssgsea_result):
     adata.obs[ssgsea_cell_df.columns] = ssgsea_cell_df[ssgsea_cell_df.columns]
     return ssgsea_cell_df
 
+
 def import_ssgsea_cell_scores(adata, ssgsea_result):
     ssgsea_df = load_ssgsea_result(ssgsea_result)
     ssgsea_cell_df = ssgsea_df.transpose()
     ssgsea_cell_df = ssgsea_cell_df.reindex(list(adata.obs.index))
     adata.obs[ssgsea_cell_df.columns] = ssgsea_cell_df[ssgsea_cell_df.columns]
     return ssgsea_cell_df
+
 
 def ssgsea_plot_all(adata, ssgsea_result, basis, outname, format):  # Plotting
     cluster_key = detect_clusters(adata)
