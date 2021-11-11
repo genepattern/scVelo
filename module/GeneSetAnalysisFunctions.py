@@ -15,8 +15,8 @@ import GeneSetAnalysisFunctions
 
 
 # Convert to Gene.By.Sample.Score.Matrix
-def get_gene_values(adata, outkey='X', outname="Dataset", write_gct=True):
-    if outkey.upper() == 'X':
+def get_gene_values(adata, key='X', outname="Dataset", write_gct=True):
+    if key.upper() == 'X':
         if isspmatrix(adata.X):
             gene_by_cell = pandas.DataFrame(
                 adata.X.todense()).transpose()
@@ -26,33 +26,33 @@ def get_gene_values(adata, outkey='X', outname="Dataset", write_gct=True):
         gene_by_cell.index = adata.var.index
         gene_by_cell.columns = adata.obs.index
         out_matrix = gene_by_cell
-        filename = outname + "_" + "cell_level_genes_" + outkey + ".gct"
-    elif outkey in adata.layers:
-        if isspmatrix(adata.layers[outkey]):
+        filename = outname + "_" + "cell_level_genes_" + key + ".gct"
+    elif key in adata.layers:
+        if isspmatrix(adata.layers[key]):
             gene_by_cell = pandas.DataFrame(
-                adata.layers[outkey].todense()).transpose()
+                adata.layers[key].todense()).transpose()
         else:
-            gene_by_cell = pandas.DataFrame(adata.layers[outkey].transpose())
+            gene_by_cell = pandas.DataFrame(adata.layers[key].transpose())
         gene_by_cell.index = adata.var.index
         gene_by_cell.columns = adata.obs.index
         out_matrix = gene_by_cell
-        filename = outname + "_" + "cell_level_genes_" + outkey + ".gct"
+        filename = outname + "_" + "cell_level_genes_" + key + ".gct"
     else:
-        # outkey='rank_velocity_genes' and outkey='rank_genes_groups' both work
+        # key='rank_velocity_genes' and key='rank_genes_groups' both work
         cluster_key = detect_clusters(adata)
         unique_values = set()
-        for col in scvelo.DataFrame(adata.uns[outkey]['names']):
+        for col in scvelo.DataFrame(adata.uns[key]['names']):
             unique_values.update(scvelo.DataFrame(
-                adata.uns[outkey]['names'])[col])
+                adata.uns[key]['names'])[col])
         unique_values = list(unique_values)
         unique_values.sort()
         gene_by_cluster = pandas.DataFrame(columns=scvelo.DataFrame(
-            adata.uns[outkey]['names']).columns, index=unique_values)
-        for col in scvelo.DataFrame(adata.uns[outkey]['names']):
-            gene_by_cluster[col] = list(scvelo.DataFrame(adata.uns[outkey]['scores'])[
-                col][numpy.argsort(scvelo.DataFrame(adata.uns[outkey]['names'])[col].values)])
+            adata.uns[key]['names']).columns, index=unique_values)
+        for col in scvelo.DataFrame(adata.uns[key]['names']):
+            gene_by_cluster[col] = list(scvelo.DataFrame(adata.uns[key]['scores'])[
+                col][numpy.argsort(scvelo.DataFrame(adata.uns[key]['names'])[col].values)])
         out_matrix = gene_by_cluster
-        filename = outname + "_" + outkey + "_by_" + cluster_key + "_clusters.gct"
+        filename = outname + "_" + key + "_by_" + cluster_key + "_clusters.gct"
     out_matrix.index.name = "NAME"
     out_matrix.index = out_matrix.index.str.replace(
         '\\..*', '', regex=True)
@@ -98,8 +98,8 @@ def detect_clusters(adata, silent=True):
     return cluster_type
 
 
-def make_pseudobulk(adata, outkey='X', method="sum", clustering="detect", outname="Dataset", write_gct=True):
-    gene_values = get_gene_values(adata, outkey='X', write_gct=False)
+def make_pseudobulk(adata, key='X', method="sum", clustering="detect", outname="Dataset", write_gct=True):
+    gene_values = get_gene_values(adata, key='X', write_gct=False)
     if clustering == "detect":
         clustering = detect_clusters(adata, silent=True)
     cluster_assignments = adata.obs[clustering]
@@ -125,7 +125,6 @@ def make_pseudobulk(adata, outkey='X', method="sum", clustering="detect", outnam
         text_file.close()
         pseudobulk_df.to_csv(filename, sep="\t", mode='a')
     return pseudobulk_df.drop(labels="Description", axis=1)
-
 
 
 def load_ssgsea_result(ssgsea_result):
