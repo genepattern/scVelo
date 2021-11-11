@@ -140,7 +140,7 @@ def load_ssgsea_result(ssgsea_result):
 
 
 # Add Clusterwise ssGSEA scores to adata.obs as a cell level score for plotting
-def adata_import_ssgsea_scores(adata, cluster_key, ssgsea_result):
+def expand_ssgsea_cluster_scores(adata, cluster_key, ssgsea_result):
     ssgsea_df = load_ssgsea_result(ssgsea_result)
     ssgsea_cell_df = ssgsea_df.transpose()
     ssgsea_cell_df = ssgsea_cell_df.reindex(list(adata.obs[cluster_key]))
@@ -149,10 +149,16 @@ def adata_import_ssgsea_scores(adata, cluster_key, ssgsea_result):
     adata.obs[ssgsea_cell_df.columns] = ssgsea_cell_df[ssgsea_cell_df.columns]
     return ssgsea_cell_df
 
+def import_ssgsea_cell_scores(adata, ssgsea_result):
+    ssgsea_df = load_ssgsea_result(ssgsea_result)
+    ssgsea_cell_df = ssgsea_df.transpose()
+    ssgsea_cell_df = ssgsea_cell_df.reindex(list(adata.obs.index))
+    adata.obs[ssgsea_cell_df.columns] = ssgsea_cell_df[ssgsea_cell_df.columns]
+    return ssgsea_cell_df
 
 def ssgsea_plot_all(adata, ssgsea_result, basis, outname, format):  # Plotting
     cluster_key = detect_clusters(adata)
-    ssgsea_cell_df = adata_import_ssgsea_scores(
+    ssgsea_cell_df = expand_ssgsea_cluster_scores(
         adata, cluster_key, ssgsea_result)
     ssgsea_sets = list(ssgsea_cell_df.columns)
     for set in ssgsea_sets:
@@ -162,7 +168,7 @@ def ssgsea_plot_all(adata, ssgsea_result, basis, outname, format):  # Plotting
 
 def ssgsea_plot_hits(adata, filtered_set_hits, ssgsea_result, basis, outname="dataset", format="png"):  # Plotting
     cluster_key = detect_clusters(adata)
-    ssgsea_cell_df = adata_import_ssgsea_scores(
+    ssgsea_cell_df = expand_ssgsea_cluster_scores(
         adata, cluster_key, ssgsea_result)
     for i in range(len(filtered_set_hits)):
         set = str(filtered_set_hits.index[i])
@@ -199,7 +205,7 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.25, a
     # paga_tree_df = scvelo.get_df(adata, 'paga/connectivities_tree', precision=2).T # connectivities subtree
     cluster_key = detect_clusters(adata)
     if set not in adata.obs.columns:
-        ssgsea_cell_df = adata_import_ssgsea_scores(
+        ssgsea_cell_df = expand_ssgsea_cluster_scores(
             adata, cluster_key, ssgsea_result)
     set_transition = create_transition_matrix(
         ssgsea_result, set)
