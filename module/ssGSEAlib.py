@@ -483,13 +483,13 @@ def collapse_dataset(dataset, chip, method="sum"):
     annotations=joined_df[["Gene Symbol",
                              "Gene Title"]].drop_duplicates().copy()
     joined_df.drop("Gene Title", axis=1, inplace=True)
-    if method == "sum":
+    if method.lower() == "sum":
         collapsed_df=joined_df.groupby(["Gene Symbol"]).sum()
-    if method == "mean":
+    if method.lower() == "mean":
         collapsed_df=joined_df.groupby(["Gene Symbol"]).mean()
-    if method == "median":
+    if method.lower() == "median":
         collapsed_df=joined_df.groupby(["Gene Symbol"]).median()
-    if method == "max":
+    if method.lower() == "max":
         collapsed_df=joined_df.groupby(["Gene Symbol"]).max()
     collapsed_df.index.name="NAME"
     return {'data': collapsed_df, 'row_descriptions': annotations["Gene Title"].values}
