@@ -17,8 +17,12 @@ import GeneSetAnalysisFunctions
 # Convert to Gene.By.Sample.Score.Matrix
 def get_gene_values(adata, outkey='X', outname="Dataset", write_gct=True):
     if outkey.upper() == 'X':
-        gene_by_cell = pandas.DataFrame(
-            adata.X.todense()).transpose()
+        if isspmatrix(adata.X):
+            gene_by_cell = pandas.DataFrame(
+                adata.X.todense()).transpose()
+        else:
+            gene_by_cell = pandas.DataFrame(
+                adata.X).transpose()
         gene_by_cell.index = adata.var.index
         gene_by_cell.columns = adata.obs.index
         out_matrix = gene_by_cell
