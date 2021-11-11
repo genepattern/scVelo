@@ -28,7 +28,7 @@ def main():
                     dest="min_overlap", nargs='?', type=int, default=1, help="Gene sets with overlap smaller than this are excluded from the analysis.")
     ap.add_argument("-C", "--combine", action="store",
                     dest="combine_mode", nargs='?', default='combine.add', help="Options for combining enrichment scores for paired *_UP and *_DN gene sets. Valid options are 'combine.off' (default, do not combine paired sets), 'combine.replace' (replace the parent gene sets with just the combined set). 'combine.add' (report the combined set in addition to the parent sets).")
-    ap.add_argument("-m", "--collapse_mode", action="store",
+    ap.add_argument("-m", "--collapse_method", action="store",
                     dest="collapse_mode", nargs='?', default='none', help="Method to use for collapsing dataset from gene ids to gene symbols. Valid options are 'none' (default, do not collapse the dataset), 'sum' (recommended for RNA-seq data), 'max' (GSEA Desktop default, recommended for microarrays), 'mean', and 'median'.")
     ap.add_argument("-f", "--chip_file", action="store",
                     dest="chip_file", nargs='?', default=None, help="CHIP file containing Gene ID to Gene Symbol mappings for use with collapse_mode!='none'.")
@@ -56,8 +56,8 @@ def main():
     else:
         sys.exit("No Gene Set DB files provided")
 
-    if options.collapse_mode != "none":
-        input_ds = ssGSEAlib.collapse_dataset(options.input_gct_filename, options.chip_file, mode=options.collapse_mode)
+    if options.collapse_method != "none":
+        input_ds = ssGSEAlib.collapse_dataset(options.input_gct_filename, options.chip_file, method=options.collapse_method)
     else:
         input_ds = options.input_gct_filename
 

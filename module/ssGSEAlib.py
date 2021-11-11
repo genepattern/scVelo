@@ -469,7 +469,7 @@ def read_chip(chip):
 # Accepts an expression dataset in GCT format, a CHIP file, and a
 # collapse metric and returns a pandas dataframe formatted version of the
 # dataset collapsed from probe level to gene level using the specified metric.
-def collapse_dataset(dataset, chip, mode="sum"):
+def collapse_dataset(dataset, chip, method="sum"):
     import ssGSEAlib
     import pandas as pd
     if isinstance(dataset, dict) == False:
@@ -483,13 +483,13 @@ def collapse_dataset(dataset, chip, mode="sum"):
     annotations=joined_df[["Gene Symbol",
                              "Gene Title"]].drop_duplicates().copy()
     joined_df.drop("Gene Title", axis=1, inplace=True)
-    if mode == "sum":
+    if method == "sum":
         collapsed_df=joined_df.groupby(["Gene Symbol"]).sum()
-    if mode == "mean":
+    if method == "mean":
         collapsed_df=joined_df.groupby(["Gene Symbol"]).mean()
-    if mode == "median":
+    if method == "median":
         collapsed_df=joined_df.groupby(["Gene Symbol"]).median()
-    if mode == "max":
+    if method == "max":
         collapsed_df=joined_df.groupby(["Gene Symbol"]).max()
     collapsed_df.index.name="NAME"
     return {'data': collapsed_df, 'row_descriptions': annotations["Gene Title"].values}
