@@ -15,7 +15,7 @@ import GeneSetAnalysisFunctions
 
 
 # Convert to Gene.By.Sample.Score.Matrix
-def make_gct(adata, outkey='X', outname="Dataset"):
+def get_gene_values(adata, outkey='X', outname="Dataset", write_gct=True):
     if upper(outkey) == 'X'
         gene_by_cell = pandas.DataFrame(
             adata.X.todense()).transpose()
@@ -53,12 +53,13 @@ def make_gct(adata, outkey='X', outname="Dataset"):
     out_matrix.index = out_matrix.index.str.replace(
         '\\..*', '', regex=True)
     out_matrix.insert(loc=0, column='Description', value="NA")
-    text_file = open(filename, "w")
-    text_file.write('#1.2\n')
-    text_file.write(str(len(out_matrix)) + "\t" +
-                    str(len(out_matrix.columns) - 1) + "\n")
-    text_file.close()
-    out_matrix.to_csv(filename, sep="\t", mode='a')
+    if write_gct == True:
+        text_file = open(filename, "w")
+        text_file.write('#1.2\n')
+        text_file.write(str(len(out_matrix)) + "\t" +
+                        str(len(out_matrix.columns) - 1) + "\n")
+        text_file.close()
+        out_matrix.to_csv(filename, sep="\t", mode='a')
     return out_matrix.drop(labels="Description", axis=1)
 
     # sumtest=Dataset_rank_velocity_genes.reindex(Dataset_rank_genes_groups.index).fillna(0) + Dataset_rank_genes_groups
