@@ -98,8 +98,10 @@ def detect_clusters(adata, silent=True):
     return cluster_type
 
 
-def make_pseudobulk(adata, key='X', method="sum", clustering="detect", outname="Dataset", write_gct=True):
+def make_pseudobulk(adata, key='X', method="sum", min_nonzero_cells=0, clustering="detect", outname="Dataset", write_gct=True):
     gene_values = get_gene_values(adata, key='X', write_gct=False)
+    if int(min_nonzero_cells) > 0:
+        gene_values = gene_values[gene_values.mask(df!=0).count(axis=1) > int(min_nonzero_cells)]
     if clustering == "detect":
         clustering = detect_clusters(adata, silent=True)
     cluster_assignments = adata.obs[clustering]
