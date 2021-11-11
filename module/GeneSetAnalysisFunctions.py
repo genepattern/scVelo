@@ -15,8 +15,15 @@ import GeneSetAnalysisFunctions
 
 
 # Convert to Gene.By.Sample.Score.Matrix
-def make_gct(adata, outkey='rank_velocity_genes', outname="Dataset"):
-    if outkey in adata.layers:
+def make_gct(adata, outkey='X', outname="Dataset"):
+    if upper(outkey) == 'X'
+        gene_by_cell = pandas.DataFrame(
+            adata.X.todense()).transpose()
+        gene_by_cell.index = adata.var.index
+        gene_by_cell.columns = adata.obs.index
+        out_matrix = gene_by_cell
+        filename = outname + "_" + "cell_level_genes_" + outkey + ".gct"
+    elif outkey in adata.layers:
         if isspmatrix(adata.layers[outkey]):
             gene_by_cell = pandas.DataFrame(
                 adata.layers[outkey].todense()).transpose()
