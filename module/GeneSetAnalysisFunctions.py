@@ -280,8 +280,6 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.25, a
                          test_set.loc[set, transition_locs[i][1]], test_set.loc[set, transition_locs[i][1]] - test_set.loc[set, transition_locs[i][0]]])
     return set_hits
 
-GeneSetAnalysisFunctions.ssgsea_plot_hits(adata,GeneSetAnalysisFunctions.find_good_transitions(adata,"/Users/acastanza/Downloads/E14_5_Pancreas_dim_reduce_clustered_complete_stochastic_velocity_data_velocity_weighted_ranked_genes.PROJ.gct", conf_threshold=0.1, adj_threshold=0.25, stdev_filter=[1,2]),"/Users/acastanza/Downloads/E14_5_Pancreas_dim_reduce_clustered_complete_stochastic_velocity_data_velocity_weighted_ranked_genes.PROJ.gct", basis="umap", outname="E14_5_Pancreas_velocity_weighted_enrichment")
-
 
 # Using the results of find_candidate_transitions keep candidates that have good directionality
 def find_good_transitions(adata, ssgsea_result, conf_threshold=0.25, adj_threshold=0.5, stdev_filter=[2], silent=False):
@@ -290,7 +288,7 @@ def find_good_transitions(adata, ssgsea_result, conf_threshold=0.25, adj_thresho
     all_set_results = []
     for set in all_sets:
         set_hits = find_candidate_transitions(
-            adata=adata, ssgsea_result=ssgsea_result, set=set, conf_threshold=conf_threshold, adj_threshold=adj_threshold, mode=stdev_filter, silent=silent)
+            adata=adata, ssgsea_result=ssgsea_result, set=set, conf_threshold=conf_threshold, adj_threshold=adj_threshold, stdev_filter=stdev_filter, silent=silent)
         all_set_results.append(set_hits)
     all_set_results_flat = [
         item for sublist in all_set_results for item in sublist]
