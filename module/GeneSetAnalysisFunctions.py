@@ -17,6 +17,7 @@ import GeneSetAnalysisFunctions
 # Convert to Gene.By.Sample.Score.Matrix
 def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset", write_gct=True):
     if key.upper() == 'X':
+        use_cell_level_filter = True
         if isspmatrix(adata.X):
             gene_by_cell = pandas.DataFrame(
                 adata.X.todense()).transpose()
@@ -28,6 +29,7 @@ def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset"
         out_matrix = gene_by_cell
         filename = outname + "_" + "cell_level_genes_" + key
     elif key in adata.layers:
+        use_cell_level_filter = True
         if isspmatrix(adata.layers[key]):
             gene_by_cell = pandas.DataFrame(
                 adata.layers[key].todense()).transpose()
@@ -38,6 +40,7 @@ def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset"
         out_matrix = gene_by_cell
         filename = outname + "_" + "cell_level_genes_" + key
     elif key == "velocity_weighted_ranked_genes":
+        use_cell_level_filter = False
         cluster_key = detect_clusters(adata)
         unique_values = set()
         for col in scvelo.DataFrame(adata.uns['rank_genes_groups']['names']):
@@ -68,6 +71,7 @@ def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset"
         filename = outname + "_" + "velocity_weighted_ranked_genes"
     else:
         # key='rank_velocity_genes' and key='rank_genes_groups' both work
+        use_cell_level_filter = False
         cluster_key = detect_clusters(adata)
         unique_values = set()
         for col in scvelo.DataFrame(adata.uns[key]['names']):
@@ -85,8 +89,9 @@ def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset"
     out_matrix.index.name = "NAME"
     out_matrix.index = out_matrix.index.str.replace(
         '\\..*', '', regex=True)
-    if int(genes_min_nonzero_cells) > 0:
-        out_matrix = out_matrix[out_matrix.mask(out_matrix!=0).count(axis=1) > int(genes_min_nonzero_cells)]
+    if use_cell_level_filter == True:
+        if int(genes_min_nonzero_cells) > 0:
+            out_matrix = out_matrix[out_matrix.mask(out_matrix!=0).count(axis=1) > int(genes_min_nonzero_cells)]
     out_matrix.insert(loc=0, column='Description', value="NA")
     if write_gct == True:
         text_file = open(filename + ".gct", "w")
