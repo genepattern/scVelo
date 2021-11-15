@@ -233,7 +233,7 @@ def create_transition_matrix(ssgsea_result, set):
 
 
 # Take the pairwise deltas from create_transition_matrix and screen out invalid transitions using the PAGA matrix as a mask then apply thresholding criteria
-def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.25, adj_threshold=0.5, stdev_filter=[2], silent=False):
+def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.3, adj_threshold=0.1, stdev_filter=[2], silent=False):
     # connectivities confidence
     paga_conf_df = scvelo.get_df(
         adata, 'paga/transitions_confidence', precision=4).T
@@ -281,8 +281,11 @@ def find_candidate_transitions(adata, ssgsea_result, set, conf_threshold=0.25, a
     return set_hits
 
 
+GeneSetAnalysisFunctions.ssgsea_plot_hits(adata,GeneSetAnalysisFunctions.find_good_transitions(adata,"/Users/acastanza/Downloads/E14_5_Pancreas_dim_reduce_clustered_complete_stochastic_velocity_data_velocity_weighted_ranked_genes.PROJ.gct", conf_threshold=0.3, adj_threshold=0.25, stdev_filter=[1.5]),"/Users/acastanza/Downloads/E14_5_Pancreas_dim_reduce_clustered_complete_stochastic_velocity_data_velocity_weighted_ranked_genes.PROJ.gct", basis="umap", outname="E14_5_Pancreas_velocity_weighted_enrichment")
+
+
 # Using the results of find_candidate_transitions keep candidates that have good directionality
-def find_good_transitions(adata, ssgsea_result, conf_threshold=0.25, adj_threshold=0.5, stdev_filter=[2], silent=False):
+def find_good_transitions(adata, ssgsea_result, conf_threshold=0.3, adj_threshold=0.1, stdev_filter=[2], silent=False):
     ssgsea_raw_df = load_ssgsea_result(ssgsea_result)
     all_sets = ssgsea_raw_df.index.to_list()
     all_set_results = []
