@@ -37,6 +37,35 @@ def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset"
         gene_by_cell.columns = adata.obs.index
         out_matrix = gene_by_cell
         filename = outname + "_" + "cell_level_genes_" + key
+    elif key == "velocity_weighted_ranked_genes":
+        cluster_key = detect_clusters(adata)
+        unique_values = set()
+        for col in scvelo.DataFrame(adata.uns['rank_genes_groups']['names']):
+            unique_values.update(scvelo.DataFrame(
+                adata.uns['rank_genes_groups']['names'])[col])
+        unique_values = list(unique_values)
+        unique_values.sort()
+        gene_by_cluster = pandas.DataFrame(columns=scvelo.DataFrame(
+            adata.uns['rank_genes_groups']['names']).columns, index=unique_values)
+        for col in scvelo.DataFrame(adata.uns['rank_genes_groups']['names']):
+            gene_by_cluster[col] = list(scvelo.DataFrame(adata.uns['rank_genes_groups']['scores'])[
+                col][numpy.argsort(scvelo.DataFrame(adata.uns['rank_genes_groups']['names'])[col].values)])
+        rank_genes_groups_by_cluster = gene_by_cluster.copy()
+        unique_values = set()
+        for col in scvelo.DataFrame(adata.uns['rank_velocity_genes']['names']):
+            unique_values.update(scvelo.DataFrame(
+                adata.uns['rank_velocity_genes']['names'])[col])
+        unique_values = list(unique_values)
+        unique_values.sort()
+        gene_by_cluster = pandas.DataFrame(columns=scvelo.DataFrame(
+            adata.uns['rank_velocity_genes']['names']).columns, index=unique_values)
+        for col in scvelo.DataFrame(adata.uns['rank_velocity_genes']['names']):
+            gene_by_cluster[col] = list(scvelo.DataFrame(adata.uns['rank_velocity_genes']['scores'])[
+                col][numpy.argsort(scvelo.DataFrame(adata.uns['rank_velocity_genes']['names'])[col].values)])
+        rank_velocity_genes_by_cluster = gene_by_cluster.copy()
+        velocity_weight = (1 + numpy.log(1 + numpy.absolute(rank_velocity_genes_by_cluster.reindex(rank_genes_groups_by_cluster.index).fillna(0))))
+        out_matrix = numpy.sign(rank_genes_groups_by_cluster) * (numpy.absolute(rank_genes_groups_by_cluster) ** velocity_weight)
+        filename = outname + "_" + "velocity_weighted_ranked_genes"
     else:
         # key='rank_velocity_genes' and key='rank_genes_groups' both work
         cluster_key = detect_clusters(adata)
