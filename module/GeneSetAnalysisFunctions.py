@@ -65,8 +65,8 @@ def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset"
         text_file.write(str(len(out_matrix)) + "\t" +
                         str(len(out_matrix.columns) - 1) + "\n")
         text_file.close()
-        out_matrix.to_csv(filename, sep="\t", mode='a')
-    return {'data': out_matrix.drop(labels="Description", axis=1)}
+        out_matrix.to_csv(filename + ".gct", sep="\t", mode='a')
+    return {'data': out_matrix.drop(labels="Description", axis=1), 'outname': filename}
     # sumtest=Dataset_rank_velocity_genes.reindex(Dataset_rank_genes_groups.index).fillna(0) + Dataset_rank_genes_groups
 
 
@@ -104,7 +104,7 @@ def make_pseudobulk(adata, key='X', method="sum", genes_min_nonzero_cells=0, clu
     gene_values = get_gene_values(adata, key='X', write_gct=False)
     gene_values = gene_values['data']
     if int(genes_min_nonzero_cells) > 0:
-        gene_values = gene_values[gene_values.mask(out_matrix!=0).count(axis=1) > int(genes_min_nonzero_cells)]
+        gene_values = gene_values[gene_values.mask(gene_values!=0).count(axis=1) > int(genes_min_nonzero_cells)]
     if clustering == "detect":
         clustering = detect_clusters(adata, silent=True)
     cluster_assignments = adata.obs[clustering]
@@ -123,13 +123,14 @@ def make_pseudobulk(adata, key='X', method="sum", genes_min_nonzero_cells=0, clu
     pseudobulk_df.index.name="NAME"
     pseudobulk_df.insert(loc=0, column='Description', value="NA")
     if write_gct == True:
+        filename = outname + "_cluster_level_pseudobulk_counts.gct"
         text_file = open(filename, "w")
         text_file.write('#1.2\n')
         text_file.write(str(len(pseudobulk_df)) + "\t" +
                         str(len(pseudobulk_df.columns) - 1) + "\n")
         text_file.close()
-        pseudobulk_df.to_csv(filename, sep="\t", mode='a')
-    return pseudobulk_df.drop(labels="Description", axis=1)
+        pseudobulk_df.to_csv(filename + ".gct", sep="\t", mode='a')
+    return {'data': pseudobulk_df.drop(labels="Description", axis=1), 'outname': filename}
 
 
 def load_ssgsea_result(ssgsea_result):

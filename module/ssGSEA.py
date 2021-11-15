@@ -29,26 +29,50 @@ def main():
     ap.add_argument("-C", "--combine", action="store",
                     dest="combine_mode", nargs='?', default='combine.add', help="Options for combining enrichment scores for paired *_UP and *_DN gene sets. Valid options are 'combine.off' (default, do not combine paired sets), 'combine.replace' (replace the parent gene sets with just the combined set). 'combine.add' (report the combined set in addition to the parent sets).")
     ap.add_argument("-m", "--collapse_method", action="store",
-                    dest="collapse_mode", nargs='?', default='none', help="Method to use for collapsing dataset from gene ids to gene symbols. Valid options are 'none' (default, do not collapse the dataset), 'sum' (recommended for RNA-seq data), 'max' (GSEA Desktop default, recommended for microarrays), 'mean', and 'median'.")
+                    dest="collapse_method", nargs='?', default='none', help="Method to use for collapsing dataset from gene ids to gene symbols. Valid options are 'none' (default, do not collapse the dataset), 'sum' (recommended for RNA-seq data), 'max' (GSEA Desktop default, recommended for microarrays), 'mean', and 'median'.")
     ap.add_argument("-f", "--chip_file", action="store",
-                    dest="chip_file", nargs='?', default=None, help="CHIP file containing Gene ID to Gene Symbol mappings for use with collapse_mode!='none'.")
+                    dest="chip_file", nargs='?', default=None, help="CHIP file containing Gene ID to Gene Symbol mappings for use with collapse_method!='none'.")
+    ap.add_argument("-t", "--genes_min_nonzero_cells_threshold", action="store",
+                    dest="cell_threshold", nargs='?', default=0, help="Sets a threshold for how many cells must express a gene for it to be included in the output matrix.")
 
     options = ap.parse_args()
 
     sys.path.insert(1, options.libdir)
     import ssGSEAlib
 
-
     if options.input_gct_filename == None:
         sys.exit("Missing input_gct_filename")
 
-    if options.output_prefix == None:
-        temp = options.input_gct_filename.split("/") # Extract input file name
-        input_file_name = temp[-1]
-        temp = input_file_name.split(".gct")
+    if options.input_gct_filename == ssGSEAlib.check_extension(options.input_gct_filename,".h5ad"):
+        import GeneSetAnalysisFunctions
+        import scanpy as sc
+        adata = sc.read(options.input_gct_filename)
+        if options.output_prefix == None:
+            temp = options.input_gct_filename.split("/") # Extract input file name
+            input_file_name = temp[-1]
+            temp = input_file_name.split(".h5ad")
+        else:
+            output_ds = options.output_prefix + ".gct"
+        if options.gene_symbol_column == "pseudobulk_counts":
+            options.input_gct_filename = GeneSetAnalysisFunctions.make_pseudobulk(adata,genes_min_nonzero_cells = int(options.cell_threshold), outname = temp[0])
+            temp[0] = options.input_gct_filename["outname"]
+        elif options.gene_symbol_column.upper() == "NAME":
+            print("Please use one of the single-cell specific options. Falling back to pseudobulk count data.")
+            options.input_gct_filename = GeneSetAnalysisFunctions.make_pseudobulk(adata,genes_min_nonzero_cells = int(options.cell_threshold), outname = temp[0])
+            temp[0] = options.input_gct_filename["outname"]
+        else:
+            options.input_gct_filename = GeneSetAnalysisFunctions.get_gene_values(adata,key=options.gene_symbol_column, genes_min_nonzero_cells = int(options.cell_threshold), outname = temp[0])
+            temp[0] = options.input_gct_filename["outname"]
         output_ds =  temp[0]+".PROJ.gct"
+        options.gene_symbol_column = "Name"
     else:
-        output_ds = options.output_prefix + ".gct"
+        if options.output_prefix == None:
+            temp = options.input_gct_filename.split("/") # Extract input file name
+            input_file_name = temp[-1]
+            temp = input_file_name.split(".gct")
+            output_ds =  temp[0]+".PROJ.gct"
+        else:
+            output_ds = options.output_prefix + ".gct"
 
     if options.gene_sets_db_list_filename != None:
         with open(options.gene_sets_db_list_filename) as f:
