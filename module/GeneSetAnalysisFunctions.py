@@ -55,7 +55,7 @@ def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset"
             gene_by_cluster[col] = list(scvelo.DataFrame(adata.uns[key]['scores'])[
                 col][numpy.argsort(scvelo.DataFrame(adata.uns[key]['names'])[col].values)])
         rank_genes_groups_by_cluster = gene_by_cluster.copy()
-        if velocity_weight == True && key != 'rank_velocity_genes':
+        if velocity_weight == True and key != 'rank_velocity_genes':
             if rank_velocity_genes in adata.uns:
                 print("Applying velocity weights to ranked genes")
                 unique_values = set()
