@@ -56,7 +56,7 @@ def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset"
                 col][numpy.argsort(scvelo.DataFrame(adata.uns[key]['names'])[col].values)])
         rank_genes_groups_by_cluster = gene_by_cluster.copy()
         if velocity_weight == True and key != 'rank_velocity_genes':
-            if rank_velocity_genes in adata.uns:
+            if "rank_velocity_genes" in adata.uns:
                 print("Applying velocity weights to ranked genes")
                 unique_values = set()
                 for col in scvelo.DataFrame(adata.uns['rank_velocity_genes']['names']):
@@ -145,7 +145,7 @@ def make_pseudobulk(adata, key='X', method="sum", genes_min_nonzero_cells=0, clu
     pseudobulk_df = pseudobulk_df.transpose()
     pseudobulk_df.columns=pseudobulk_df.columns.to_list()
     if velocity_weight == True:
-        if rank_velocity_genes in adata.uns:
+        if "rank_velocity_genes" in adata.uns:
             print("Applying velocity weights to pseudobulk counts")
             unique_values = set()
             for col in scvelo.DataFrame(adata.uns['rank_velocity_genes']['names']):
