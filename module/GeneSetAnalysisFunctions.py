@@ -324,17 +324,17 @@ def find_good_transitions(adata, ssgsea_result, conf_threshold=0.3, adj_threshol
     return filtered_set_hits
 
 
-    def str_to_bool(s):
-        if s == 'True':
-             return True
-        elif s == True:
-            return True
-        elif s == 'False':
+def str_to_bool(s):
+    if s == 'True':
+         return True
+    elif s == True:
+        return True
+    elif s == 'False':
              return False
-        elif s == False:
-            return False
-        else:
-             raise ValueError # evil ValueError that doesn't tell you what the wrong value was
+    elif s == False:
+        return False
+    else:
+         raise ValueError # evil ValueError that doesn't tell you what the wrong value was
 
 
 # Get the two clusters latent time and cor() latent time with the clusters ES's. for PAGA transitions, (then compute threholds?)
