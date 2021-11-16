@@ -15,7 +15,7 @@ import GeneSetAnalysisFunctions
 
 
 # Convert to Gene.By.Sample.Score.Matrix
-def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset", write_gct=True):
+def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset", velocity_weight=False, write_gct=True):
     if key.upper() == 'X':
         use_cell_level_filter = True
         if isspmatrix(adata.X):
@@ -39,36 +39,6 @@ def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset"
         gene_by_cell.columns = adata.obs.index
         out_matrix = gene_by_cell
         filename = outname + "_" + "cell_level_genes_" + key
-    elif key == "velocity_weighted_ranked_genes":
-        use_cell_level_filter = False
-        cluster_key = detect_clusters(adata)
-        unique_values = set()
-        for col in scvelo.DataFrame(adata.uns['rank_genes_groups']['names']):
-            unique_values.update(scvelo.DataFrame(
-                adata.uns['rank_genes_groups']['names'])[col])
-        unique_values = list(unique_values)
-        unique_values.sort()
-        gene_by_cluster = pandas.DataFrame(columns=scvelo.DataFrame(
-            adata.uns['rank_genes_groups']['names']).columns, index=unique_values)
-        for col in scvelo.DataFrame(adata.uns['rank_genes_groups']['names']):
-            gene_by_cluster[col] = list(scvelo.DataFrame(adata.uns['rank_genes_groups']['scores'])[
-                col][numpy.argsort(scvelo.DataFrame(adata.uns['rank_genes_groups']['names'])[col].values)])
-        rank_genes_groups_by_cluster = gene_by_cluster.copy()
-        unique_values = set()
-        for col in scvelo.DataFrame(adata.uns['rank_velocity_genes']['names']):
-            unique_values.update(scvelo.DataFrame(
-                adata.uns['rank_velocity_genes']['names'])[col])
-        unique_values = list(unique_values)
-        unique_values.sort()
-        gene_by_cluster = pandas.DataFrame(columns=scvelo.DataFrame(
-            adata.uns['rank_velocity_genes']['names']).columns, index=unique_values)
-        for col in scvelo.DataFrame(adata.uns['rank_velocity_genes']['names']):
-            gene_by_cluster[col] = list(scvelo.DataFrame(adata.uns['rank_velocity_genes']['scores'])[
-                col][numpy.argsort(scvelo.DataFrame(adata.uns['rank_velocity_genes']['names'])[col].values)])
-        rank_velocity_genes_by_cluster = gene_by_cluster.copy()
-        velocity_weight = (1 + numpy.log(1 + numpy.absolute(rank_velocity_genes_by_cluster.reindex(rank_genes_groups_by_cluster.index).fillna(0))))
-        out_matrix = numpy.sign(rank_genes_groups_by_cluster) * (numpy.absolute(rank_genes_groups_by_cluster) ** velocity_weight)
-        filename = outname + "_" + "velocity_weighted_ranked_genes"
     else:
         # key='rank_velocity_genes' and key='rank_genes_groups' both work
         use_cell_level_filter = False
@@ -84,8 +54,27 @@ def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset"
         for col in scvelo.DataFrame(adata.uns[key]['names']):
             gene_by_cluster[col] = list(scvelo.DataFrame(adata.uns[key]['scores'])[
                 col][numpy.argsort(scvelo.DataFrame(adata.uns[key]['names'])[col].values)])
-        out_matrix = gene_by_cluster
-        filename = outname + "_" + key + "_by_" + cluster_key + "_clusters"
+        rank_genes_groups_by_cluster = gene_by_cluster.copy()
+        if velocity_weight==True:
+            if rank_velocity_genes in adata.uns:
+                unique_values = set()
+                for col in scvelo.DataFrame(adata.uns['rank_velocity_genes']['names']):
+                    unique_values.update(scvelo.DataFrame(
+                    adata.uns['rank_velocity_genes']['names'])[col])
+                unique_values = list(unique_values)
+                unique_values.sort()
+                velocity_gene_by_cluster = pandas.DataFrame(columns=scvelo.DataFrame(
+                    adata.uns['rank_velocity_genes']['names']).columns, index=unique_values)
+                for col in scvelo.DataFrame(adata.uns['rank_velocity_genes']['names']):
+                    velocity_gene_by_cluster[col] = list(scvelo.DataFrame(adata.uns['rank_velocity_genes']['scores'])[
+                        col][numpy.argsort(scvelo.DataFrame(adata.uns['rank_velocity_genes']['names'])[col].values)])
+                rank_velocity_genes_by_cluster = velocity_gene_by_cluster.copy()
+                velocity_weight = (1 + numpy.log(1 + numpy.absolute(rank_velocity_genes_by_cluster.reindex(rank_genes_groups_by_cluster.index).fillna(0))))
+                out_matrix = numpy.sign(rank_genes_groups_by_cluster) * (numpy.absolute(rank_genes_groups_by_cluster) ** velocity_weight)
+                filename = outname + "_" + "velocity_weighted_ranked_genes"
+        else:
+            out_matrix = rank_genes_groups_by_cluster
+            filename = outname + "_" + key + "_by_" + cluster_key + "_clusters"
     out_matrix.index.name = "NAME"
     out_matrix.index = out_matrix.index.str.replace(
         '\\..*', '', regex=True)
@@ -134,7 +123,7 @@ def detect_clusters(adata, silent=True):
     return cluster_type
 
 
-def make_pseudobulk(adata, key='X', method="sum", genes_min_nonzero_cells=0, clustering="detect", outname="Dataset", write_gct=True):
+def make_pseudobulk(adata, key='X', method="sum", genes_min_nonzero_cells=0, clustering="detect", outname="Dataset", velocity_weight=False, write_gct=True):
     gene_values = get_gene_values(adata, key='X', write_gct=False)
     gene_values = gene_values['data']
     if int(genes_min_nonzero_cells) > 0:
@@ -154,17 +143,36 @@ def make_pseudobulk(adata, key='X', method="sum", genes_min_nonzero_cells=0, clu
         pseudobulk_df=gene_values.groupby(["Clusters"]).max()
     pseudobulk_df = pseudobulk_df.transpose()
     pseudobulk_df.columns=pseudobulk_df.columns.to_list()
-    pseudobulk_df.index.name="NAME"
-    pseudobulk_df.insert(loc=0, column='Description', value="NA")
-    if write_gct == True:
+    if velocity_weight==True:
+        if rank_velocity_genes in adata.uns:
+            unique_values = set()
+            for col in scvelo.DataFrame(adata.uns['rank_velocity_genes']['names']):
+                unique_values.update(scvelo.DataFrame(
+                    adata.uns['rank_velocity_genes']['names'])[col])
+            unique_values = list(unique_values)
+            unique_values.sort()
+            velocity_gene_by_cluster = pandas.DataFrame(columns=scvelo.DataFrame(
+                adata.uns['rank_velocity_genes']['names']).columns, index=unique_values)
+            for col in scvelo.DataFrame(adata.uns['rank_velocity_genes']['names']):
+                velocity_gene_by_cluster[col] = list(scvelo.DataFrame(adata.uns['rank_velocity_genes']['scores'])[
+                    col][numpy.argsort(scvelo.DataFrame(adata.uns['rank_velocity_genes']['names'])[col].values)])
+            rank_velocity_genes_by_cluster = velocity_gene_by_cluster.copy()
+            velocity_weight = (1 + numpy.log(1 + numpy.absolute(rank_velocity_genes_by_cluster.reindex(pseudobulk_df.index).fillna(0))))
+            out_matrix = numpy.sign(pseudobulk_df) * (numpy.absolute(pseudobulk_df) ** velocity_weight)
+            filename = outname + "_" + "_cluster_level_velocity_weighted_pseudobulk_counts"
+    else:
+        out_matrix = pseudobulk_df
         filename = outname + "_cluster_level_pseudobulk_counts"
+    out_matrix.index.name="NAME"
+    out_matrix.insert(loc=0, column='Description', value="NA")
+    if write_gct == True:
         text_file = open(filename + ".gct", "w")
         text_file.write('#1.2\n')
-        text_file.write(str(len(pseudobulk_df)) + "\t" +
-                        str(len(pseudobulk_df.columns) - 1) + "\n")
+        text_file.write(str(len(out_matrix)) + "\t" +
+                        str(len(out_matrix.columns) - 1) + "\n")
         text_file.close()
-        pseudobulk_df.to_csv(filename + ".gct", sep="\t", mode='a')
-    return {'data': pseudobulk_df.drop(labels="Description", axis=1), 'outname': filename}
+        out_matrix.to_csv(filename + ".gct", sep="\t", mode='a')
+    return {'data': out_matrix.drop(labels="Description", axis=1), 'outname': filename}
 
 
 def load_ssgsea_result(ssgsea_result):
@@ -326,3 +334,6 @@ def find_good_transitions(adata, ssgsea_result, conf_threshold=0.3, adj_threshol
 # for i in range(len(filtered_set_hits)):
 #     set = str(filtered_set_hits.index[i])
 #  scipy.stats.pearsonr(numpy.asarray([float(cluster_times.get("0")),float(cluster_times.get("1"))]),numpy.array([float(filtered_set_hits.iat[0,1]),float(filtered_set_hits.iat[0,3])]))
+
+
+# GeneSetAnalysisFunctions.ssgsea_plot_hits(adata,GeneSetAnalysisFunctions.find_good_transitions(adata,"/Users/acastanza/Downloads/E14_5_Pancreas_dim_reduce_clustered_complete_stochastic_velocity_data_velocity_weighted_ranked_genes.PROJ.gct", conf_threshold=0.2, adj_threshold=0.1, stdev_filter=[1.5]),"/Users/acastanza/Downloads/E14_5_Pancreas_dim_reduce_clustered_complete_stochastic_velocity_data_velocity_weighted_ranked_genes.PROJ.gct", basis="umap", outname="E14_5_Pancreas_velocity_weighted_enrichment")

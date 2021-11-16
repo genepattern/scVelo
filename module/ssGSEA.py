@@ -24,6 +24,8 @@ def main():
                     dest="sample_normalization_method", nargs='?', default='none', help="Method used to normalize gene expression data. Valid options are 'none' (default), 'rank', 'log', and 'log.rank'")
     ap.add_argument("-w", "--weight", action="store",
                     dest="weighting_exponent", nargs='?', type=float, default=0.75, help="Exponent for weighting enrichment calculation. Module authors strongly recommend against changing from default.")
+    ap.add_argument("-r", "--velocity_weight", action="store",
+                    dest="velocity_weight", nargs='?', default=False, help="Apply a weighting factor to the data based on scores from scVelo's rank_velocity_genes")
     ap.add_argument("-v", "--min", action="store",
                     dest="min_overlap", nargs='?', type=int, default=1, help="Gene sets with overlap smaller than this are excluded from the analysis.")
     ap.add_argument("-C", "--combine", action="store",
@@ -54,14 +56,14 @@ def main():
         else:
             output_ds = options.output_prefix + ".gct"
         if options.gene_symbol_column == "pseudobulk_counts":
-            options.input_gct_filename = GeneSetAnalysisFunctions.make_pseudobulk(adata,genes_min_nonzero_cells = int(options.cell_threshold), outname = temp[0])
+            options.input_gct_filename = GeneSetAnalysisFunctions.make_pseudobulk(adata,genes_min_nonzero_cells = int(options.cell_threshold), outname = temp[0], velocity_weight=options.velocity_weight)
             temp[0] = options.input_gct_filename["outname"]
         elif options.gene_symbol_column.upper() == "NAME":
             print("Please use one of the single-cell specific options. Falling back to pseudobulk count data.")
-            options.input_gct_filename = GeneSetAnalysisFunctions.make_pseudobulk(adata,genes_min_nonzero_cells = int(options.cell_threshold), outname = temp[0])
+            options.input_gct_filename = GeneSetAnalysisFunctions.make_pseudobulk(adata,genes_min_nonzero_cells = int(options.cell_threshold), outname = temp[0], velocity_weight=options.velocity_weight)
             temp[0] = options.input_gct_filename["outname"]
         else:
-            options.input_gct_filename = GeneSetAnalysisFunctions.get_gene_values(adata,key=options.gene_symbol_column, genes_min_nonzero_cells = int(options.cell_threshold), outname = temp[0])
+            options.input_gct_filename = GeneSetAnalysisFunctions.get_gene_values(adata,key=options.gene_symbol_column, genes_min_nonzero_cells = int(options.cell_threshold), outname = temp[0], velocity_weight=options.velocity_weight)
             temp[0] = options.input_gct_filename["outname"]
         output_ds =  temp[0]+".PROJ.gct"
         options.gene_symbol_column = "Name"
