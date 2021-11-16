@@ -327,11 +327,11 @@ def find_good_transitions(adata, ssgsea_result, conf_threshold=0.3, adj_threshol
     def str_to_bool(s):
         if s == 'True':
              return True
-        elif s == True
+        elif s == True:
             return True
         elif s == 'False':
              return False
-        elif s == False
+        elif s == False:
             return False
         else:
              raise ValueError # evil ValueError that doesn't tell you what the wrong value was
