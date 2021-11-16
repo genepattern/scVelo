@@ -56,11 +56,11 @@ def main():
         else:
             output_ds = options.output_prefix + ".gct"
         if options.gene_symbol_column == "pseudobulk_counts":
-            options.input_gct_filename = GeneSetAnalysisFunctions.make_pseudobulk(adata,genes_min_nonzero_cells = int(options.cell_threshold), outname = temp[0], velocity_weight=options.velocity_weight)
+            options.input_gct_filename = GeneSetAnalysisFunctions.make_pseudobulk(adata,genes_min_nonzero_cells = int(options.cell_threshold), outname = temp[0], velocity_weight=GeneSetAnalysisFunctions.str_to_bool(options.velocity_weight))
             temp[0] = options.input_gct_filename["outname"]
         elif options.gene_symbol_column.upper() == "NAME":
             print("Please use one of the single-cell specific options. Falling back to pseudobulk count data.")
-            options.input_gct_filename = GeneSetAnalysisFunctions.make_pseudobulk(adata,genes_min_nonzero_cells = int(options.cell_threshold), outname = temp[0], velocity_weight=options.velocity_weight)
+            options.input_gct_filename = GeneSetAnalysisFunctions.make_pseudobulk(adata,genes_min_nonzero_cells = int(options.cell_threshold), outname = temp[0], velocity_weight=GeneSetAnalysisFunctions.str_to_bool(options.velocity_weight))
             temp[0] = options.input_gct_filename["outname"]
         else:
             options.input_gct_filename = GeneSetAnalysisFunctions.get_gene_values(adata,key=options.gene_symbol_column, genes_min_nonzero_cells = int(options.cell_threshold), outname = temp[0], velocity_weight=options.velocity_weight)

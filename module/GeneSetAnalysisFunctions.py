@@ -39,7 +39,7 @@ def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset"
         gene_by_cell.columns = adata.obs.index
         out_matrix = gene_by_cell
         filename = outname + "_" + "cell_level_genes_" + key
-    else:
+    elif key == 'rank_velocity_genes' or key == 'rank_genes_groups':
         # key='rank_velocity_genes' and key='rank_genes_groups' both work
         use_cell_level_filter = False
         cluster_key = detect_clusters(adata)
@@ -55,8 +55,9 @@ def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset"
             gene_by_cluster[col] = list(scvelo.DataFrame(adata.uns[key]['scores'])[
                 col][numpy.argsort(scvelo.DataFrame(adata.uns[key]['names'])[col].values)])
         rank_genes_groups_by_cluster = gene_by_cluster.copy()
-        if velocity_weight==True:
+        if velocity_weight == True && key != 'rank_velocity_genes':
             if rank_velocity_genes in adata.uns:
+                print("Applying velocity weights to ranked genes")
                 unique_values = set()
                 for col in scvelo.DataFrame(adata.uns['rank_velocity_genes']['names']):
                     unique_values.update(scvelo.DataFrame(
@@ -143,8 +144,9 @@ def make_pseudobulk(adata, key='X', method="sum", genes_min_nonzero_cells=0, clu
         pseudobulk_df=gene_values.groupby(["Clusters"]).max()
     pseudobulk_df = pseudobulk_df.transpose()
     pseudobulk_df.columns=pseudobulk_df.columns.to_list()
-    if velocity_weight==True:
+    if velocity_weight == True:
         if rank_velocity_genes in adata.uns:
+            print("Applying velocity weights to pseudobulk counts")
             unique_values = set()
             for col in scvelo.DataFrame(adata.uns['rank_velocity_genes']['names']):
                 unique_values.update(scvelo.DataFrame(
@@ -320,6 +322,20 @@ def find_good_transitions(adata, ssgsea_result, conf_threshold=0.3, adj_threshol
     filtered_set_hits = all_positive_changes.append(all_negative_changes)
     filtered_set_hits.set_index("Gene_Set", inplace=True)
     return filtered_set_hits
+
+
+    def str_to_bool(s):
+        if s == 'True':
+             return True
+        elif s == True
+            return True
+        elif s == 'False':
+             return False
+        elif s == False
+            return False
+        else:
+             raise ValueError # evil ValueError that doesn't tell you what the wrong value was
+
 
 # Get the two clusters latent time and cor() latent time with the clusters ES's. for PAGA transitions, (then compute threholds?)
 # import nympy as np
