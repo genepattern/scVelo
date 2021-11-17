@@ -191,6 +191,7 @@ def expand_ssgsea_cluster_scores(adata, cluster_key, ssgsea_result):
     ssgsea_cell_df = ssgsea_cell_df.reindex(list(adata.obs[cluster_key]))
     ssgsea_cell_df.index = range(len(ssgsea_cell_df.index))
     ssgsea_cell_df = ssgsea_cell_df.set_index(adata.obs.index)
+    adata.uns['gene_sets']=list(ssgsea_cell_df.columns)
     adata.obs[ssgsea_cell_df.columns] = ssgsea_cell_df[ssgsea_cell_df.columns]
     return ssgsea_cell_df
 
@@ -199,6 +200,7 @@ def import_ssgsea_cell_scores(adata, ssgsea_result):
     ssgsea_df = load_ssgsea_result(ssgsea_result)
     ssgsea_cell_df = ssgsea_df.transpose()
     ssgsea_cell_df = ssgsea_cell_df.reindex(list(adata.obs.index))
+    adata.uns['gene_sets']=list(ssgsea_cell_df.columns)
     adata.obs[ssgsea_cell_df.columns] = ssgsea_cell_df[ssgsea_cell_df.columns]
     return ssgsea_cell_df
 
