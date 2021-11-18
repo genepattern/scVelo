@@ -154,8 +154,7 @@ def make_pseudobulk(adata, key='X', method="sum", genes_min_nonzero_cells=0, clu
             velocity_gene_by_cluster = pandas.DataFrame(columns=scvelo.DataFrame(
                 adata.uns['rank_velocity_genes']['names']).columns, index=unique_values)
             for col in scvelo.DataFrame(adata.uns['rank_velocity_genes']['names']):
-                velocity_gene_by_cluster[col] = list(scvelo.DataFrame(adata.uns['rank_velocity_genes']['scores'])[
-                    col][numpy.argsort(scvelo.DataFrame(adata.uns['rank_velocity_genes']['names'])[col].values)])
+                velocity_gene_by_cluster[col] = pandas.DataFrame({'scores':scvelo.DataFrame(adata.uns['rank_velocity_genes']['scores'])[col].values},index=scvelo.DataFrame(adata.uns['rank_velocity_genes']['names'])[col].values).reindex(velocity_gene_by_cluster.index).fillna(0)
             rank_velocity_genes_by_cluster = velocity_gene_by_cluster.copy()
             velocity_weight = (1 + numpy.log(1 + numpy.absolute(rank_velocity_genes_by_cluster.reindex(pseudobulk_df.index).fillna(0))))
             out_matrix = numpy.sign(pseudobulk_df) * (numpy.absolute(pseudobulk_df) ** velocity_weight)
