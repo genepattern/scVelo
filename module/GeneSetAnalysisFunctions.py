@@ -52,8 +52,7 @@ def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset"
         gene_by_cluster = pandas.DataFrame(columns=scvelo.DataFrame(
             adata.uns[key]['names']).columns, index=unique_values)
         for col in scvelo.DataFrame(adata.uns[key]['names']):
-            gene_by_cluster[col] = list(scvelo.DataFrame(adata.uns[key]['scores'])[
-                col][numpy.argsort(scvelo.DataFrame(adata.uns[key]['names'])[col].values)])
+            gene_by_cluster[col] = pandas.DataFrame({'scores':scvelo.DataFrame(adata.uns[key]['scores'])[col].values},index=scvelo.DataFrame(adata.uns[key]['names'])[col].values).reindex(gene_by_cluster.index).fillna(0)
         rank_genes_groups_by_cluster = gene_by_cluster.copy()
         if velocity_weight == True and key != 'rank_velocity_genes':
             if "rank_velocity_genes" in adata.uns:
@@ -67,8 +66,7 @@ def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset"
                 velocity_gene_by_cluster = pandas.DataFrame(columns=scvelo.DataFrame(
                     adata.uns['rank_velocity_genes']['names']).columns, index=unique_values)
                 for col in scvelo.DataFrame(adata.uns['rank_velocity_genes']['names']):
-                    velocity_gene_by_cluster[col] = list(scvelo.DataFrame(adata.uns['rank_velocity_genes']['scores'])[
-                        col][numpy.argsort(scvelo.DataFrame(adata.uns['rank_velocity_genes']['names'])[col].values)])
+                    velocity_gene_by_cluster[col] = pandas.DataFrame({'scores':scvelo.DataFrame(adata.uns['rank_velocity_genes']['scores'])[col].values},index=scvelo.DataFrame(adata.uns['rank_velocity_genes']['names'])[col].values).reindex(velocity_gene_by_cluster.index).fillna(0)
                 rank_velocity_genes_by_cluster = velocity_gene_by_cluster.copy()
                 velocity_weight = (1 + numpy.log(1 + numpy.absolute(rank_velocity_genes_by_cluster.reindex(rank_genes_groups_by_cluster.index).fillna(0))))
                 out_matrix = numpy.sign(rank_genes_groups_by_cluster) * (numpy.absolute(rank_genes_groups_by_cluster) ** velocity_weight)
