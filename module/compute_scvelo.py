@@ -92,10 +92,10 @@ def main():
             options.topgenes), subset=False, check_values=False)
 
     # scVelo Core Functions
-    if options.enforce == "True":
+    if options.enforce == "all":
         scv.pp.filter_and_normalize(adata, min_shared_counts=int(
             options.minshared), n_top_genes=int(options.topgenes), subset_highly_variable=False, enforce=True)
-    elif options.enforce == "False":
+    elif options.enforce == "velocity":
         scv.pp.filter_and_normalize(adata, min_shared_counts=int(
             options.minshared), n_top_genes=int(options.topgenes), subset_highly_variable=False, layers_normalize={'spliced', 'unspliced', 'ambiguous'})
     else:
@@ -108,7 +108,7 @@ def main():
         sc.pp.regress_out(adata, regression_keys)
         sc.pp.scale(adata)
 
-    if options.hvg == "True" or options.enforce == "True" or options.keys != "NONE":
+    if options.hvg == "True" or options.enforce == "all" or options.keys != "NONE":
         print("Additional preprocessing of the non-splicing expression data was requested, re-running PCA and " +
               options.embedding.upper() + " embedding to produce plots that reflect this.")
         sc.pp.pca(adata, n_comps=int(options.pcs), svd_solver='arpack')
