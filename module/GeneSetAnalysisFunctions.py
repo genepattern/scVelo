@@ -88,7 +88,7 @@ def get_gene_values(adata, key='X', genes_min_nonzero_cells=0, outname="Dataset"
                         str(len(out_matrix.columns) - 1) + "\n")
         text_file.close()
         out_matrix.to_csv(filename + ".gct", sep="\t", mode='a')
-    return {'data': out_matrix.drop(labels="Description", axis=1), 'outname': filename}
+    return {'data': out_matrix.drop(labels="Description", axis=1), 'row_descriptions': out_matrix["Description"].values, 'outname': filename}
     # sumtest=Dataset_rank_velocity_genes.reindex(Dataset_rank_genes_groups.index).fillna(0) + Dataset_rank_genes_groups
 
 
@@ -172,7 +172,7 @@ def make_pseudobulk(adata, key='X', method="sum", genes_min_nonzero_cells=0, clu
                         str(len(out_matrix.columns) - 1) + "\n")
         text_file.close()
         out_matrix.to_csv(filename + ".gct", sep="\t", mode='a')
-    return {'data': out_matrix.drop(labels="Description", axis=1), 'outname': filename}
+    return {'data': out_matrix.drop(labels="Description", axis=1), 'row_descriptions': out_matrix["Description"].values, 'outname': filename}
 
 
 def load_ssgsea_result(ssgsea_result):
