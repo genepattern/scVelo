@@ -83,8 +83,8 @@ def main():
     # Check if user wants to regenerate variable gene selection, or if it needs to be generated from scratch
     if options.hvg == "False":
         if "highly_variable" not in list(adata.var):
-            print("Calculation of highly variable genes was not selected but no precomputed set was detected in the dataset so doing it anyway using method " + options.hvg)
-            sc.pp.highly_variable_genes(adata, flavor=options.hvg, n_top_genes=int(
+            print("Calculation of highly variable genes was not selected but no precomputed set was detected in the dataset so doing it anyway using method 'seurat_v3'")
+            sc.pp.highly_variable_genes(adata, flavor='seurat_v3', n_top_genes=int(
                 options.topgenes), subset=False, check_values=False)
     else:
         print("Realculation of highly variable genes was requested; calculating using method " + options.hvg)
