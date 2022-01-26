@@ -5,7 +5,7 @@ MAINTAINER Anthony S. Castanza <acastanza@cloud.ucsd.edu>
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
-RUN mkdir /src
+RUN mkdir /build
 
 # install system dependencies
 RUN apt-get update --yes
