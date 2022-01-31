@@ -12,7 +12,7 @@ Wrapped as a module by Anthony S. Castanza and Barbara A. Hill Mesirov Lab, UCSD
 **Summary**: “RNA velocity enables the recovery of directed dynamic information by leveraging splicing kinetics. scVelo generalizes the concept of RNA velocity (La Manno et al., Nature, 2018). by relaxing previously made assumptions with a stochastic and a dynamical model that solves the full transcriptional dynamics. It thereby adapts RNA velocity to widely varying specifications such as non-stationary populations.” [(source)](https://scvelo.readthedocs.io/) for more about scVelo see the [scVelo about page](https://scvelo.readthedocs.io/about/).
 This module implements the basic, dynamical modeling, and differential kinetics scVelo analysis pipelines downstream of Scanpy preprocessing.
 
-**Source Publication**: Bergen, V., Lange, M., Peidli, S. et al. Generalizing RNA velocity to transient cell states through dynamical modeling. Nat Biotechnol 38, 1408–1414 (2020). https://doi.org/10.1038/s41587-020-0591-3 </br>
+**Source Publication**: Bergen, V., Lange, M., Peidli, S. et al. Generalizing RNA velocity to transient cell states through dynamical modeling. Nat Biotechnol 38, 1408–1414 (2020). https://doi.org/10.1038/s41587-020-0591-3 <br>
 See: [https://scvelo.readthedocs.io/references/](https://scvelo.readthedocs.io/references/) for full citation information
 
 **Parameters:**
@@ -41,8 +41,8 @@ See: [https://scvelo.readthedocs.io/references/](https://scvelo.readthedocs.io/r
 
 **Output File(s)**: An .h5ad file containing the full results of the scVelo pipeline, along with major plots from the selected analysis (.png format by default), and tab delimited text files containing numerical values underlying some of the computations. Plots will be named based on the specific analysis options selected, and separate plots will be produced for the differential kinetics analysis mode if enabled.
 
-**Module Language**: Python 3 </br>
-**Source Repository**: https://github.com/genepattern/scVelo.ComputeVelocity/tree/v0.10 </br>
+**Module Language**: Python 3 <br>
+**Source Repository**: https://github.com/genepattern/scVelo.ComputeVelocity/tree/v0.10 <br>
 **Docker image**: genepattern/compute_scvelo:beta1
 
 | Version | Date       | Comment               |
