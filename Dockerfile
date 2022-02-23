@@ -11,11 +11,13 @@ RUN mkdir /build
 RUN apt-get update --yes
 RUN apt-get install build-essential=12.6 --yes -V
 RUN apt-get install libcurl4-gnutls-dev=7.64.0-4+deb10u2 --yes -V
-RUN apt-get install libhdf5-serial-dev=1.10.4+repack-10 --yes -V
+RUN apt-get install libhdf5-dev=1.10.4+repack-10 --yes -V
+# RUN apt-get install libhdf5-serial-dev=1.10.4+repack-10 --yes -V - couldn't find this one - maybe because it's a virtual package?
 # RUN apt-get install libigraph0-dev --yes #This should install automatically with python-igraph as the repo version fails
 RUN apt-get install libxml2-dev=2.9.4+dfsg1-7+deb10u2 --yes -V
 RUN apt-get install libtool=2.4.6-9 --yes -V
-RUN apt-get install flex=2:3.3.2.dfsg-1 bison=2.6.4-6.2 --yes -V
+RUN apt-get install flex=2.6.4-6.2 --yes -V
+RUN apt-get install bison=2:3.3.2.dfsg-1 --yes -V
 
 # install python with conda
 RUN mkdir /conda && \

@@ -43,7 +43,7 @@ See: [https://scvelo.readthedocs.io/references/](https://scvelo.readthedocs.io/r
 
 **Module Language**: Python 3 <br>
 **Source Repository**: https://github.com/genepattern/scVelo.ComputeVelocity/tree/v0.10 <br>
-**Docker image**: genepattern/compute_scvelo:beta1
+**Docker image**: genepattern/compute_scvelo:beta
 
 | Version | Date       | Comment               |
 |:--------|:-----------|:----------------------|
