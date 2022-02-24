@@ -1,18 +1,21 @@
-import os
-import sys
+# unused imports
+# import os
+# import sys
+# import shutil
+# from optparse import OptionParser
+# import pandas as pd
+# import matplotlib
+# import igraph
+
 import re
 import argparse
-import shutil
 import warnings
-from optparse import OptionParser
 
 import anndata as ad
 import scanpy as sc
 import numpy as np
-import pandas as pd
 import scvelo as scv
-import matplotlib
-import igraph
+
 
 __author__ = "Anthony S. Castanza"
 __email__ = "acastanza@ucsd.edu"
