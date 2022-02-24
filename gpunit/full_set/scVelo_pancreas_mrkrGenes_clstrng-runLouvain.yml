@@ -1,0 +1,42 @@
+#lsid=urn:lsid:genepattern.org:module.analysis:00425:1
+#
+name: scVelo_pancreas_mrkrGenes_clstrng-runLouvain
+description:  scVelo_pancreas_mrkrGenes_clstrng-runLouvain
+module: scVelo
+params:
+       h5ad: "../input/scvelo_pancreas_builtin.h5ad"
+       Marker.Genes: "../input/Pancreatic_cell_marker_genes.txt"
+       Velocity.Mode: "stochastic"
+       min_shared_counts: "30"
+       n_top_genes: "2000"
+       recalculate_highly_variable_genes: "False"
+       Enforce.Normalization: "velocity"
+       N_PCs: "30"
+       N_Neighbors: "30"
+       Differential.Kinetics.Analysis: "False"
+       Embedding: "umap"
+       Clustering: "run_louvain"
+       Cluster.Resolution: "1.0"
+       Regression.Keys: "NONE"
+       Plot.Batches: "True"
+       Save.Plot.Type: "png"
+       output.file.base: "<h5ad_basename>"
+assertions:
+   jobStatus: success
+       scvelo_pancreas_builtin_velocity_length_and_confidence_by_dataset_clusters.txt: !!null
+       scvelo_pancreas_builtin_top100_velocity_genes_by_dataset_clusters.txt: !!null
+       scvelo_pancreas_builtin_paga_transitions_confidence_by_dataset_clusters.txt: !!null
+       scvelo_pancreas_builtin_complete_stochastic_velocity_data.h5ad: !!null
+       scvelo_scvelo_pancreas_builtin_velocity_terminal_states.png: !!null
+       scvelo_scvelo_pancreas_builtin_velocity_length_embedding.png: !!null
+       scvelo_scvelo_pancreas_builtin_velocity_embeddings.png: !!null
+       scvelo_scvelo_pancreas_builtin_velocity_confidence_embedding.png: !!null
+       scvelo_scvelo_pancreas_builtin_paga_velocity_graph_by_dataset_clusters.png: !!null
+       scvelo_proportions_scvelo_pancreas_builtin_splicing_proportions.png: !!null
+       scvelo_scvelo_pancreas_builtin_embedding_Sst.png: !!null
+       scvelo_scvelo_pancreas_builtin_embedding_Ppy.png: !!null
+       scvelo_scvelo_pancreas_builtin_embedding_Ins2.png: !!null
+       scvelo_scvelo_pancreas_builtin_embedding_Gulp1.png: !!null
+       scvelo_scvelo_pancreas_builtin_embedding_Ghrl.png: !!null
+       scvelo_scvelo_pancreas_builtin_embedding_Gcg.png: !!null
+       scvelo_scvelo_pancreas_builtin_combined_per-marker_velocity.png: !!null
