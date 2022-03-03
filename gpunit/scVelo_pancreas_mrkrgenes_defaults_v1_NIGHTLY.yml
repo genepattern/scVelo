@@ -21,6 +21,7 @@ params:
        Plot.Batches: "True"
        Save.Plot.Type: "png"
        output.file.base: "<h5ad_basename>"
+       job.cpuCount: "3"
 assertions:
     jobStatus: success
     files:
