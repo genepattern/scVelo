@@ -23,6 +23,7 @@ params:
        output.file.base: "<h5ad_basename>"
 assertions:
    jobStatus: success
+   files:
        scvelo_pancreas_builtin_velocity_length_and_confidence_by_dataset_clusters.txt: !!null
        scvelo_pancreas_builtin_top100_velocity_genes_by_dataset_clusters.txt: !!null
        scvelo_pancreas_builtin_paga_transitions_confidence_by_dataset_clusters.txt: !!null
