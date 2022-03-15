@@ -28,16 +28,16 @@ assertions:
         scvelo_pancreas_builtin_top100_velocity_genes_by_leiden_clusters.txt: !!null
         scvelo_pancreas_builtin_paga_transitions_confidence_by_leiden_clusters.txt: !!null
         scvelo_pancreas_builtin_complete_stochastic_velocity_data.h5ad: !!null
-        scvelo_scvelo_pancreas_builtin_velocity_terminal_states.png: !!null
-        scvelo_scvelo_pancreas_builtin_velocity_length_embedding.png: !!null
-        scvelo_scvelo_pancreas_builtin_velocity_embeddings.png: !!null
-        scvelo_scvelo_pancreas_builtin_velocity_confidence_embedding.png: !!null
-        scvelo_scvelo_pancreas_builtin_paga_velocity_graph_by_leiden_clusters.png: !!null
-        scvelo_proportions_scvelo_pancreas_builtin_splicing_proportions.png: !!null
-        scvelo_scvelo_pancreas_builtin_embedding_Sst.png: !!null
-        scvelo_scvelo_pancreas_builtin_embedding_Ppy.png: !!null
-        scvelo_scvelo_pancreas_builtin_embedding_Ins2.png: !!null
-        scvelo_scvelo_pancreas_builtin_embedding_Gulp1.png: !!null
-        scvelo_scvelo_pancreas_builtin_embedding_Ghrl.png: !!null
-        scvelo_scvelo_pancreas_builtin_embedding_Gcg.png: !!null
-        scvelo_scvelo_pancreas_builtin_combined_per-marker_velocity.png: !!null
+        figures/scvelo_scvelo_pancreas_builtin_velocity_terminal_states.png: !!null
+        figures/scvelo_scvelo_pancreas_builtin_velocity_length_embedding.png: !!null
+        figures/scvelo_scvelo_pancreas_builtin_velocity_embeddings.png: !!null
+        figures/scvelo_scvelo_pancreas_builtin_velocity_confidence_embedding.png: !!null
+        figures/scvelo_scvelo_pancreas_builtin_paga_velocity_graph_by_leiden_clusters.png: !!null
+        figures/scvelo_proportions_scvelo_pancreas_builtin_splicing_proportions.png: !!null
+        figures/markers/scvelo_scvelo_pancreas_builtin_embedding_Sst.png: !!null
+        figures/markers/scvelo_scvelo_pancreas_builtin_embedding_Ppy.png: !!null
+        figures/markers/scvelo_scvelo_pancreas_builtin_embedding_Ins2.png: !!null
+        figures/markers/scvelo_scvelo_pancreas_builtin_embedding_Gulp1.png: !!null
+        figures/markers/scvelo_scvelo_pancreas_builtin_embedding_Ghrl.png: !!null
+        figures/markers/scvelo_scvelo_pancreas_builtin_embedding_Gcg.png: !!null
+        figures/markers/scvelo_scvelo_pancreas_builtin_combined_per-marker_velocity.png: !!null

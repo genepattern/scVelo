@@ -5,7 +5,7 @@ description: scVelo_pancreas_mrkrgenes_defaults_v1_NIGHTLY
 module: scVelo
 params:
     h5ad: "./input/scvelo_pancreas_builtin.h5ad"
-    Marker.Genes: "./input/Pancreatic_cell_marker_genes.txt"
+    Marker.Genes: ""
     Velocity.Mode: "stochastic"
     min_shared_counts: "30"
     n_top_genes: "2000"
