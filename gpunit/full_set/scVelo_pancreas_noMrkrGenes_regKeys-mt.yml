@@ -25,4 +25,4 @@ assertions:
     jobStatus: failure
     files:
         stderr.txt:
-          diff: ../expected_output/noMarkerFile/stderr_Regress_mt.txt
+            diff: ../expected_output/noMarkerFile/stderr_Regress_mt.txt

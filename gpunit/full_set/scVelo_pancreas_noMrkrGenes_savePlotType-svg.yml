@@ -1,7 +1,7 @@
 #lsid=urn:lsid:genepattern.org:module.analysis:00425:1
 #
 name: scVelo_pancreas_noMrkrGenes_savePlotType-svg
-description:  scVelo_pancreas_noMrkrGenes_savePlotType-svg
+description: scVelo_pancreas_noMrkrGenes_savePlotType-svg
 module: scVelo
 params:
     h5ad: "../input/scvelo_pancreas_builtin.h5ad"
