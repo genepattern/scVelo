@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/build/compute_scvelo.py", line 405, in <module>
+    main()
+  File "/build/compute_scvelo.py", line 111, in main
+    sc.pp.regress_out(adata, regression_keys)
+  File "/opt/conda/lib/python3.8/site-packages/scanpy/preprocessing/_simple.py", line 638, in regress_out
+    regressors = adata.obs[keys]
+  File "/opt/conda/lib/python3.8/site-packages/pandas/core/frame.py", line 3030, in __getitem__
+    indexer = self.loc._get_listlike_indexer(key, axis=1, raise_missing=True)[1]
+  File "/opt/conda/lib/python3.8/site-packages/pandas/core/indexing.py", line 1266, in _get_listlike_indexer
+    self._validate_read_indexer(keyarr, indexer, axis, raise_missing=raise_missing)
+  File "/opt/conda/lib/python3.8/site-packages/pandas/core/indexing.py", line 1308, in _validate_read_indexer
+    raise KeyError(f"None of [{key}] are in the [{axis_name}]")
+KeyError: "None of [Index(['mt'], dtype='object')] are in the [columns]"

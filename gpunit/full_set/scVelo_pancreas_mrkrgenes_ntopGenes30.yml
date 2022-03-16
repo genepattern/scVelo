@@ -2,7 +2,7 @@
 #
 name: scVelo_pancreas_mrkrgenes_ntopGenes30
 description: scVelo_pancreas_mrkrgenes_ntopGenes30
-module: full_set
+module: scVelo
 params:
     h5ad: "../input/scvelo_pancreas_builtin.h5ad"
     Marker.Genes: "../input/Pancreatic_cell_marker_genes.txt"

@@ -22,15 +22,7 @@ params:
     Save.Plot.Type: "png"
     output.file.base: "<h5ad_basename>"
 assertions:
-    jobStatus: success
+    jobStatus: failure
     files:
-        scvelo_pancreas_builtin_velocity_length_and_confidence_by_dataset_clusters.txt: !!null
-        scvelo_pancreas_builtin_top100_velocity_genes_by_dataset_clusters.txt: !!null
-        scvelo_pancreas_builtin_paga_transitions_confidence_by_dataset_clusters.txt: !!null
-        scvelo_pancreas_builtin_complete_stochastic_velocity_data.h5ad: !!null
-        scvelo_scvelo_pancreas_builtin_velocity_terminal_states.png: !!null
-        scvelo_scvelo_pancreas_builtin_velocity_length_embedding.png: !!null
-        scvelo_scvelo_pancreas_builtin_velocity_embeddings.png: !!null
-        scvelo_scvelo_pancreas_builtin_velocity_confidence_embedding.png: !!null
-        scvelo_scvelo_pancreas_builtin_paga_velocity_graph_by_dataset_clusters.png: !!null
-        scvelo_proportions_scvelo_pancreas_builtin_splicing_proportions.png: !!null
+        stderr.txt:
+          diff: ../expected_output/noMarkerFile/stderr_Regress_mt.txt
