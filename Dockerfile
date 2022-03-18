@@ -9,13 +9,15 @@ RUN mkdir /build
 
 # install system dependencies
 RUN apt-get update --yes
-RUN apt-get install build-essential --yes
-RUN apt-get install libcurl4-gnutls-dev --yes
-RUN apt-get install libhdf5-serial-dev --yes
+RUN apt-get install build-essential=12.6 --yes -V
+RUN apt-get install libcurl4-gnutls-dev=7.64.0-4+deb10u2 --yes -V
+RUN apt-get install libhdf5-dev=1.10.4+repack-10 --yes -V
+# RUN apt-get install libhdf5-serial-dev=1.10.4+repack-10 --yes -V - couldn't find this one - prob because it's a virtual package?
 # RUN apt-get install libigraph0-dev --yes #This should install automatically with python-igraph as the repo version fails
-RUN apt-get install libxml2-dev --yes
-RUN apt-get install libtool --yes
-RUN apt-get install flex bison --yes
+RUN apt-get install libxml2-dev=2.9.4+dfsg1-7+deb10u2 --yes -V
+RUN apt-get install libtool=2.4.6-9 --yes -V
+RUN apt-get install flex=2.6.4-6.2 --yes -V
+RUN apt-get install bison=2:3.3.2.dfsg-1 --yes -V
 
 # install python with conda
 RUN mkdir /conda && \
@@ -23,9 +25,6 @@ RUN mkdir /conda && \
     wget https://repo.anaconda.com/miniconda/Miniconda3-py38_4.10.3-Linux-x86_64.sh && \
     bash Miniconda3-py38_4.10.3-Linux-x86_64.sh -b -p /opt/conda
 ENV PATH="/opt/conda/bin:${PATH}"
-
-# install R dependencies
-
 
 # install python dependencies
 RUN pip install Cython==0.29.24

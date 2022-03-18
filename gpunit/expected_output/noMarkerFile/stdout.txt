@@ -1,0 +1,46 @@
+saving figure to file ./figures/scvelo_proportions_scvelo_pancreas_builtin_splicing_proportions.png
+Calculation of highly variable genes was not selected but no precomputed set was detected in the dataset so doing it anyway using method 'seurat_v3'
+Filtered out 21611 genes that are detected 30 counts (shared).
+Normalized count data: X, unspliced, spliced.
+Extracted 2000 highly variable genes.
+Logarithmized X.
+computing neighbors
+    finished (0:00:12) --> added 
+    'distances' and 'connectivities', weighted adjacency matrices (adata.obsp)
+computing moments based on connectivities
+    finished (0:00:02) --> added 
+    'Ms' and 'Mu', moments of un/spliced abundances (adata.layers)
+computing velocities
+    finished (0:00:02) --> added 
+    'velocity', velocity vectors for each individual cell (adata.layers)
+computing velocity graph (using 2/40 cores)
+WARNING: Unable to create progress bar. Consider installing `tqdm` as `pip install tqdm` and `ipywidgets` as `pip install ipywidgets`,
+or disable the progress bar using `show_progress_bar=False`.
+    finished (0:00:11) --> added 
+    'velocity_graph', sparse matrix with cosine correlations (adata.uns)
+computing terminal states
+    identified 2 regions of root cells and 1 region of end points .
+    finished (0:00:00) --> added
+    'root_cells', root cells of Markov diffusion process (adata.obs)
+    'end_points', end points of Markov diffusion process (adata.obs)
+Found 'clusters' key in dataset. We'll use this for plots and any differential kinetics.
+ranking velocity genes
+    finished (0:00:07) --> added 
+    'rank_velocity_genes', sorted scores by group ids (adata.uns) 
+    'spearmans_score', spearmans correlation scores (adata.var)
+computing velocity embedding
+    finished (0:00:01) --> added
+    'velocity_umap', embedded velocity vectors (adata.obsm)
+saving figure to file ./figures/scvelo_scvelo_pancreas_builtin_velocity_embeddings.png
+--> added 'velocity_length' (adata.obs)
+--> added 'velocity_confidence' (adata.obs)
+--> added 'velocity_confidence_transition' (adata.obs)
+saving figure to file ./figures/scvelo_scvelo_pancreas_builtin_velocity_length_embedding.png
+saving figure to file ./figures/scvelo_scvelo_pancreas_builtin_velocity_confidence_embedding.png
+running PAGA using priors: ['velocity_pseudotime']
+    finished (0:00:01) --> added
+    'paga/connectivities', connectivities adjacency (adata.uns)
+    'paga/connectivities_tree', connectivities subtree (adata.uns)
+    'paga/transitions_confidence', velocity transitions (adata.uns)
+saving figure to file ./figures/scvelo_scvelo_pancreas_builtin_paga_velocity_graph_by_dataset_clusters.png
+saving figure to file ./figures/scvelo_scvelo_pancreas_builtin_velocity_terminal_states.png

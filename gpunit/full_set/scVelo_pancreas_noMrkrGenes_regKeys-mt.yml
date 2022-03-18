@@ -1,0 +1,28 @@
+#lsid=urn:lsid:genepattern.org:module.analysis:00425:1
+#
+name: scVelo_pancreas_noMrkrGenes_regKeys-mt
+description:  scVelo_pancreas_noMrkrGenes_regKeys-mt
+module: scVelo
+params:
+    h5ad: "../input/scvelo_pancreas_builtin.h5ad"
+    Marker.Genes: ""
+    Velocity.Mode: "stochastic"
+    min_shared_counts: "30"
+    n_top_genes: "2000"
+    recalculate_highly_variable_genes: "False"
+    Enforce.Normalization: "velocity"
+    N_PCs: "30"
+    N_Neighbors: "30"
+    Differential.Kinetics.Analysis: "False"
+    Embedding: "umap"
+    Clustering: "autodetect_existing"
+    Cluster.Resolution: "1.0"
+    Regression.Keys: "mt"
+    Plot.Batches: "True"
+    Save.Plot.Type: "png"
+    output.file.base: "<h5ad_basename>"
+assertions:
+    jobStatus: failure
+    files:
+        stderr.txt:
+            diff: ../expected_output/noMarkerFile/stderr_Regress_mt.txt
