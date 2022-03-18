@@ -201,7 +201,7 @@ p6_value=False\=false;seurat_v3\=seurat_v3;cell_ranger\=cell_ranger
 p7_MODE=
 p7_TYPE=TEXT
 p7_default_value=velocity
-p7_description=Normally, the top level counts matrix used by most tools such as scanpy and seurat will already be normalized.<br>scVelo requires that the separate spliced and unspliced counts layers used only by velocity calculations also be normalized.<br>Setting Enforce.Normalization to "all" will cause scVelo to force normalization of all three layers of the data.<br>Setting Enforce.Normalization to "velocity" (default) will only normalize the velocity specific spliced and unspliced layers.<br>Setting Enforce.Normalization to "none" will use the dataset as is for all layers.<br>Note\: selecting "all" will force re-calculation of PCA, the KNN graph, and UMAP embeddings.
+p7_description=Typically, the top level counts matrix used by most tools such as scanpy and seurat will already be normalized.<br>scVelo requires that the separate spliced and unspliced counts layers used only by velocity calculations also be normalized.<br>Setting Enforce.Normalization to "all" will cause scVelo to force normalization of all three layers of the data.<br>Setting Enforce.Normalization to "velocity" (default) will only normalize the velocity specific spliced and unspliced layers.<br>Setting Enforce.Normalization to "none" will use the dataset as is for all layers.<br>Note\: selecting "all" will force re-calculation of PCA, the KNN graph, and UMAP embeddings.
 p7_fileFormat=
 p7_flag=-f
 p7_name=Enforce.Normalization
