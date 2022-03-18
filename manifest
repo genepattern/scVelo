@@ -1,16 +1,16 @@
 #scVelo
 #Fri Mar 11 21:40:17 UTC 2022
 JVMLevel=
-LSID=urn\:lsid\:genepattern.org\:module.analysis\:00425\:0.1.5.1
+LSID=urn\:lsid\:genepattern.org\:module.analysis\:00425\
 author=Anthony S. Castanza, Barbara A. Hill;UCSD, Broad Institute of Harvard and MIT
 categories=single-cell;singlecell;velocity
 commandLine=python /build/compute_scvelo.py -i <h5ad> -m <Marker.Genes> -v <Velocity.Mode> -s <min_shared_counts> -t <n_top_genes> -g <recalculate_highly_variable_genes> -f <Enforce.Normalization> -c <N_PCs> -n <N_Neighbors> -d <Differential.Kinetics.Analysis> -e <Embedding> -l <Clustering> -r <Cluster.Resolution> -k <Regression.Keys> -b <Plot.Batches> -p <Save.Plot.Type> -o <output.file.base> -j <job.cpuCount>
 cpuType=any
 description=Module for performing basic velocity analysis using the scVelo protocol on ScanpyUtilities processed datasets
 documentationUrl=https\://genepattern.github.io/scVelo/v1/
-fileFormat=h5ad;png;svg
+fileFormat=h5ad;png;svg;pdf
 job.cpuCount=2
-job.docker.image=genepattern/scvelo\:beta
+job.docker.image=genepattern/scvelo\:v1
 job.memory=6 Gb
 job.walltime=
 language=any
@@ -239,9 +239,9 @@ p9_type=java.lang.Integer
 p9_value=
 privacy=public
 publicationDate=01/31/2022 17\:44 
-quality=preproduction
-src.repo=https\://github.com/genepattern/scVelo/tree/v0.1
+quality=production
+src.repo=https\://github.com/genepattern/scVelo/tree/v1
 taskDoc=
 taskType=single-cell
 userid=bhill@broadinstitute.org
-version=adding default cpuCount
+version=Initial release
