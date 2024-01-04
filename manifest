@@ -3,7 +3,7 @@
 JVMLevel=
 LSID=urn\:lsid\:genepattern.org\:module.analysis\:00425\
 author=Anthony S. Castanza, Barbara A. Hill;UCSD, Broad Institute of Harvard and MIT
-categories=single-cell;singlecell;velocity
+categories=single-cell;singlecell;rna velocity
 commandLine=python /build/compute_scvelo.py -i <h5ad> -m <Marker.Genes> -v <Velocity.Mode> -s <min_shared_counts> -t <n_top_genes> -g <recalculate_highly_variable_genes> -f <Enforce.Normalization> -c <N_PCs> -n <N_Neighbors> -d <Differential.Kinetics.Analysis> -e <Embedding> -l <Clustering> -r <Cluster.Resolution> -k <Regression.Keys> -b <Plot.Batches> -p <Save.Plot.Type> -o <output.file.base> -j <job.cpuCount>
 cpuType=any
 description=Module for performing basic velocity analysis using the scVelo protocol on ScanpyUtilities processed datasets
